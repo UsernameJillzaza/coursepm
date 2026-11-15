@@ -139,6 +139,22 @@ describe('POST /api/milestones/:id/submissions', () => {
     expect(await count(m.id)).toBe(1)
   })
 
+  it('check order: role before fields (supervisor + invalid body → 403), fields before rules (invalid body on a closed milestone → 400), non-numeric id → 404', async () => {
+    const open = await milestone()
+    const closed = await milestone({ deadline: hours(-1) })
+    const supBad = await post(sup1, open.id, work({ link: 'not a url' }))
+    expect(supBad.status).toBe(403)
+    const closedBad = await post(a1, closed.id, work({ link: 'not a url' }))
+    expect(closedBad.status).toBe(400)
+    expect(Object.keys(closedBad.body.error.fields)).toEqual(['link'])
+    for (const path of ['/api/milestones/abc/submissions', '/api/milestones/0/submissions']) {
+      expect((await (await loginAgent(a1)).post(path).send(work())).status).toBe(404)
+      expect((await (await loginAgent(a1)).get(path)).status).toBe(404)
+    }
+    expect(await count(open.id)).toBe(0)
+    expect(await count(closed.id)).toBe(0)
+  })
+
   it('a supervisor of the team cannot submit → 403 (scope first, then role); a student of another team → 404', async () => {
     const m = await milestone()
     const sup = await post(sup1, m.id)
