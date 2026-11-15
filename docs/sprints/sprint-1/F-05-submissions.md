@@ -43,8 +43,8 @@ values. A 409 from the server shows the rule message, because the UI state may b
 submittedAt) with `UNIQUE(milestoneId, revision)` and the composite FK
 `(milestoneId, teamId) → Milestone(id, teamId)`. Migration `<timestamp>_submissions` creates the
 submission table and `UNIQUE(milestoneId, revision)`; a separate
-`<timestamp>_submission_team_matches_milestone` migration adds `Milestone UNIQUE(id, teamId)` and the
-composite FK.
+`<timestamp>_submission_team_matches_milestone` migration adds the composite FK (`Milestone UNIQUE(id, teamId)`
+already exists from the milestones migration). All submission FKs are RESTRICT: submissions are never deleted (BR-07).
 
 ## Acceptance criteria
 | ID | Given / When / Then |

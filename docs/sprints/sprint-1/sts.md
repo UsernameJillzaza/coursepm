@@ -88,7 +88,8 @@ confirm the data is still there (NFR-06); MAN-02 inspect the cookie flags in Dev
 **Delivered in parts (the routes and tables arrive with later Issues).** #5 delivers the team-route parts of
 TEST-02-01 and TEST-02-03 and the team-list part of TEST-UI-04. The milestone parts of TEST-02-01, TEST-02-02,
 TEST-02-03, TEST-UI-04 and TEST-02-04 / TEST-02-09 arrive with #6 (F-04); the submission parts of TEST-02-01,
-TEST-02-02, TEST-02-03 and TEST-UI-04 with #7 (F-05); TEST-02-05 with #8 (F-06).
+TEST-02-02, TEST-02-03 and TEST-UI-04 with #7 (F-05); TEST-02-05 and the feedback part of TEST-05-09 (#7 checks
+the newest-first order and a `feedback: null` slot) with #8 (F-06).
 
 **Additional automated cases.** Existing tests may strengthen an AC without receiving a separate STS ID.
 Retain and report these cases with their actual test file/name in Part F: e-mail normalization (AC-01-1),
@@ -99,5 +100,8 @@ session is sent to `/login` (AC-01-1), a successful login opens `/teams` with na
 credentials show the server message (AC-01-2) and Log out returns to the login page (AC-01-4), team member
 objects expose only `id` and `name` (AC-03-1), a member can open their own team (AC-03-1), a non-existent or
 non-numeric team id answers 404 like an out-of-scope one (AC-03-2), and the team detail page shows name,
-course and members (AC-03-1). These
+course and members (AC-03-1). F-05 adds: a supervisor of the team cannot submit (403 after the scope check, AC-05-1), milestones report
+`revisionsUsed` and `latestSubmittedAt` from stored revisions (AC-05-7), milestone titles link to their page,
+a student submit updates the list and counter, the revision list is newest first with submitter and link
+(AC-05-1, AC-05-7, UI), and an out-of-scope milestone page shows **Milestone not found** (AC-02-2). These
 supplement the planned STS rows above.
