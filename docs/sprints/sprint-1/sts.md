@@ -83,7 +83,7 @@ test file/name, build command and result above or in the Part F results table.
 | TEST-R02-01 | AC-R02-1 | B + C | Client installed; health request pending, then mocked healthy or unavailable | Run `npm run build`; render the app and resolve/reject its health request | Build exits 0; app shows `API status: checking…`, then `API status: connected` on 200 with the expected health body or `API status: unreachable` on failure/unhealthy response | `app-health.test.tsx` › shows "API status: checking…" while the health request is pending<br/>`app-health.test.tsx` › shows "API status: connected" on 200 with the expected health body<br/>(+3 more)<br/>`npm --prefix client run build` | Pass (5/5) · build OK |
 
 **Manual checks (they supplement the automated tests; they don't replace them):** MAN-01 restart the API and
-confirm the data is still there (NFR-06); MAN-02 inspect the cookie flags in DevTools (NFR-04). Both are still to be done by hand on the release commit; their automated counterparts are TEST-03-04 / TEST-R01-02 / E2E-01 (persistence) and TEST-01-13 (cookie flags).
+confirm the data is still there (NFR-06); MAN-02 inspect the cookie flags in DevTools (NFR-04). Both **passed** on `v0.1.0` (`5d76a78`, 2026-11-15), scripted in Edge with the evidence in `artifacts/sprint-1/manual/` (`man-checks.txt` and screenshots); their automated counterparts are TEST-03-04 / TEST-R01-02 / E2E-01 (persistence) and TEST-01-13 (cookie flags).
 
 **Delivered in parts (the routes and tables arrive with later Issues).** #5 delivers the team-route parts of
 TEST-02-01 and TEST-02-03 and the team-list part of TEST-UI-04. The milestone parts of TEST-02-01, TEST-02-02,

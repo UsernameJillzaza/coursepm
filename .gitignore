@@ -37,3 +37,6 @@ playwright-report/
 
 # Local Claude Code dev-server launch config (machine-specific paths)
 .claude/
+
+# server/client output written by artifacts/sprint-1/manual/man-checks.js
+artifacts/sprint-1/manual/*.out.txt
