@@ -223,4 +223,3 @@ Running 3 tests using 1 worker
   ok 3 e2e\sprint-1\e2e-02-03-journey.spec.ts:90:1 › E2E-03: no New milestone control for a student; another team's page by URL shows "Team not found" (1.4s)
 
   3 passed (10.2s)
-
