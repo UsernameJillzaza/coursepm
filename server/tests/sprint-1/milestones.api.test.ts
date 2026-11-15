@@ -36,6 +36,9 @@ describe('F-04 milestone API', () => {
       id: expect.any(Number), teamId: alpha.id, title: 'Proposal', maxRevisions: 3,
       createdById: supervisor.id, revisionsUsed: 0, status: 'OPEN', latestSubmittedAt: null,
     })
+    const supervisorList = await supervisorAgent.get(`/api/teams/${alpha.id}/milestones`)
+    expect(supervisorList.status).toBe(200)
+    expect(supervisorList.body.items).toHaveLength(1)
     const studentAgent = await loginAgent(student)
     const listed = await studentAgent.get(`/api/teams/${alpha.id}/milestones`)
     expect(listed.status).toBe(200)

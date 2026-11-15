@@ -15,4 +15,3 @@ No pending migrations to apply.
       Tests  12 passed (12)
    Start at  15:24:45
    Duration  2.48s (transform 14ms, setup 0ms, import 30ms, tests 6ms, environment 0ms)
-

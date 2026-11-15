@@ -49,6 +49,8 @@ describe('TEST-04-04 (AC-04-4): milestone validation boundaries', () => {
     const result = validateMilestone(input({ description: 'x'.repeat(2001) }), now)
     expect(result.ok).toBe(false)
     if (!result.ok) expect(result.fields).toHaveProperty('description')
+    const accepted = validateMilestone(input({ description: 'x'.repeat(2000) }), now)
+    expect(accepted.ok).toBe(true)
   })
 
   it('returns every failing field together', () => {
