@@ -1,0 +1,39 @@
+# Dependencies
+node_modules/
+
+# Environment / secrets — never commit real .env files
+.env
+.env.*
+!.env.example
+
+# Build output
+dist/
+build/
+client/dist/
+server/dist/
+
+# Prisma generated client (regenerated with `prisma generate`)
+server/src/generated/
+
+# Uploaded attachments (Lab 2 D-04: local disk, path stored in DB) — user
+# content, not source; never committed.
+server/uploads/
+
+# Test / tooling caches
+coverage/
+*.tsbuildinfo
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+
+# Playwright artifacts
+test-results/
+playwright-report/
+
+# Local Claude Code dev-server launch config (machine-specific paths)
+.claude/
