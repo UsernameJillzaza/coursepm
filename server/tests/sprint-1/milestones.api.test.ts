@@ -112,7 +112,7 @@ describe('F-04 milestone API', () => {
     })).rejects.toThrow()
   })
 
-  it('new routes require a session and out-of-scope detail/list return 404', async () => {
+  it('TEST-02-01 / TEST-02-02 milestone part (AC-02-1, AC-02-2): new routes require a session and out-of-scope detail/list return 404', async () => {
     const created = await prisma.milestone.create({
       data: { teamId: beta.id, title: 'Beta secret', description: '', deadline: new Date(future()), maxRevisions: 3, createdById: otherSupervisor.id },
     })
@@ -132,5 +132,17 @@ describe('F-04 milestone API', () => {
     expect(list.text + detail.text).not.toContain('Beta secret')
     expect((await agent.get('/api/milestones/not-an-id')).status).toBe(404)
     expect((await agent.get('/api/teams/not-an-id/milestones')).status).toBe(404)
+  })
+
+  it('TEST-02-03 milestone part (AC-02-3): a supervisor of another team gets 404 for an Alpha milestone and list', async () => {
+    const created = await prisma.milestone.create({
+      data: { teamId: alpha.id, title: 'Alpha secret', description: '', deadline: new Date(future()), maxRevisions: 3, createdById: supervisor.id },
+    })
+    const agent = await loginAgent(otherSupervisor)
+    const list = await agent.get(`/api/teams/${alpha.id}/milestones`)
+    const detail = await agent.get(`/api/milestones/${created.id}`)
+    expect(list.status).toBe(404)
+    expect(detail.status).toBe(404)
+    expect(list.text + detail.text).not.toContain('Alpha secret')
   })
 })

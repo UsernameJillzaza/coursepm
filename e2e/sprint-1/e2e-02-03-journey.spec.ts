@@ -18,14 +18,14 @@ test('E2E-02: milestone → submission (rejected link, revision 1, revision 2, l
   await page.getByRole('link', { name: 'New milestone' }).click()
   await page.getByLabel('Title').fill(title)
   await page.getByLabel('Description').fill('Upload the design document for review.')
-  await page.getByLabel(/deadline/i).fill('2020-01-01T10:00')
+  await page.getByLabel('Deadline (Bangkok time)').fill('2020-01-01T10:00')
   await page.getByRole('button', { name: 'Create milestone' }).click()
   await expect(page.locator('.invalid-feedback').filter({ hasText: /deadline/i })).toBeVisible()
   await expect(page.getByLabel('Title')).toHaveValue(title)
   await shot(page, '04-milestone-past-deadline-rejected')
 
-  await page.getByLabel(/deadline/i).fill(bangkokInput(7))
-  await page.getByLabel(/revision limit/i).fill('2')
+  await page.getByLabel('Deadline (Bangkok time)').fill(bangkokInput(7))
+  await page.getByLabel('Revision limit').fill('2')
   await page.getByRole('button', { name: 'Create milestone' }).click()
   await expect(page.getByRole('heading', { name: 'Team Alpha' })).toBeVisible()
   await expect(page.getByRole('link', { name: title })).toBeVisible()
@@ -39,19 +39,19 @@ test('E2E-02: milestone → submission (rejected link, revision 1, revision 2, l
   await expect(page.getByRole('heading', { name: title })).toBeVisible()
 
   await page.getByLabel('Title').fill('Design doc draft')
-  await page.getByLabel(/link/i).fill('javascript:alert(1)')
+  await page.getByLabel('Link to the work (http/https)').fill('javascript:alert(1)')
   await page.getByRole('button', { name: /submit work/i }).click()
   await expect(page.locator('.invalid-feedback').filter({ hasText: /link/i })).toBeVisible()
-  await expect(page.getByLabel(/link/i)).toHaveValue('javascript:alert(1)')
+  await expect(page.getByLabel('Link to the work (http/https)')).toHaveValue('javascript:alert(1)')
   await shot(page, '05-submission-link-rejected')
 
-  await page.getByLabel(/link/i).fill('https://github.com/example/design/pull/1')
+  await page.getByLabel('Link to the work (http/https)').fill('https://github.com/example/design/pull/1')
   await page.getByRole('button', { name: /submit work/i }).click()
   await expect(page.getByRole('article', { name: 'Revision 1' })).toContainText('Design doc draft')
   await expect(page.getByText(/Revisions used: 1 \/ 2/)).toBeVisible()
 
   await page.getByLabel('Title').fill('Design doc final')
-  await page.getByLabel(/link/i).fill('https://github.com/example/design/pull/2')
+  await page.getByLabel('Link to the work (http/https)').fill('https://github.com/example/design/pull/2')
   await page.getByRole('button', { name: /submit work/i }).click()
   await expect(page.getByRole('article', { name: 'Revision 2' })).toContainText('Design doc final')
   await expect(page.getByText('All 2 revisions used.')).toBeVisible()
@@ -66,15 +66,18 @@ test('E2E-02: milestone → submission (rejected link, revision 1, revision 2, l
   const rev1 = page.getByRole('article', { name: 'Revision 1' })
   await rev1.getByRole('textbox', { name: /feedback for revision 1/i }).fill('Good draft. Add the sequence diagram for login.')
   await rev1.getByRole('button', { name: 'Save feedback' }).click()
-  await expect(rev1).toContainText('Good draft. Add the sequence diagram for login.')
+  // Saving reloads the list (spinner, then new data): wait for the settled
+  // result, the saved text and no form left on revision 1, before checking it.
+  await expect(page.getByRole('button', { name: 'Save feedback' })).toHaveCount(1) // revision 2's form only
+  await expect(page.getByRole('article', { name: 'Revision 1' })).toContainText('Good draft. Add the sequence diagram for login.')
+  await expect(page.getByRole('article', { name: 'Revision 1' }).getByRole('button', { name: 'Save feedback' })).toHaveCount(0)
   await shot(page, '07-supervisor-feedback-saved')
   await logout(page)
 
   // 4. Student A2 retrieves the persisted result after a reload: both revisions,
   //    newest first, feedback still on revision 1, none on revision 2, no form.
   await login(page, 'alpha2@coursepm.test')
-  await page.goto(milestoneUrl)
-  await page.reload()
+  await page.goto(milestoneUrl) // a full page load: the data comes back from the database
   const cards = page.getByRole('article')
   await expect(cards).toHaveCount(2)
   await expect(cards.first()).toHaveAccessibleName('Revision 2')

@@ -1,5 +1,5 @@
-import fs from 'node:fs'
 import { expect, type Page } from '@playwright/test'
+import fs from 'node:fs'
 import path from 'node:path'
 
 // The demo password is read from server/.env (SEED_PASSWORD), so it is never
@@ -12,8 +12,11 @@ export function seedPassword(): string {
 }
 
 // Part F evidence: full-page screenshots under artifacts/sprint-1/screenshots/.
+// It first waits until no loading spinner is shown, so a screenshot never
+// catches a list in the middle of a reload.
 export const SHOTS = path.join(__dirname, '..', 'artifacts', 'sprint-1', 'screenshots')
-export function shot(page: Page, name: string) {
+export async function shot(page: Page, name: string) {
+  await expect(page.getByRole('status', { name: 'Loading' })).toHaveCount(0)
   return page.screenshot({ path: path.join(SHOTS, `${name}.png`), fullPage: true })
 }
 
