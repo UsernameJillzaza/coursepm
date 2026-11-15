@@ -1,0 +1,93 @@
+
+ RUN  v4.1.12 C:/Users/BTCOM/Desktop/coursepm/server
+
+Loaded Prisma config from prisma.config.ts.
+
+Prisma schema loaded from prisma\schema.prisma.
+Datasource "db": PostgreSQL database "coursepm_issue5_test", schema "public" at "127.0.0.1:55433"
+
+5 migrations found in prisma/migrations
+
+Applying migration `20261115091309_submissions`
+Applying migration `20261115091328_submission_team_matches_milestone`
+
+The following migration(s) have been applied:
+
+migrations/
+  └─ 20261115091309_submissions/
+    └─ migration.sql
+  └─ 20261115091328_submission_team_matches_milestone/
+    └─ migration.sql
+
+All migrations have been successfully applied.
+ ❯ tests/sprint-1/feedback-rules.unit.test.ts (6 tests | 5 failed) 15ms
+     × validates the trimmed body boundary 10ms
+     × validates the trimmed body boundary 1ms
+     × validates the trimmed body boundary 1ms
+     × validates the trimmed body boundary 0ms
+     × rejects missing and non-string bodies, ignoring client-supplied ownership fields 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/sprint-1/feedback-rules.unit.test.ts > F-06 feedback body rule (AC-06-5) > validates the trimmed body boundary
+ FAIL  tests/sprint-1/feedback-rules.unit.test.ts > F-06 feedback body rule (AC-06-5) > validates the trimmed body boundary
+ FAIL  tests/sprint-1/feedback-rules.unit.test.ts > F-06 feedback body rule (AC-06-5) > validates the trimmed body boundary
+AssertionError: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ tests/sprint-1/feedback-rules.unit.test.ts:12:23
+     10|   ])('validates the trimmed body boundary', (body, valid) => {
+     11|     const result = validateFeedback({ body })
+     12|     expect(result.ok).toBe(valid)
+       |                       ^
+     13|     if (valid && result.ok) expect(result.value.body).toBe(body.trim())
+     14|     if (!valid && !result.ok) expect(result.fields).toHaveProperty('bo…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+ FAIL  tests/sprint-1/feedback-rules.unit.test.ts > F-06 feedback body rule (AC-06-5) > validates the trimmed body boundary
+AssertionError: expected ' a ' to be 'a' // Object.is equality
+
+Expected: "a"
+Received: " a "
+
+ ❯ tests/sprint-1/feedback-rules.unit.test.ts:13:55
+     11|     const result = validateFeedback({ body })
+     12|     expect(result.ok).toBe(valid)
+     13|     if (valid && result.ok) expect(result.value.body).toBe(body.trim())
+       |                                                       ^
+     14|     if (!valid && !result.ok) expect(result.fields).toHaveProperty('bo…
+     15|   })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+ FAIL  tests/sprint-1/feedback-rules.unit.test.ts > F-06 feedback body rule (AC-06-5) > rejects missing and non-string bodies, ignoring client-supplied ownership fields
+AssertionError: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ tests/sprint-1/feedback-rules.unit.test.ts:20:25
+     18|     for (const input of [{}, { body: 3 }, { body: null }]) {
+     19|       const result = validateFeedback(input)
+     20|       expect(result.ok).toBe(false)
+       |                         ^
+     21|       if (!result.ok) expect(result.fields).toHaveProperty('body')
+     22|     }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  5 failed | 1 passed (6)
+   Start at  16:39:25
+   Duration  3.84s (transform 20ms, setup 0ms, import 40ms, tests 15ms, environment 0ms)
+
