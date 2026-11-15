@@ -85,11 +85,19 @@ test file/name, build command and result above or in the Part F results table.
 **Manual checks (they supplement the automated tests; they don't replace them):** MAN-01 restart the API and
 confirm the data is still there (NFR-06); MAN-02 inspect the cookie flags in DevTools (NFR-04).
 
+**Delivered in parts (the routes and tables arrive with later Issues).** #5 delivers the team-route parts of
+TEST-02-01 and TEST-02-03 and the team-list part of TEST-UI-04. The milestone parts of TEST-02-01, TEST-02-02,
+TEST-02-03, TEST-UI-04 and TEST-02-04 / TEST-02-09 arrive with #6 (F-04); the submission parts of TEST-02-01,
+TEST-02-02, TEST-02-03 and TEST-UI-04 with #7 (F-05); TEST-02-05 with #8 (F-06).
+
 **Additional automated cases.** Existing tests may strengthen an AC without receiving a separate STS ID.
 Retain and report these cases with their actual test file/name in Part F: e-mail normalization (AC-01-1),
 inactive login (AC-01-8), the `maxRevisions` CHECK constraint (AC-04-4), and the composite-FK integrity
 check for submission/team ownership (AC-05-1), a malformed session cookie treated as no session (AC-02-1),
 `/api/auth/me` without a cookie (AC-01-3), and the login UI cases in `auth-ui.test.tsx`: a visitor without a
 session is sent to `/login` (AC-01-1), a successful login opens `/teams` with name and role (AC-01-1), wrong
-credentials show the server message (AC-01-2) and Log out returns to the login page (AC-01-4). These
+credentials show the server message (AC-01-2) and Log out returns to the login page (AC-01-4), team member
+objects expose only `id` and `name` (AC-03-1), a member can open their own team (AC-03-1), a non-existent or
+non-numeric team id answers 404 like an out-of-scope one (AC-03-2), and the team detail page shows name,
+course and members (AC-03-1). These
 supplement the planned STS rows above.

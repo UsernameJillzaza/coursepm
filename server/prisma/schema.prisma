@@ -25,6 +25,8 @@ model User {
   isActive     Boolean   @default(true)
   createdAt    DateTime  @default(now())
   sessions     Session[]
+  memberships  TeamMember[]
+  supervising  SupervisorAssignment[]
 }
 
 // NFR-04: the id is SHA-256(cookie token); the token itself is never stored.
@@ -35,5 +37,37 @@ model Session {
   expiresAt DateTime
   createdAt DateTime @default(now())
 
+  @@index([userId])
+}
+
+// F-03 teams and membership (SDS §2). D-07: a student may be in several teams.
+model Team {
+  id          Int                    @id @default(autoincrement())
+  name        String
+  courseCode  String
+  createdAt   DateTime               @default(now())
+  members     TeamMember[]
+  supervisors SupervisorAssignment[]
+
+  @@unique([courseCode, name])
+}
+
+model TeamMember {
+  teamId Int
+  userId Int
+  team   Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([teamId, userId])
+  @@index([userId])
+}
+
+model SupervisorAssignment {
+  teamId Int
+  userId Int
+  team   Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([teamId, userId])
   @@index([userId])
 }

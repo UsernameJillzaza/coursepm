@@ -3,9 +3,10 @@ import { AuthProvider } from './auth/AuthContext'
 import LoginPage from './auth/LoginPage'
 import RequireAuth from './auth/RequireAuth'
 import TopBar from './components/TopBar'
+import TeamDetailPage from './teams/TeamDetailPage'
 import TeamsPage from './teams/TeamsPage'
 
-// SDS §3 route map. Later features add /teams/:teamId and /milestones/:id.
+// SDS §3 route map. F-04 adds the milestone routes.
 export default function App() {
   return (
     <AuthProvider>
@@ -17,6 +18,14 @@ export default function App() {
           element={
             <RequireAuth>
               <TeamsPage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/teams/:teamId"
+          element={
+            <RequireAuth>
+              <TeamDetailPage />
             </RequireAuth>
           }
         />
