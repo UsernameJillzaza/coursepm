@@ -1,8 +1,9 @@
 CoursePM Sprint 1 release-candidate run
-Commit: a0ddf35  (branch feature/9-e2e-release-docs)
-Date: 2026-11-15 17:27:09 SEAST +0700
+Commit: daefdff  (branch feature/9-e2e-release-docs)
+Working tree before the run: clean
+Date: 2026-11-15 17:32 +07:00 (Asia/Bangkok)
 Node: v24.19.0
-Summary: server 111/111 passed, 0 failed, 0 skipped · client 39/39 passed, 0 failed, 0 skipped · E2E 3 passed, 0 failed · type-check OK · client build OK
+Summary: server 112/112 passed, 0 failed, 0 skipped · client 39/39 passed, 0 failed, 0 skipped · E2E 3/3 passed, 0 failed, 0 skipped · type-check OK · client build OK
 
 $ npm --prefix server test -- --reporter=verbose
 
@@ -21,70 +22,71 @@ Datasource "db": PostgreSQL database "coursepm_b9_test", schema "public" at "loc
 
 
 No pending migrations to apply.
- ✓ tests/sprint-1/submissions.api.test.ts > POST /api/milestones/:id/submissions > TEST-05-01 (AC-05-1): a team student submits → 201 revision 1 in the contract shape; a fresh GET returns it 143ms
- ✓ tests/sprint-1/submissions.api.test.ts > POST /api/milestones/:id/submissions > TEST-05-02 (AC-05-2): a resubmission is revision 2 and revision 1 is unchanged 100ms
- ✓ tests/sprint-1/submissions.api.test.ts > POST /api/milestones/:id/submissions > TEST-05-04 (AC-05-3): after the deadline → 409 DEADLINE_PASSED and nothing is stored 55ms
- ✓ tests/sprint-1/submissions.api.test.ts > POST /api/milestones/:id/submissions > TEST-05-06 (AC-05-4): at the revision limit → 409 REVISION_LIMIT_REACHED; the count stays at the limit 139ms
- ✓ tests/sprint-1/submissions.api.test.ts > POST /api/milestones/:id/submissions > TEST-05-07 (AC-05-5): an invalid link or title → 400 naming the field; nothing stored 91ms
- ✓ tests/sprint-1/submissions.api.test.ts > POST /api/milestones/:id/submissions > TEST-05-08 (AC-05-6): two simultaneous submissions become revisions 1 and 2, never duplicates 57ms
- ✓ tests/sprint-1/submissions.api.test.ts > POST /api/milestones/:id/submissions > TEST-05-10 (AC-05-9): limit 1, two at once → exactly one 201 revision 1 and one 409 REVISION_LIMIT_REACHED 46ms
- ✓ tests/sprint-1/submissions.api.test.ts > POST /api/milestones/:id/submissions > check order: role before fields (supervisor + invalid body → 403), fields before rules (invalid body on a closed milestone → 400), non-numeric id → 404 212ms
- ✓ tests/sprint-1/submissions.api.test.ts > POST /api/milestones/:id/submissions > a supervisor of the team cannot submit → 403 (scope first, then role); a student of another team → 404 79ms
- ✓ tests/sprint-1/submissions.api.test.ts > GET /api/milestones/:id/submissions > TEST-05-09 (AC-05-7), F-05 part: newest revision first, each with its submitter and a feedback slot (null until F-06) 129ms
- ✓ tests/sprint-1/submissions.api.test.ts > GET /api/milestones/:id/submissions > TEST-02-02 / TEST-02-03 submission part (AC-02-2, AC-02-3): outsiders get 404 with no submission data 110ms
- ✓ tests/sprint-1/submissions.api.test.ts > GET /api/milestones/:id/submissions > the milestone list and detail report revisionsUsed and latestSubmittedAt from stored revisions 119ms
+ ✓ tests/sprint-1/submissions.api.test.ts > POST /api/milestones/:id/submissions > TEST-05-01 (AC-05-1): a team student submits → 201 revision 1 in the contract shape; a fresh GET returns it 146ms
+ ✓ tests/sprint-1/submissions.api.test.ts > POST /api/milestones/:id/submissions > TEST-05-02 (AC-05-2): a resubmission is revision 2 and revision 1 is unchanged 104ms
+ ✓ tests/sprint-1/submissions.api.test.ts > POST /api/milestones/:id/submissions > TEST-05-04 (AC-05-3): after the deadline → 409 DEADLINE_PASSED and nothing is stored 38ms
+ ✓ tests/sprint-1/submissions.api.test.ts > POST /api/milestones/:id/submissions > TEST-05-06 (AC-05-4): at the revision limit → 409 REVISION_LIMIT_REACHED; the count stays at the limit 127ms
+ ✓ tests/sprint-1/submissions.api.test.ts > POST /api/milestones/:id/submissions > TEST-05-07 (AC-05-5): an invalid link or title → 400 naming the field; nothing stored 81ms
+ ✓ tests/sprint-1/submissions.api.test.ts > POST /api/milestones/:id/submissions > TEST-05-08 (AC-05-6): two simultaneous submissions become revisions 1 and 2, never duplicates 54ms
+ ✓ tests/sprint-1/submissions.api.test.ts > POST /api/milestones/:id/submissions > TEST-05-10 (AC-05-9): limit 1, two at once → exactly one 201 revision 1 and one 409 REVISION_LIMIT_REACHED 47ms
+ ✓ tests/sprint-1/submissions.api.test.ts > POST /api/milestones/:id/submissions > check order: role before fields (supervisor + invalid body → 403), fields before rules (invalid body on a closed milestone → 400), non-numeric id → 404 207ms
+ ✓ tests/sprint-1/submissions.api.test.ts > POST /api/milestones/:id/submissions > a supervisor of the team cannot submit → 403 (scope first, then role); a student of another team → 404 71ms
+ ✓ tests/sprint-1/submissions.api.test.ts > GET /api/milestones/:id/submissions > TEST-05-09 (AC-05-7), F-05 part: newest revision first, each with its submitter and a feedback slot (null until F-06) 118ms
+ ✓ tests/sprint-1/submissions.api.test.ts > GET /api/milestones/:id/submissions > TEST-02-02 / TEST-02-03 submission part (AC-02-2, AC-02-3): outsiders get 404 with no submission data 117ms
+ ✓ tests/sprint-1/submissions.api.test.ts > GET /api/milestones/:id/submissions > the milestone list and detail report revisionsUsed and latestSubmittedAt from stored revisions 113ms
  ✓ tests/sprint-1/submissions.api.test.ts > GET /api/milestones/:id/submissions > TEST-02-01 submission part (AC-02-1): submission routes need a session 4ms
  ✓ tests/sprint-1/submissions.api.test.ts > data integrity (additional case for AC-05-1): a submission belongs to its milestone's team > the database rejects a submission whose teamId differs from its milestone's team; the matching team is accepted 6ms
- ✓ tests/sprint-1/auth.api.test.ts > POST /api/auth/login > TEST-01-01 (AC-01-1): valid credentials → 200, public user, HttpOnly cpm_session cookie 64ms
- ✓ tests/sprint-1/auth.api.test.ts > POST /api/auth/login > accepts the e-mail in a different case with spaces around it 33ms
- ✓ tests/sprint-1/auth.api.test.ts > POST /api/auth/login > TEST-01-02 (AC-01-2): wrong password → 401 INVALID_CREDENTIALS, no cookie 29ms
- ✓ tests/sprint-1/auth.api.test.ts > POST /api/auth/login > TEST-01-03 (AC-01-2): unknown e-mail → the same 401 body; empty body → 400 naming both fields 60ms
- ✓ tests/sprint-1/auth.api.test.ts > POST /api/auth/login > TEST-01-08 (AC-01-6): a "role" sent by the client is ignored 33ms
- ✓ tests/sprint-1/auth.api.test.ts > GET /api/auth/me and POST /api/auth/logout > TEST-01-04 (AC-01-3): returns { user } for a valid session 43ms
- ✓ tests/sprint-1/auth.api.test.ts > GET /api/auth/me and POST /api/auth/logout > a malformed session cookie is treated as no session (401 on /me, 200 on /health), never a 500 12ms
+ ✓ tests/sprint-1/feedback.api.test.ts > F-06 feedback API > TEST-06-01 (AC-06-1): an assigned supervisor records trimmed feedback on revision 1 91ms
+ ✓ tests/sprint-1/feedback.api.test.ts > F-06 feedback API > TEST-06-02 / TEST-02-05 (AC-06-2, AC-02-5): a student in scope gets 403 before validation and stores nothing 44ms
+ ✓ tests/sprint-1/feedback.api.test.ts > F-06 feedback API > TEST-06-03 (AC-06-3): an unassigned supervisor or student gets 404 before role or validation 79ms
+ ✓ tests/sprint-1/feedback.api.test.ts > F-06 feedback API > TEST-06-04 / TEST-05-09 (AC-06-4, AC-05-7): feedback stays with revision 1 after revision 2 167ms
+ ✓ tests/sprint-1/feedback.api.test.ts > F-06 feedback API > TEST-06-05 (AC-06-5): a second POST returns 409 and leaves the original feedback unchanged 53ms
+ ✓ tests/sprint-1/feedback.api.test.ts > F-06 feedback API > two simultaneous first POSTs produce exactly one feedback and one FEEDBACK_EXISTS 53ms
+ ✓ tests/sprint-1/feedback.api.test.ts > F-06 feedback API > TEST-06-06 (AC-06-5): empty, whitespace-only and 4,001-character bodies get 400; 4,000 is accepted 92ms
+ ✓ tests/sprint-1/feedback.api.test.ts > F-06 feedback API > TEST-02-01 feedback part (AC-02-1): requires a session; missing and malformed submission IDs return 404 in the standard shape 85ms
+ ✓ tests/sprint-1/auth.api.test.ts > POST /api/auth/login > TEST-01-01 (AC-01-1): valid credentials → 200, public user, HttpOnly cpm_session cookie 87ms
+ ✓ tests/sprint-1/auth.api.test.ts > POST /api/auth/login > accepts the e-mail in a different case with spaces around it 85ms
+ ✓ tests/sprint-1/auth.api.test.ts > POST /api/auth/login > TEST-01-02 (AC-01-2): wrong password → 401 INVALID_CREDENTIALS, no cookie 30ms
+ ✓ tests/sprint-1/auth.api.test.ts > POST /api/auth/login > TEST-01-03 (AC-01-2): unknown e-mail → the same 401 body; empty body → 400 naming both fields 64ms
+ ✓ tests/sprint-1/auth.api.test.ts > POST /api/auth/login > TEST-01-08 (AC-01-6): a "role" sent by the client is ignored 34ms
+ ✓ tests/sprint-1/auth.api.test.ts > GET /api/auth/me and POST /api/auth/logout > TEST-01-04 (AC-01-3): returns { user } for a valid session 41ms
+ ✓ tests/sprint-1/auth.api.test.ts > GET /api/auth/me and POST /api/auth/logout > a malformed session cookie is treated as no session (401 on /me, 200 on /health), never a 500 11ms
  ✓ tests/sprint-1/auth.api.test.ts > GET /api/auth/me and POST /api/auth/logout > returns 401 UNAUTHENTICATED without a cookie 2ms
- ✓ tests/sprint-1/auth.api.test.ts > GET /api/auth/me and POST /api/auth/logout > TEST-01-05 (AC-01-4): logout deletes the session; the old cookie is then rejected 46ms
- ✓ tests/sprint-1/auth.api.test.ts > GET /api/auth/me and POST /api/auth/logout > TEST-01-11 (AC-01-9): logout without a session → 204 with no body 2ms
- ✓ tests/sprint-1/auth.api.test.ts > GET /api/auth/me and POST /api/auth/logout > TEST-01-09 (AC-01-7): an expired session → 401 and the row is deleted 40ms
- ✓ tests/sprint-1/auth.api.test.ts > TEST-01-10 (AC-01-8): inactive accounts > an inactive account cannot log in: the same generic 401 INVALID_CREDENTIALS 88ms
- ✓ tests/sprint-1/auth.api.test.ts > TEST-01-10 (AC-01-8): inactive accounts > a session saved before deactivation gets 401 UNAUTHENTICATED on its next request 74ms
- ✓ tests/sprint-1/auth.api.test.ts > TEST-01-07 / TEST-01-12 (AC-01-5): password storage > TEST-01-07: login and /me bodies contain no password or hash 35ms
- ✓ tests/sprint-1/auth.api.test.ts > TEST-01-07 / TEST-01-12 (AC-01-5): password storage > TEST-01-12: A1's stored passwordHash is a scrypt hash that verifies, never the plaintext 27ms
- ✓ tests/sprint-1/auth.api.test.ts > TEST-01-13 (AC-01-11): session storage and cookie attributes > stores SHA-256(token), not the token; expires 8 h after creation; cookie HttpOnly, SameSite=Lax, Path=/ 38ms
- ✓ tests/sprint-1/auth.api.test.ts > TEST-01-13 (AC-01-11): session storage and cookie attributes > adds Secure to the cookie when NODE_ENV=production 34ms
- ✓ tests/sprint-1/feedback.api.test.ts > F-06 feedback API > TEST-06-01 (AC-06-1): an assigned supervisor records trimmed feedback on revision 1 95ms
- ✓ tests/sprint-1/feedback.api.test.ts > F-06 feedback API > TEST-06-02 / TEST-02-05 (AC-06-2, AC-02-5): a student in scope gets 403 before validation and stores nothing 47ms
- ✓ tests/sprint-1/feedback.api.test.ts > F-06 feedback API > TEST-06-03 (AC-06-3): an unassigned supervisor or student gets 404 before role or validation 73ms
- ✓ tests/sprint-1/feedback.api.test.ts > F-06 feedback API > TEST-06-04 / TEST-05-09 (AC-06-4, AC-05-7): feedback stays with revision 1 after revision 2 141ms
- ✓ tests/sprint-1/feedback.api.test.ts > F-06 feedback API > TEST-06-05 (AC-06-5): a second POST returns 409 and leaves the original feedback unchanged 54ms
- ✓ tests/sprint-1/feedback.api.test.ts > F-06 feedback API > two simultaneous first POSTs produce exactly one feedback and one FEEDBACK_EXISTS 49ms
- ✓ tests/sprint-1/feedback.api.test.ts > F-06 feedback API > TEST-06-06 (AC-06-5): empty, whitespace-only and 4,001-character bodies get 400; 4,000 is accepted 65ms
- ✓ tests/sprint-1/feedback.api.test.ts > F-06 feedback API > requires a session; missing and malformed submission IDs return 404 in the standard shape 47ms
+ ✓ tests/sprint-1/auth.api.test.ts > GET /api/auth/me and POST /api/auth/logout > TEST-01-05 (AC-01-4): logout deletes the session; the old cookie is then rejected 38ms
+ ✓ tests/sprint-1/auth.api.test.ts > GET /api/auth/me and POST /api/auth/logout > TEST-01-11 (AC-01-9): logout without a session → 204 with no body 1ms
+ ✓ tests/sprint-1/auth.api.test.ts > GET /api/auth/me and POST /api/auth/logout > TEST-01-09 (AC-01-7): an expired session → 401 and the row is deleted 33ms
+ ✓ tests/sprint-1/auth.api.test.ts > TEST-01-10 (AC-01-8): inactive accounts > an inactive account cannot log in: the same generic 401 INVALID_CREDENTIALS 84ms
+ ✓ tests/sprint-1/auth.api.test.ts > TEST-01-10 (AC-01-8): inactive accounts > a session saved before deactivation gets 401 UNAUTHENTICATED on its next request 80ms
+ ✓ tests/sprint-1/auth.api.test.ts > TEST-01-07 / TEST-01-12 (AC-01-5): password storage > TEST-01-07: login and /me bodies contain no password or hash 104ms
+ ✓ tests/sprint-1/auth.api.test.ts > TEST-01-07 / TEST-01-12 (AC-01-5): password storage > TEST-01-12: A1's stored passwordHash is a scrypt hash that verifies, never the plaintext 26ms
+ ✓ tests/sprint-1/auth.api.test.ts > TEST-01-13 (AC-01-11): session storage and cookie attributes > stores SHA-256(token), not the token; expires 8 h after creation; cookie HttpOnly, SameSite=Lax, Path=/ 46ms
+ ✓ tests/sprint-1/auth.api.test.ts > TEST-01-13 (AC-01-11): session storage and cookie attributes > adds Secure to the cookie when NODE_ENV=production 105ms
  ✓ tests/sprint-1/errors-and-seed.test.ts > TEST-02-06 (AC-02-6): unexpected errors are safe > a thrown internal error becomes 500 INTERNAL_ERROR with no stack or SQL text 18ms
- ✓ tests/sprint-1/errors-and-seed.test.ts > F-02 error handler: known errors (AppError) > an AppError is answered with its own status, code, message and fields in the standard envelope 4ms
- ✓ tests/sprint-1/errors-and-seed.test.ts > TEST-02-08 (AC-02-8): request-body errors are client errors, not 500 > a body over the 100 kB limit → 413 PAYLOAD_TOO_LARGE in the standard shape 10ms
- ✓ tests/sprint-1/errors-and-seed.test.ts > TEST-02-08 (AC-02-8): request-body errors are client errors, not 500 > malformed JSON → 400 VALIDATION_ERROR 18ms
- ✓ tests/sprint-1/errors-and-seed.test.ts > TEST-03-04 (AC-03-4): the seed is repeatable > running the seed twice keeps the same users, teams, memberships and assignments (same rows, no duplicates) 712ms
- ✓ tests/sprint-1/milestones.api.test.ts > F-04 milestone API > TEST-04-01 (AC-04-1): an assigned supervisor creates a milestone visible to their students 164ms
- ✓ tests/sprint-1/milestones.api.test.ts > F-04 milestone API > TEST-04-02 / TEST-02-04 (AC-04-2, AC-02-4): a student cannot create in their own team 47ms
- ✓ tests/sprint-1/milestones.api.test.ts > F-04 milestone API > TEST-04-03 / TEST-02-09 (AC-04-3, AC-02-9): scope precedes role and validation 81ms
- ✓ tests/sprint-1/milestones.api.test.ts > F-04 milestone API > TEST-04-05 (AC-04-4): invalid fields are combined, and boundary values are accepted 51ms
- ✓ tests/sprint-1/milestones.api.test.ts > F-04 milestone API > TEST-04-06 (AC-04-5): lists milestones by deadline with derived status and empty revision fields 52ms
+ ✓ tests/sprint-1/errors-and-seed.test.ts > F-02 error handler: known errors (AppError) > an AppError is answered with its own status, code, message and fields in the standard envelope 5ms
+ ✓ tests/sprint-1/errors-and-seed.test.ts > TEST-02-08 (AC-02-8): request-body errors are client errors, not 500 > a body over the 100 kB limit → 413 PAYLOAD_TOO_LARGE in the standard shape 7ms
+ ✓ tests/sprint-1/errors-and-seed.test.ts > TEST-02-08 (AC-02-8): request-body errors are client errors, not 500 > malformed JSON → 400 VALIDATION_ERROR 15ms
+ ✓ tests/sprint-1/errors-and-seed.test.ts > TEST-03-04 (AC-03-4): the seed is repeatable > running the seed twice keeps the same users, teams, memberships and assignments (same rows, no duplicates) 658ms
+ ✓ tests/sprint-1/milestones.api.test.ts > F-04 milestone API > TEST-04-01 (AC-04-1): an assigned supervisor creates a milestone visible to their students 151ms
+ ✓ tests/sprint-1/milestones.api.test.ts > F-04 milestone API > TEST-04-02 / TEST-02-04 (AC-04-2, AC-02-4): a student cannot create in their own team 40ms
+ ✓ tests/sprint-1/milestones.api.test.ts > F-04 milestone API > TEST-04-03 / TEST-02-09 (AC-04-3, AC-02-9): scope precedes role and validation 91ms
+ ✓ tests/sprint-1/milestones.api.test.ts > F-04 milestone API > TEST-04-05 (AC-04-4): invalid fields are combined, and boundary values are accepted 44ms
+ ✓ tests/sprint-1/milestones.api.test.ts > F-04 milestone API > TEST-04-06 (AC-04-5): lists milestones by deadline with derived status and empty revision fields 40ms
  ✓ tests/sprint-1/milestones.api.test.ts > F-04 milestone API > the database CHECK rejects revision limits outside 1–5 8ms
- ✓ tests/sprint-1/milestones.api.test.ts > F-04 milestone API > new routes require a session and out-of-scope detail/list return 404 65ms
- ✓ tests/sprint-1/teams.api.test.ts > GET /api/teams > TEST-03-01 (AC-03-1): a student sees only their own team, with its members and supervisors 80ms
- ✓ tests/sprint-1/teams.api.test.ts > GET /api/teams > TEST-03-01 (AC-03-1): a supervisor sees exactly their assigned teams 43ms
- ✓ tests/sprint-1/teams.api.test.ts > GET /api/teams > member objects expose only id and name (no e-mail or password data) 37ms
- ✓ tests/sprint-1/teams.api.test.ts > GET /api/teams/:teamId > returns the team for a member 36ms
- ✓ tests/sprint-1/teams.api.test.ts > GET /api/teams/:teamId > TEST-03-02 (AC-03-2): a student requesting another team gets 404 with no team data 50ms
- ✓ tests/sprint-1/teams.api.test.ts > GET /api/teams/:teamId > TEST-03-03 / TEST-02-03 team part (AC-03-3, AC-02-3): an unassigned supervisor gets 404 37ms
- ✓ tests/sprint-1/teams.api.test.ts > GET /api/teams/:teamId > a non-existent id and a non-numeric id both give 404, the same as out of scope 41ms
+ ✓ tests/sprint-1/milestones.api.test.ts > F-04 milestone API > TEST-02-01 / TEST-02-02 milestone part (AC-02-1, AC-02-2): new routes require a session and out-of-scope detail/list return 404 60ms
+ ✓ tests/sprint-1/milestones.api.test.ts > F-04 milestone API > TEST-02-03 milestone part (AC-02-3): a supervisor of another team gets 404 for an Alpha milestone and list 41ms
+ ✓ tests/sprint-1/teams.api.test.ts > GET /api/teams > TEST-03-01 (AC-03-1): a student sees only their own team, with its members and supervisors 79ms
+ ✓ tests/sprint-1/teams.api.test.ts > GET /api/teams > TEST-03-01 (AC-03-1): a supervisor sees exactly their assigned teams 48ms
+ ✓ tests/sprint-1/teams.api.test.ts > GET /api/teams > member objects expose only id and name (no e-mail or password data) 40ms
+ ✓ tests/sprint-1/teams.api.test.ts > GET /api/teams/:teamId > returns the team for a member 40ms
+ ✓ tests/sprint-1/teams.api.test.ts > GET /api/teams/:teamId > TEST-03-02 (AC-03-2): a student requesting another team gets 404 with no team data 38ms
+ ✓ tests/sprint-1/teams.api.test.ts > GET /api/teams/:teamId > TEST-03-03 / TEST-02-03 team part (AC-03-3, AC-02-3): an unassigned supervisor gets 404 38ms
+ ✓ tests/sprint-1/teams.api.test.ts > GET /api/teams/:teamId > a non-existent id and a non-numeric id both give 404, the same as out of scope 42ms
  ✓ tests/sprint-1/teams.api.test.ts > TEST-02-01 (AC-02-1): protected routes reject a request without a session > GET /api/auth/me → 401 with only an error body 2ms
  ✓ tests/sprint-1/teams.api.test.ts > TEST-02-01 (AC-02-1): protected routes reject a request without a session > GET /api/teams → 401 with only an error body 2ms
  ✓ tests/sprint-1/teams.api.test.ts > TEST-02-01 (AC-02-1): protected routes reject a request without a session > GET /api/teams/1 → 401 with only an error body 2ms
- ✓ tests/sprint-1/password.unit.test.ts > TEST-01-06 password hashing > stores scrypt$N$r$p$salt$key, never the password itself 28ms
- ✓ tests/sprint-1/password.unit.test.ts > TEST-01-06 password hashing > uses a fresh salt, so the same password gives different hashes 52ms
- ✓ tests/sprint-1/password.unit.test.ts > TEST-01-06 password hashing > verifies the right password and rejects a wrong one or a malformed hash 76ms
+ ✓ tests/sprint-1/password.unit.test.ts > TEST-01-06 password hashing > stores scrypt$N$r$p$salt$key, never the password itself 31ms
+ ✓ tests/sprint-1/password.unit.test.ts > TEST-01-06 password hashing > uses a fresh salt, so the same password gives different hashes 56ms
+ ✓ tests/sprint-1/password.unit.test.ts > TEST-01-06 password hashing > verifies the right password and rejects a wrong one or a malformed hash 85ms
  ✓ tests/sprint-1/test-database.test.ts > TEST-R01-02 assertSeparateTestDatabase > accepts a test database that differs from the development one and returns its name 1ms
  ✓ tests/sprint-1/test-database.test.ts > TEST-R01-02 assertSeparateTestDatabase > refuses a missing or empty DATABASE_URL_TEST 1ms
  ✓ tests/sprint-1/test-database.test.ts > TEST-R01-02 assertSeparateTestDatabase > refuses the identical URL as the test database 0ms
@@ -96,9 +98,9 @@ No pending migrations to apply.
  ✓ tests/sprint-1/test-database.test.ts > TEST-R01-02 global setup > fails before running any migration when the test URL is missing or points to the dev database 1ms
  ✓ tests/sprint-1/test-database.test.ts > TEST-R01-02 global setup > ignores a DATABASE_URL_DEV inherited from the outside environment and checks the real DATABASE_URL 0ms
  ✓ tests/sprint-1/test-database.test.ts > TEST-R01-02 global setup > migrates only the test database when the configuration is valid 0ms
- ✓ tests/sprint-1/test-database.test.ts > TEST-R01-02 the test connection really selects the test database > SELECT current_database() returns the DATABASE_URL_TEST database, not the development one 104ms
- ✓ tests/sprint-1/health.api.test.ts > GET /api/health > TEST-R01-01 (AC-R01-1): returns 200 { status: "ok", service: "CoursePM API" } without a session 24ms
- ✓ tests/sprint-1/health.api.test.ts > GET /api/health > TEST-R01-03 / TEST-02-07 (AC-R01-3, AC-02-8): an unknown /api route → 404 NOT_FOUND "Not found." with no internal details 6ms
+ ✓ tests/sprint-1/test-database.test.ts > TEST-R01-02 the test connection really selects the test database > SELECT current_database() returns the DATABASE_URL_TEST database, not the development one 82ms
+ ✓ tests/sprint-1/health.api.test.ts > GET /api/health > TEST-R01-01 (AC-R01-1): returns 200 { status: "ok", service: "CoursePM API" } without a session 19ms
+ ✓ tests/sprint-1/health.api.test.ts > GET /api/health > TEST-R01-03 / TEST-02-07 (AC-R01-3, AC-02-8): an unknown /api route → 404 NOT_FOUND "Not found." with no internal details 4ms
  ✓ tests/sprint-1/submission-rules.unit.test.ts > TEST-05-03 checkCanSubmit: deadline rule (BR-06, D-05) > accepts 1 ms before the deadline 1ms
  ✓ tests/sprint-1/submission-rules.unit.test.ts > TEST-05-03 checkCanSubmit: deadline rule (BR-06, D-05) > accepts exactly at the deadline (the deadline is inclusive) 0ms
  ✓ tests/sprint-1/submission-rules.unit.test.ts > TEST-05-03 checkCanSubmit: deadline rule (BR-06, D-05) > rejects 1 ms after the deadline with DEADLINE_PASSED 0ms
@@ -106,7 +108,7 @@ No pending migrations to apply.
  ✓ tests/sprint-1/submission-rules.unit.test.ts > TEST-05-05 checkCanSubmit: revision limit (BR-07) > rejects a third revision with REVISION_LIMIT_REACHED 0ms
  ✓ tests/sprint-1/submission-rules.unit.test.ts > TEST-05-05 checkCanSubmit: revision limit (BR-07) > reports DEADLINE_PASSED first when both rules fail 0ms
  ✓ tests/sprint-1/submission-rules.unit.test.ts > TEST-05-07 validateSubmission (BR-08) > accepts a valid submission and trims it 0ms
- ✓ tests/sprint-1/submission-rules.unit.test.ts > TEST-05-07 validateSubmission (BR-08) > rejects the link "ftp://files.example.com/a.pdf" 11ms
+ ✓ tests/sprint-1/submission-rules.unit.test.ts > TEST-05-07 validateSubmission (BR-08) > rejects the link "ftp://files.example.com/a.pdf" 14ms
  ✓ tests/sprint-1/submission-rules.unit.test.ts > TEST-05-07 validateSubmission (BR-08) > rejects the link "javascript:alert(1)" 0ms
  ✓ tests/sprint-1/submission-rules.unit.test.ts > TEST-05-07 validateSubmission (BR-08) > rejects the link "not a url" 0ms
  ✓ tests/sprint-1/submission-rules.unit.test.ts > TEST-05-07 validateSubmission (BR-08) > rejects the link "www.example.com/no-scheme" 0ms
@@ -131,14 +133,13 @@ No pending migrations to apply.
  ✓ tests/sprint-1/feedback-rules.unit.test.ts > F-06 feedback body rule (AC-06-5) > validates the trimmed body boundary 0ms
  ✓ tests/sprint-1/feedback-rules.unit.test.ts > F-06 feedback body rule (AC-06-5) > validates the trimmed body boundary 0ms
  ✓ tests/sprint-1/feedback-rules.unit.test.ts > F-06 feedback body rule (AC-06-5) > validates the trimmed body boundary 0ms
- ✓ tests/sprint-1/feedback-rules.unit.test.ts > F-06 feedback body rule (AC-06-5) > rejects missing and non-string bodies, ignoring client-supplied ownership fields 1ms
+ ✓ tests/sprint-1/feedback-rules.unit.test.ts > F-06 feedback body rule (AC-06-5) > rejects missing and non-string bodies, ignoring client-supplied ownership fields 0ms
 
  Test Files  12 passed (12)
-      Tests  111 passed (111)
-   Start at  17:26:17
-   Duration  12.12s (transform 371ms, setup 0ms, import 2.25s, tests 5.71s, environment 1ms)
+      Tests  112 passed (112)
+   Start at  17:32:08
+   Duration  11.75s (transform 277ms, setup 0ms, import 2.08s, tests 5.62s, environment 1ms)
 
-[exit 0]
 
 $ npm --prefix client test -- --reporter=verbose
 
@@ -148,55 +149,54 @@ $ npm --prefix client test -- --reporter=verbose
 
  RUN  v4.1.12 D:/Claude Projects/coursepm-build/client
 
- ✓ tests/sprint-1/app-health.test.tsx > TEST-R02-01 API status indicator > shows "API status: checking…" while the health request is pending 38ms
- ✓ tests/sprint-1/app-health.test.tsx > TEST-R02-01 API status indicator > shows "API status: connected" on 200 with the expected health body 14ms
+ ✓ tests/sprint-1/app-health.test.tsx > TEST-R02-01 API status indicator > shows "API status: checking…" while the health request is pending 28ms
+ ✓ tests/sprint-1/app-health.test.tsx > TEST-R02-01 API status indicator > shows "API status: connected" on 200 with the expected health body 13ms
  ✓ tests/sprint-1/app-health.test.tsx > TEST-R02-01 API status indicator > shows "API status: unreachable" when the request fails 15ms
- ✓ tests/sprint-1/app-health.test.tsx > TEST-R02-01 API status indicator > shows "API status: unreachable" for an unhealthy 200 response 4ms
- ✓ tests/sprint-1/app-health.test.tsx > TEST-R02-01 API status indicator > shows "API status: unreachable" for an error status 3ms
- ✓ tests/sprint-1/auth-ui.test.tsx > F-01 authentication UI > redirects a visitor without a session from /teams to the login page 145ms
- ✓ tests/sprint-1/teams-ui.test.tsx > F-03 My teams page > TEST-UI-04 team part (AC-02-10): shows a loading state while the list is pending 151ms
- ✓ tests/sprint-1/teams-ui.test.tsx > F-03 My teams page > AC-03-1: lists the teams from the API with members and supervisors 41ms
- ✓ tests/sprint-1/teams-ui.test.tsx > F-03 My teams page > TEST-UI-04 team part (AC-02-10): shows the empty state when the user is in no team 14ms
- ✓ tests/sprint-1/submissions-ui.test.tsx > F-05 milestone page: revisions > AC-05-7: lists revisions newest first with submitter and link; a supervisor gets no submit form 199ms
- ✓ tests/sprint-1/submissions-ui.test.tsx > F-05 milestone page: revisions > the milestone list on the team page links each title to its milestone page 37ms
- ✓ tests/sprint-1/milestones-ui.test.tsx > F-04 milestone UI > shows ordered milestones with status, revision count and Bangkok deadline; only supervisors see New milestone 198ms
- ✓ tests/sprint-1/milestones-ui.test.tsx > F-04 milestone UI > AC-04-7: a student sees milestones but no New milestone control 23ms
- ✓ tests/sprint-1/milestones-ui.test.tsx > F-04 milestone UI > TEST-UI-04 milestone part (AC-02-10): shows an empty list 15ms
- ✓ tests/sprint-1/milestones-ui.test.tsx > F-04 milestone UI > TEST-UI-04 milestone part (AC-02-10): shows loading while the milestone request is pending 16ms
- ✓ tests/sprint-1/feedback-ui.test.tsx > F-06 feedback UI > shows the feedback on its own revision and keeps revision 2 empty for a student 204ms
- ✓ tests/sprint-1/teams-ui.test.tsx > F-03 My teams page > TEST-UI-04 team part (AC-02-10): shows an error with Retry, and Retry loads the list again 76ms
- ✓ tests/sprint-1/teams-ui.test.tsx > F-03 team detail page > shows the team name, course and member list 20ms
- ✓ tests/sprint-1/teams-ui.test.tsx > F-03 team detail page > AC-03-5: a 404 from the API shows "Team not found" and no team data 9ms
- ✓ tests/sprint-1/milestones-ui.test.tsx > F-04 milestone UI > TEST-UI-04 milestone part (AC-02-10): Retry fetches the list again after an error 76ms
- ✓ tests/sprint-1/milestones-ui.test.tsx > F-04 milestone UI > TEST-UI-01 (AC-04-6): server field errors appear under inputs without clearing typed values 293ms
- ✓ tests/sprint-1/feedback-ui.test.tsx > F-06 feedback UI > TEST-UI-06 (AC-06-6): a 400 field error stays beside the textarea and preserves the text 353ms
- ✓ tests/sprint-1/auth-ui.test.tsx > F-01 authentication UI > AC-01-2: shows the server message for wrong credentials and keeps the e-mail 624ms
- ✓ tests/sprint-1/feedback-ui.test.tsx > F-06 feedback UI > saving feedback refreshes the revision list and replaces the form with the saved feedback 488ms
- ✓ tests/sprint-1/submissions-ui.test.tsx > F-05 submit form > AC-05-1: a student submits; the new revision appears and the counter updates 826ms
- ✓ tests/sprint-1/submissions-ui.test.tsx > F-05 submit form > TEST-UI-02 (AC-05-8): after the deadline the form is replaced by an explanation 15ms
- ✓ tests/sprint-1/submissions-ui.test.tsx > F-05 submit form > TEST-UI-02 (AC-05-8): at the revision limit the form is replaced by an explanation 18ms
- ✓ tests/sprint-1/feedback-ui.test.tsx > F-06 feedback UI > shows a 409 conflict without clearing the supervisor's draft 293ms
- ✓ tests/sprint-1/auth-ui.test.tsx > F-01 authentication UI > AC-01-1: a successful login opens /teams and shows the user name and role 611ms
+ ✓ tests/sprint-1/app-health.test.tsx > TEST-R02-01 API status indicator > shows "API status: unreachable" for an unhealthy 200 response 16ms
+ ✓ tests/sprint-1/app-health.test.tsx > TEST-R02-01 API status indicator > shows "API status: unreachable" for an error status 15ms
+ ✓ tests/sprint-1/teams-ui.test.tsx > F-03 My teams page > TEST-UI-04 team part (AC-02-10): shows a loading state while the list is pending 111ms
+ ✓ tests/sprint-1/teams-ui.test.tsx > F-03 My teams page > AC-03-1: lists the teams from the API with members and supervisors 23ms
+ ✓ tests/sprint-1/teams-ui.test.tsx > F-03 My teams page > TEST-UI-04 team part (AC-02-10): shows the empty state when the user is in no team 15ms
+ ✓ tests/sprint-1/auth-ui.test.tsx > F-01 authentication UI > redirects a visitor without a session from /teams to the login page 110ms
+ ✓ tests/sprint-1/teams-ui.test.tsx > F-03 My teams page > TEST-UI-04 team part (AC-02-10): shows an error with Retry, and Retry loads the list again 61ms
+ ✓ tests/sprint-1/teams-ui.test.tsx > F-03 team detail page > shows the team name, course and member list 18ms
+ ✓ tests/sprint-1/teams-ui.test.tsx > F-03 team detail page > AC-03-5: a 404 from the API shows "Team not found" and no team data 13ms
+ ✓ tests/sprint-1/feedback-ui.test.tsx > F-06 feedback UI > shows the feedback on its own revision and keeps revision 2 empty for a student 142ms
+ ✓ tests/sprint-1/milestones-ui.test.tsx > F-04 milestone UI > shows ordered milestones with status, revision count and Bangkok deadline; only supervisors see New milestone 150ms
+ ✓ tests/sprint-1/milestones-ui.test.tsx > F-04 milestone UI > AC-04-7: a student sees milestones but no New milestone control 18ms
+ ✓ tests/sprint-1/milestones-ui.test.tsx > F-04 milestone UI > TEST-UI-04 milestone part (AC-02-10): shows an empty list 12ms
+ ✓ tests/sprint-1/milestones-ui.test.tsx > F-04 milestone UI > TEST-UI-04 milestone part (AC-02-10): shows loading while the milestone request is pending 17ms
+ ✓ tests/sprint-1/submissions-ui.test.tsx > F-05 milestone page: revisions > AC-05-7: lists revisions newest first with submitter and link; a supervisor gets no submit form 149ms
+ ✓ tests/sprint-1/submissions-ui.test.tsx > F-05 milestone page: revisions > the milestone list on the team page links each title to its milestone page 32ms
+ ✓ tests/sprint-1/milestones-ui.test.tsx > F-04 milestone UI > TEST-UI-04 milestone part (AC-02-10): Retry fetches the list again after an error 77ms
+ ✓ tests/sprint-1/milestones-ui.test.tsx > F-04 milestone UI > TEST-UI-01 (AC-04-6): server field errors appear under inputs without clearing typed values 311ms
+ ✓ tests/sprint-1/feedback-ui.test.tsx > F-06 feedback UI > TEST-UI-06 (AC-06-6): a 400 field error stays beside the textarea and preserves the text 367ms
+ ✓ tests/sprint-1/auth-ui.test.tsx > F-01 authentication UI > AC-01-2: shows the server message for wrong credentials and keeps the e-mail 618ms
+ ✓ tests/sprint-1/feedback-ui.test.tsx > F-06 feedback UI > saving feedback refreshes the revision list and replaces the form with the saved feedback 490ms
+ ✓ tests/sprint-1/submissions-ui.test.tsx > F-05 submit form > AC-05-1: a student submits; the new revision appears and the counter updates 863ms
+ ✓ tests/sprint-1/submissions-ui.test.tsx > F-05 submit form > TEST-UI-02 (AC-05-8): after the deadline the form is replaced by an explanation 16ms
+ ✓ tests/sprint-1/submissions-ui.test.tsx > F-05 submit form > TEST-UI-02 (AC-05-8): at the revision limit the form is replaced by an explanation 34ms
+ ✓ tests/sprint-1/feedback-ui.test.tsx > F-06 feedback UI > shows a 409 conflict without clearing the supervisor's draft 308ms
+ ✓ tests/sprint-1/auth-ui.test.tsx > F-01 authentication UI > AC-01-1: a successful login opens /teams and shows the user name and role 660ms
  ✓ tests/sprint-1/auth-ui.test.tsx > F-01 authentication UI > AC-01-4: Log out calls the API and returns to the login page 42ms
- ✓ tests/sprint-1/auth-ui.test.tsx > F-01 authentication UI > TEST-UI-03 (AC-02-7): a 401 from any API call mid-session sends the user to the login page 23ms
- ✓ tests/sprint-1/submissions-ui.test.tsx > F-05 submit form > TEST-UI-02 (AC-05-8): a 409 from the server (state changed meanwhile) shows its message 707ms
- ✓ tests/sprint-1/auth-ui.test.tsx > TEST-UI-05 (AC-01-10): login form errors > a missing field shows a message beside that field and keeps what was typed 418ms
- ✓ tests/sprint-1/auth-ui.test.tsx > TEST-UI-05 (AC-01-10): login form errors > invalid credentials show one generic alert, mark no field, and keep the typed values 630ms
- ✓ tests/sprint-1/submissions-ui.test.tsx > F-05 submit form > TEST-UI-07 (AC-05-10): a 400 shows the message beside Link and keeps the entered values 651ms
- ✓ tests/sprint-1/submissions-ui.test.tsx > TEST-UI-04 submission part (AC-02-10): revision list states > shows a loading state while the revisions are pending 29ms
- ✓ tests/sprint-1/submissions-ui.test.tsx > TEST-UI-04 submission part (AC-02-10): revision list states > shows the empty state when there are no revisions 26ms
- ✓ tests/sprint-1/submissions-ui.test.tsx > TEST-UI-04 submission part (AC-02-10): revision list states > shows an error with Retry, and Retry loads the revisions again 77ms
- ✓ tests/sprint-1/submissions-ui.test.tsx > TEST-UI-04 submission part (AC-02-10): revision list states > a milestone outside the user's scope shows "Milestone not found" 15ms
+ ✓ tests/sprint-1/auth-ui.test.tsx > F-01 authentication UI > TEST-UI-03 (AC-02-7): a 401 from any API call mid-session sends the user to the login page 29ms
+ ✓ tests/sprint-1/submissions-ui.test.tsx > F-05 submit form > TEST-UI-02 (AC-05-8): a 409 from the server (state changed meanwhile) shows its message 672ms
+ ✓ tests/sprint-1/auth-ui.test.tsx > TEST-UI-05 (AC-01-10): login form errors > a missing field shows a message beside that field and keeps what was typed 392ms
+ ✓ tests/sprint-1/auth-ui.test.tsx > TEST-UI-05 (AC-01-10): login form errors > invalid credentials show one generic alert, mark no field, and keep the typed values 590ms
+ ✓ tests/sprint-1/submissions-ui.test.tsx > F-05 submit form > TEST-UI-07 (AC-05-10): a 400 shows the message beside Link and keeps the entered values 644ms
+ ✓ tests/sprint-1/submissions-ui.test.tsx > TEST-UI-04 submission part (AC-02-10): revision list states > shows a loading state while the revisions are pending 24ms
+ ✓ tests/sprint-1/submissions-ui.test.tsx > TEST-UI-04 submission part (AC-02-10): revision list states > shows the empty state when there are no revisions 16ms
+ ✓ tests/sprint-1/submissions-ui.test.tsx > TEST-UI-04 submission part (AC-02-10): revision list states > shows an error with Retry, and Retry loads the revisions again 64ms
+ ✓ tests/sprint-1/submissions-ui.test.tsx > TEST-UI-04 submission part (AC-02-10): revision list states > a milestone outside the user's scope shows "Milestone not found" 29ms
 
  Test Files  6 passed (6)
       Tests  39 passed (39)
-   Start at  17:26:30
-   Duration  4.62s (transform 553ms, setup 1.64s, import 1.38s, tests 7.45s, environment 7.71s)
+   Start at  17:32:20
+   Duration  4.63s (transform 809ms, setup 1.61s, import 1.63s, tests 7.22s, environment 7.82s)
 
-[exit 0]
 
 $ cd server && npx tsc --noEmit
-[exit 0]
+(exit 0)
 
 $ npm --prefix client run build
 
@@ -212,17 +212,15 @@ dist/index.html                   0.39 kB │ gzip:  0.26 kB
 dist/assets/index-BbRluUcX.css  230.30 kB │ gzip: 30.70 kB
 dist/assets/index-dUQLsAu6.js   278.33 kB │ gzip: 86.70 kB
 
-✓ built in 222ms
-[exit 0]
+✓ built in 241ms
 
 $ npx playwright test
 
 Running 3 tests using 1 worker
 
   ok 1 e2e\sprint-1\e2e-01-login-teams.spec.ts:8:1 › E2E-01: wrong password, login, own team only, reload keeps the session, logout (1.7s)
-  ok 2 e2e\sprint-1\e2e-02-03-journey.spec.ts:12:1 › E2E-02: milestone → submission (rejected link, revision 1, revision 2, limit) → feedback → persisted result (4.1s)
-  ok 3 e2e\sprint-1\e2e-02-03-journey.spec.ts:87:1 › E2E-03: no New milestone control for a student; another team's page by URL shows "Team not found" (1.5s)
+  ok 2 e2e\sprint-1\e2e-02-03-journey.spec.ts:12:1 › E2E-02: milestone → submission (rejected link, revision 1, revision 2, limit) → feedback → persisted result (3.9s)
+  ok 3 e2e\sprint-1\e2e-02-03-journey.spec.ts:90:1 › E2E-03: no New milestone control for a student; another team's page by URL shows "Team not found" (1.4s)
 
-  3 passed (10.7s)
-[exit 0]
+  3 passed (10.2s)
 
