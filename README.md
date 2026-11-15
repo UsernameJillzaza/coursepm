@@ -29,11 +29,23 @@ Node.js 24, PostgreSQL 18 running locally, Microsoft Edge (used by the Playwrigh
    npm --prefix client run dev
    ```
 
-After pulling F-01 (Issue #4), apply the migrations to your development database:
+Apply the migrations to your development database:
 ```bash
 npm --prefix server run db:deploy
 ```
-Login, logout and the session cookie work from F-01. The demo accounts and teams are loaded by the seed, which arrives with F-03 (Issue #5); until then the API tests create their own accounts.
+Then load the synthetic demo data (8 accounts, 3 teams). Every demo account uses the `SEED_PASSWORD` from your `server/.env`, and the seed is safe to run again:
+```bash
+npm --prefix server run db:seed
+```
+
+## Demo accounts (synthetic)
+| E-mail | Role | Team |
+| --- | --- | --- |
+| `supervisor1@coursepm.test` | Supervisor | Team Alpha |
+| `supervisor2@coursepm.test` | Supervisor | Team Beta, Team Gamma |
+| `alpha1@coursepm.test`, `alpha2@coursepm.test` | Student | Team Alpha |
+| `beta1@coursepm.test`, `beta2@coursepm.test` | Student | Team Beta |
+| `gamma1@coursepm.test`, `gamma2@coursepm.test` | Student | Team Gamma |
 
 ## Tests
 | Command | What it runs |
@@ -41,4 +53,4 @@ Login, logout and the session cookie work from F-01. The demo accounts and teams
 | `npm run test:server` | Vitest + Supertest against `DATABASE_URL_TEST` (checked to be a separate database, then migrated) |
 | `npm run test:client` | Vitest + React Testing Library component tests |
 | `npm --prefix client run build` | Type-check and production build of the client |
-| `npm run test:e2e` | Playwright journeys in Edge (journeys arrive with the features) |
+| `npm run test:e2e` | Playwright journeys in Edge against the seeded development database (starts both dev servers if they aren't running) |
