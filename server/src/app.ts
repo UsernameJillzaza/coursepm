@@ -1,11 +1,18 @@
 import express from 'express'
 import type { NextFunction, Request, Response } from 'express'
 import { sendError } from './http'
+import { authenticate } from './auth/middleware'
+import { authRouter } from './auth/routes'
 
 // The app is exported without listen() so Supertest can import it; server.ts
 // owns listen().
 const app = express()
 app.use(express.json())
+
+// F-01: attach req.user from the session cookie on every request (it never
+// rejects by itself; see auth/middleware.ts), then the auth endpoints.
+app.use(authenticate)
+app.use('/api/auth', authRouter)
 
 // GET /api/health — public liveness check (SDS §4).
 app.get('/api/health', (_req, res) => {
