@@ -7,7 +7,7 @@ Status: **release candidate** on `sprint1-staging`. After the reviewed `sprint1-
 | Release tag / commit | `v0.1.0` / `<commit on main after the release PR>` |
 | Features | F-01 authentication · F-02 access scope · F-03 teams + demo seed · F-04 milestones · F-05 submissions (deadline + revision rules) · F-06 feedback · R-01/R-02 scaffold and shared UI states |
 | Pull requests | #10 (Parts A–D), #11 (Part E contracts), #12 (scaffold), #13 (F-01), #14 (F-02/F-03), #15 (F-04), #16 (F-05), #17 (F-06), the #9 PR (E2E, evidence, these notes) |
-| Release candidate run | `a0ddf35` on `feature/9-e2e-release-docs`, 2026-11-15: server 111/111 · client 39/39 · E2E 3/3 (0 failed, 0 skipped) · server type-check OK · client build OK. The commits after `a0ddf35` on this branch change only docs and evidence files (no source or test code). Log: [sprint1-release-run.txt](../../../artifacts/sprint-1/test-runs/sprint1-release-run.txt) |
+| Release candidate run | `daefdff` on `feature/9-e2e-release-docs`, 2026-11-15, clean working tree: server 112/112 · client 39/39 · E2E 3/3 (0 failed, 0 skipped) · server type-check OK · client build OK. Screenshots 01–09 come from this run. The commits after `daefdff` on this branch change only docs and evidence files (no source or test code). Log: [sprint1-release-run.txt](../../../artifacts/sprint-1/test-runs/sprint1-release-run.txt) |
 | Requirements | every Sprint 1 FR/BR/NFR has a feature, AC and test in [traceability](../../traceability.md); results in the STS "Execution results" section |
 
 ## Demo sequence (about 3 minutes)
