@@ -7,7 +7,7 @@ Status: **release candidate** on `sprint1-staging`. After the reviewed `sprint1-
 | Release tag / commit | `v0.1.0` / `<commit on main after the release PR>` |
 | Features | F-01 authentication · F-02 access scope · F-03 teams + demo seed · F-04 milestones · F-05 submissions (deadline + revision rules) · F-06 feedback · R-01/R-02 scaffold and shared UI states |
 | Pull requests | #10 (Parts A–D), #11 (Part E contracts), #12 (scaffold), #13 (F-01), #14 (F-02/F-03), #15 (F-04), #16 (F-05), #17 (F-06), the #9 PR (E2E, evidence, these notes) |
-| Release candidate run | `a0ddf35` on `feature/9-e2e-release-docs`, 2026-11-15: server 111/111 · client 39/39 · E2E 3/3 (0 failed, 0 skipped) · server type-check OK · client build OK. Log: [sprint1-release-run.txt](../../../artifacts/sprint-1/test-runs/sprint1-release-run.txt) |
+| Release candidate run | `a0ddf35` on `feature/9-e2e-release-docs`, 2026-11-15: server 111/111 · client 39/39 · E2E 3/3 (0 failed, 0 skipped) · server type-check OK · client build OK. The commits after `a0ddf35` on this branch change only docs and evidence files (no source or test code). Log: [sprint1-release-run.txt](../../../artifacts/sprint-1/test-runs/sprint1-release-run.txt) |
 | Requirements | every Sprint 1 FR/BR/NFR has a feature, AC and test in [traceability](../../traceability.md); results in the STS "Execution results" section |
 
 ## Demo sequence (about 3 minutes)
@@ -39,4 +39,5 @@ The forbidden **role** operations (student creates a milestone → 403, student 
 - TDD evidence gaps, stated in the PRs: the scaffold's basic health/404 behaviour (#12) and the F-06 API (#17) were committed together with their tests; some 404/401 guard tests passed before their routes existed because the catch-all route already answered 404.
 - One flaky client test was found by the first release run on `2e7a41d` (client 38/39): the F-06 "saving feedback refreshes the list" test held an element from before the list reloaded. `a0ddf35` makes it wait for the final state (assertions unchanged); it then passed 10/10 on its own and 4/4 in the full client suite, and in the release run above.
 - Each E2E run adds a "Design review <timestamp>" milestone to Team Alpha in the development database.
+- Review follow-up left open (optional in the PR #17 review, not required by AC-06-6): after a 409 `FEEDBACK_EXISTS`, the feedback form stays until the page is reloaded, instead of reloading the list to show the other supervisor's feedback.
 - Not in Sprint 1 by design: Docker / CI / GCP (Lab 5), revision comparison, milestone editing / extensions, administration screens, progress board, scores, summary and export (Sprints 2–3).

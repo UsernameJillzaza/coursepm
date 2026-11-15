@@ -5,7 +5,8 @@ CPE334 group project (theme 6), team TH-042_P6. Student teams submit milestone w
 ## Documents
 - [SRS](docs/srs.md) · [Feature inventory](docs/features.md) · [Traceability](docs/traceability.md)
 - [System-Level SDS](docs/system-sds.md) · [Three-sprint plan](docs/sprints/plan.md)
-- Sprint 1: [feature contracts, STS, Definition of Done, Issue plan](docs/sprints/sprint-1/)
+- Sprint 1: [feature contracts, STS, Definition of Done, Issue plan](docs/sprints/sprint-1/) · [release notes (v0.1.0)](docs/sprints/sprint-1/release-notes.md)
+- Sprint 1 evidence: [release-candidate test run](artifacts/sprint-1/test-runs/sprint1-release-run.txt) · [screenshots](artifacts/sprint-1/screenshots/) · [TDD logs](artifacts/sprint-1/tdd/)
 
 ## Requirements
 Node.js 24, PostgreSQL 18 running locally, Microsoft Edge (used by the Playwright tests).
@@ -53,4 +54,5 @@ npm --prefix server run db:seed
 | `npm run test:server` | Vitest + Supertest against `DATABASE_URL_TEST` (checked to be a separate database, then migrated) |
 | `npm run test:client` | Vitest + React Testing Library component tests |
 | `npm --prefix client run build` | Type-check and production build of the client |
-| `npm run test:e2e` | Playwright journeys in Edge against the seeded development database (starts both dev servers if they aren't running) |
+| `cd server && npx tsc --noEmit` | Type-check of the server |
+| `npm run test:e2e` | Playwright journeys in Edge against the seeded development database (starts both dev servers if they aren't running). Run `db:seed` first; each run adds a "Design review <timestamp>" milestone to Team Alpha and rewrites the screenshots in `artifacts/sprint-1/screenshots/` |
