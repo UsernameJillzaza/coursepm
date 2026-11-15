@@ -18,8 +18,9 @@ limit) and an association that must be preserved (F-06 feedback ↔ revision). T
 dependency: F-01 → F-02/F-03 → F-04 → F-05 → F-06.
 
 **Feasibility.** Most of F-01 and F-02 is adapted from our TokTickIT Lab 3 auth code (scrypt hashes, a
-hashed session cookie, `requireRole`), which is already tested. That leaves Sprint 1's new work in
-F-03 … F-06: four tables and seven endpoints.
+hashed session cookie, the test setup); role checks are done inside each handler after the scope check
+(D-03), not by a role middleware. That leaves Sprint 1's new work in
+F-03 … F-06: six tables and eight endpoints.
 
 **What moves if time runs short:** the side-by-side comparison (F-07) and CSV export (F-12) are the first
 to cut, since no other feature depends on them. Any change of scope is recorded as `CHG-nn` in

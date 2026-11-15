@@ -4,7 +4,7 @@ Version 0.1 · 2026-11-15 · requirement IDs refer to [srs.md](srs.md).
 
 | ID | Feature / responsibility | Description | Requirements | Depends on | Sprint |
 | --- | --- | --- | --- | --- | --- |
-| F-01 | Authentication and session | Login, logout, current user; scrypt hashes; HttpOnly session cookie with 8-hour expiry; seeded demo accounts. | FR-01, FR-02, BR-01, NFR-01, NFR-03, NFR-04 | — | 1 |
+| F-01 | Authentication and session | Login, logout, current user; inactive accounts rejected; scrypt hashes; HttpOnly session cookie with 8-hour expiry; seeded demo accounts. | FR-01, FR-02, BR-01, NFR-01, NFR-03, NFR-04 | — | 1 |
 | F-02 | Access-scope enforcement (cross-cutting) | Middleware and query helpers that limit every team-owned record to members or assigned supervisors and enforce role-only operations. | BR-02, BR-03, NFR-02, NFR-07 | F-01 | 1 |
 | F-03 | Teams and membership (seeded) | Team, membership and supervisor-assignment tables, seed script, "My teams" page and team detail with members. | FR-03, D-04, D-07, NFR-06 | F-01, F-02 | 1 |
 | F-04 | Milestone creation and list | Supervisor creates a milestone for an assigned team; everyone with access lists the team's milestones with status. | FR-04, FR-05, BR-04, BR-05, D-05 | F-03 | 1 |

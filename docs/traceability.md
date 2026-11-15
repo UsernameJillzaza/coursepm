@@ -10,13 +10,13 @@ The **Result** column is filled from the release test run (Part F).
 | FR-01 | F-01 | 1 | AC-01-1, AC-01-2 | TEST-01-01, TEST-01-02, TEST-01-03, E2E-01 | |
 | FR-02 | F-01 | 1 | AC-01-3, AC-01-4 | TEST-01-04, TEST-01-05, E2E-01 | |
 | BR-01 | F-01 | 1 | AC-01-6 | TEST-01-08 | |
-| NFR-01 | F-01, F-02 | 1 | AC-02-1, AC-02-7 | TEST-02-01, TEST-UI-03 | |
+| NFR-01 | F-01, F-02 | 1 | AC-02-1, AC-02-7, AC-01-9 | TEST-02-01, TEST-UI-03, TEST-01-11 | |
 | NFR-03 | F-01 | 1 | AC-01-5 | TEST-01-06, TEST-01-07 | |
 | NFR-04 | F-01 | 1 | AC-01-4, AC-01-7, AC-01-8 | TEST-01-05, TEST-01-09, TEST-01-10 | |
-| BR-02 | F-02, F-03 | 1 | AC-02-2, AC-03-2 | TEST-02-02, TEST-03-02 | |
+| BR-02 | F-02, F-03 | 1 | AC-02-2, AC-03-2 | TEST-02-02, TEST-03-02, E2E-03 | |
 | BR-03 | F-02, F-03 | 1 | AC-02-3, AC-03-3 | TEST-02-03, TEST-03-03 | |
-| NFR-02 | F-02 | 1 | AC-02-2 … AC-02-5 | TEST-02-02 … TEST-02-05 | |
-| NFR-07 | F-02 | 1 | AC-02-6 | TEST-02-06 | |
+| NFR-02 | F-02 | 1 | AC-02-2 … AC-02-5 | TEST-02-02 … TEST-02-05, E2E-03 | |
+| NFR-07 | F-02 | 1 | AC-02-6, AC-02-8 | TEST-02-06, TEST-02-08 | |
 | FR-03 | F-03 | 1 | AC-03-1 | TEST-03-01, E2E-01 | |
 | NFR-06 | F-03, R-01 | 1 | AC-03-4 | TEST-03-04, setup check | |
 | FR-04 | F-04 | 1 | AC-04-1 | TEST-04-01, E2E-02 | |
