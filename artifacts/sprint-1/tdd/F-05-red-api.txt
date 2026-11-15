@@ -1,0 +1,218 @@
+# #7 TDD red run — submission API tests before the submission routes exist
+# 2026-11-15T16:15:09+07:00  base commit 1c0a8ca + the new tests
+
+ RUN  v4.1.12 D:/Claude Projects/coursepm-build/server
+
+Loaded Prisma config from prisma.config.ts.
+
+Prisma schema loaded from prisma\schema.prisma.
+Datasource "db": PostgreSQL database "coursepm_b7_test", schema "public" at "localhost:5432"
+
+5 migrations found in prisma/migrations
+
+
+No pending migrations to apply.
+ ❯ tests/sprint-1/submissions.api.test.ts (13 tests | 10 failed) 1159ms
+     × TEST-05-01 (AC-05-1): a team student submits → 201 revision 1 in the contract shape; a fresh GET returns it 89ms
+     × TEST-05-02 (AC-05-2): a resubmission is revision 2 and revision 1 is unchanged 50ms
+     × TEST-05-04 (AC-05-3): after the deadline → 409 DEADLINE_PASSED and nothing is stored 40ms
+     × TEST-05-06 (AC-05-4): at the revision limit → 409 REVISION_LIMIT_REACHED; the count stays at the limit 69ms
+     × TEST-05-07 (AC-05-5): an invalid link or title → 400 naming the field; nothing stored 78ms
+     × TEST-05-08 (AC-05-6): two simultaneous submissions become revisions 1 and 2, never duplicates 54ms
+     × TEST-05-10 (AC-05-9): limit 1, two at once → exactly one 201 revision 1 and one 409 REVISION_LIMIT_REACHED 52ms
+     × a supervisor of the team cannot submit → 403 (scope first, then role); a student of another team → 404 43ms
+     × TEST-05-09 (AC-05-7), F-05 part: newest revision first, each with its submitter and a feedback slot (null until F-06) 127ms
+     × the milestone list and detail report revisionsUsed and latestSubmittedAt from stored revisions 130ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 10 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/sprint-1/submissions.api.test.ts > POST /api/milestones/:id/submissions > TEST-05-01 (AC-05-1): a team student submits → 201 revision 1 in the contract shape; a fresh GET returns it
+AssertionError: expected 404 to be 201 // Object.is equality
+
+- Expected
++ Received
+
+- 201
++ 404
+
+ ❯ tests/sprint-1/submissions.api.test.ts:64:24
+     62|     const before = Date.now()
+     63|     const res = await post(a1, m.id, work({ submittedAt: '2000-01-01T0…
+     64|     expect(res.status).toBe(201)
+       |                        ^
+     65|     expect(Object.keys(res.body.submission).sort()).toEqual(['descript…
+     66|     expect(res.body.submission).toMatchObject({
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/10]⎯
+
+ FAIL  tests/sprint-1/submissions.api.test.ts > POST /api/milestones/:id/submissions > TEST-05-02 (AC-05-2): a resubmission is revision 2 and revision 1 is unchanged
+TypeError: Cannot read properties of undefined (reading 'id')
+ ❯ tests/sprint-1/submissions.api.test.ts:82:100
+     80|     const m = await milestone()
+     81|     const first = await post(a1, m.id)
+     82|     const stored1 = await prisma.submission.findUniqueOrThrow({ where:…
+       |                                                                                                    ^
+     83|     const second = await post(a2, m.id, work({ title: 'Proposal v2', l…
+     84|     expect(second.status).toBe(201)
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/10]⎯
+
+ FAIL  tests/sprint-1/submissions.api.test.ts > POST /api/milestones/:id/submissions > TEST-05-04 (AC-05-3): after the deadline → 409 DEADLINE_PASSED and nothing is stored
+AssertionError: expected 404 to be 409 // Object.is equality
+
+- Expected
++ Received
+
+- 409
++ 404
+
+ ❯ tests/sprint-1/submissions.api.test.ts:92:24
+     90|     const m = await milestone({ deadline: hours(-1) })
+     91|     const res = await post(a1, m.id)
+     92|     expect(res.status).toBe(409)
+       |                        ^
+     93|     expect(res.body.error.code).toBe('DEADLINE_PASSED')
+     94|     expect(await count(m.id)).toBe(0)
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/10]⎯
+
+ FAIL  tests/sprint-1/submissions.api.test.ts > POST /api/milestones/:id/submissions > TEST-05-06 (AC-05-4): at the revision limit → 409 REVISION_LIMIT_REACHED; the count stays at the limit
+AssertionError: expected 404 to be 201 // Object.is equality
+
+- Expected
++ Received
+
+- 201
++ 404
+
+ ❯ tests/sprint-1/submissions.api.test.ts:99:43
+     97|   it('TEST-05-06 (AC-05-4): at the revision limit → 409 REVISION_LIMIT…
+     98|     const m = await milestone({ maxRevisions: 2 })
+     99|     expect((await post(a1, m.id)).status).toBe(201)
+       |                                           ^
+    100|     expect((await post(a1, m.id)).status).toBe(201)
+    101|     const third = await post(a1, m.id)
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/10]⎯
+
+ FAIL  tests/sprint-1/submissions.api.test.ts > POST /api/milestones/:id/submissions > TEST-05-07 (AC-05-5): an invalid link or title → 400 naming the field; nothing stored
+AssertionError: expected 404 to be 400 // Object.is equality
+
+- Expected
++ Received
+
+- 400
++ 404
+
+ ❯ tests/sprint-1/submissions.api.test.ts:110:28
+    108|     const m = await milestone()
+    109|     const badLink = await post(a1, m.id, work({ link: 'javascript:aler…
+    110|     expect(badLink.status).toBe(400)
+       |                            ^
+    111|     expect(Object.keys(badLink.body.error.fields)).toEqual(['link'])
+    112|     const badTitle = await post(a1, m.id, work({ title: 'ab' }))
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/10]⎯
+
+ FAIL  tests/sprint-1/submissions.api.test.ts > POST /api/milestones/:id/submissions > TEST-05-08 (AC-05-6): two simultaneous submissions become revisions 1 and 2, never duplicates
+AssertionError: expected [ 404, 404 ] to deeply equal [ 201, 201 ]
+
+- Expected
++ Received
+
+  [
+-   201,
+-   201,
++   404,
++   404,
+  ]
+
+ ❯ tests/sprint-1/submissions.api.test.ts:125:49
+    123|       y.post(`/api/milestones/${m.id}/submissions`).send(work({ title:…
+    124|     ])
+    125|     expect(results.map((r) => r.status).sort()).toEqual([201, 201])
+       |                                                 ^
+    126|     expect((await prisma.submission.findMany({ where: { milestoneId: m…
+    127|   })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/10]⎯
+
+ FAIL  tests/sprint-1/submissions.api.test.ts > POST /api/milestones/:id/submissions > TEST-05-10 (AC-05-9): limit 1, two at once → exactly one 201 revision 1 and one 409 REVISION_LIMIT_REACHED
+AssertionError: expected [ 404, 404 ] to deeply equal [ 201, 409 ]
+
+- Expected
++ Received
+
+  [
+-   201,
+-   409,
++   404,
++   404,
+  ]
+
+ ❯ tests/sprint-1/submissions.api.test.ts:136:49
+    134|       y.post(`/api/milestones/${m.id}/submissions`).send(work()),
+    135|     ])
+    136|     expect(results.map((r) => r.status).sort()).toEqual([201, 409])
+       |                                                 ^
+    137|     expect(results.find((r) => r.status === 201)!.body.submission.revi…
+    138|     expect(results.find((r) => r.status === 409)!.body.error.code).toB…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/10]⎯
+
+ FAIL  tests/sprint-1/submissions.api.test.ts > POST /api/milestones/:id/submissions > a supervisor of the team cannot submit → 403 (scope first, then role); a student of another team → 404
+AssertionError: expected 404 to be 403 // Object.is equality
+
+- Expected
++ Received
+
+- 403
++ 404
+
+ ❯ tests/sprint-1/submissions.api.test.ts:145:24
+    143|     const m = await milestone()
+    144|     const sup = await post(sup1, m.id)
+    145|     expect(sup.status).toBe(403)
+       |                        ^
+    146|     expect(sup.body.error.code).toBe('FORBIDDEN')
+    147|     expect((await post(b1, m.id)).status).toBe(404)
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/10]⎯
+
+ FAIL  tests/sprint-1/submissions.api.test.ts > GET /api/milestones/:id/submissions > TEST-05-09 (AC-05-7), F-05 part: newest revision first, each with its submitter and a feedback slot (null until F-06)
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ tests/sprint-1/submissions.api.test.ts:158:24
+    156|     await post(a1, m.id, work({ title: 'Rev two' }))
+    157|     const res = await (await loginAgent(sup1)).get(`/api/milestones/${…
+    158|     expect(res.status).toBe(200)
+       |                        ^
+    159|     expect(res.body.items.map((s: { revision: number; title: string })…
+    160|       [2, 'Rev two'],
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/10]⎯
+
+ FAIL  tests/sprint-1/submissions.api.test.ts > GET /api/milestones/:id/submissions > the milestone list and detail report revisionsUsed and latestSubmittedAt from stored revisions
+TypeError: Cannot read properties of undefined (reading 'submittedAt')
+ ❯ tests/sprint-1/submissions.api.test.ts:180:129
+    178|     const created = await post(a1, m.id)
+    179|     const detail = await (await loginAgent(a2)).get(`/api/milestones/$…
+    180|     expect(detail.body.milestone).toMatchObject({ revisionsUsed: 1, ma…
+       |                                                                                                                                 ^
+    181|     const list = await (await loginAgent(a2)).get(`/api/teams/${alpha.…
+    182|     expect(list.body.items.find((x: { id: number }) => x.id === m.id))…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/10]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  10 failed | 3 passed (13)
+   Start at  16:15:11
+   Duration  4.62s (transform 289ms, setup 0ms, import 558ms, tests 1.16s, environment 0ms)
+
