@@ -4,10 +4,11 @@ import { defineConfig } from 'vitest/config'
 // API tests run against a separate database (DATABASE_URL_TEST) so a test run
 // never touches the development data. The app code reads DATABASE_URL, so it
 // is pointed at the test database here; the original development URL is kept
-// as DATABASE_URL_DEV so global setup can refuse a test URL that resolves to
-// the development database (AC-R01-2), before it migrates anything.
-const devUrl = process.env.DATABASE_URL_DEV ?? process.env.DATABASE_URL ?? ''
-process.env.DATABASE_URL_DEV = devUrl
+// in COURSEPM_GUARD_DEV_URL, ALWAYS overwritten from DATABASE_URL (never taken
+// from the shell), so global setup can refuse a test URL that resolves to the
+// development database (AC-R01-2) before it migrates anything.
+const devUrl = process.env.DATABASE_URL ?? ''
+process.env.COURSEPM_GUARD_DEV_URL = devUrl
 
 export default defineConfig({
   test: {
@@ -17,7 +18,7 @@ export default defineConfig({
     globalSetup: './tests/global-setup.ts',
     env: {
       DATABASE_URL: process.env.DATABASE_URL_TEST ?? '',
-      DATABASE_URL_DEV: devUrl,
+      COURSEPM_GUARD_DEV_URL: devUrl,
       NODE_ENV: 'test',
     },
     // Suites share one test database; run files one at a time.

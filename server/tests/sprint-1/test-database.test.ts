@@ -30,6 +30,11 @@ describe('TEST-R01-02 assertSeparateTestDatabase', () => {
     expect(() => assertSeparateTestDatabase(DEV, url)).toThrow(/same database as DATABASE_URL/)
   })
 
+  it('refuses to run when DATABASE_URL is missing or empty, because the two databases cannot be compared', () => {
+    expect(() => assertSeparateTestDatabase(undefined, TEST)).toThrow(/DATABASE_URL is not set/)
+    expect(() => assertSeparateTestDatabase('', TEST)).toThrow(/DATABASE_URL is not set/)
+  })
+
   it('refuses a test URL that is not a PostgreSQL URL', () => {
     expect(() => assertSeparateTestDatabase(DEV, 'not a url')).toThrow(/not a valid PostgreSQL URL/)
   })
@@ -44,6 +49,14 @@ describe('TEST-R01-02 global setup', () => {
     }
   })
 
+  it('ignores a DATABASE_URL_DEV inherited from the outside environment and checks the real DATABASE_URL', () => {
+    const exec = vi.fn()
+    // A stale DATABASE_URL_DEV must not hide that the test URL is the development database.
+    const env = { DATABASE_URL: DEV, DATABASE_URL_TEST: DEV, DATABASE_URL_DEV: 'postgresql://x:y@localhost:5432/something_else' }
+    expect(() => runGlobalSetup(env, exec)).toThrow(/same database as DATABASE_URL/)
+    expect(exec).not.toHaveBeenCalled()
+  })
+
   it('migrates only the test database when the configuration is valid', () => {
     const exec = vi.fn()
     runGlobalSetup({ DATABASE_URL: DEV, DATABASE_URL_TEST: TEST }, exec)
@@ -54,11 +67,11 @@ describe('TEST-R01-02 global setup', () => {
 
 describe('TEST-R01-02 the test connection really selects the test database', () => {
   it('SELECT current_database() returns the DATABASE_URL_TEST database, not the development one', async () => {
-    // vitest.config keeps the original development URL as DATABASE_URL_DEV,
+    // vitest.config records the real development URL as COURSEPM_GUARD_DEV_URL,
     // because it points DATABASE_URL at the test database for the app code.
-    expect(process.env.DATABASE_URL_DEV).toBeTruthy()
+    expect(process.env.COURSEPM_GUARD_DEV_URL).toBeTruthy()
     const expected = new URL(process.env.DATABASE_URL_TEST!).pathname.slice(1)
-    const dev = new URL(process.env.DATABASE_URL_DEV!).pathname.slice(1)
+    const dev = new URL(process.env.COURSEPM_GUARD_DEV_URL!).pathname.slice(1)
     const rows = await prisma.$queryRaw<{ current_database: string }[]>`SELECT current_database()`
     expect(rows[0].current_database).toBe(expected)
     expect(rows[0].current_database).not.toBe(dev)

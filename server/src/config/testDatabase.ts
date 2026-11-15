@@ -32,14 +32,17 @@ export function assertSeparateTestDatabase(devUrl: string | undefined, testUrl: 
   }
   const test = identify(testUrl.trim(), 'DATABASE_URL_TEST')
   if (!test.database) throw new Error('DATABASE_URL_TEST is not a valid PostgreSQL URL (no database name).')
-  if (devUrl && devUrl.trim() !== '') {
-    const dev = identify(devUrl.trim(), 'DATABASE_URL')
-    if (dev.host === test.host && dev.port === test.port && dev.database === test.database) {
-      throw new Error(
-        `DATABASE_URL_TEST points to the same database as DATABASE_URL ("${test.database}"). ` +
-          'Use a separate test database; refusing to migrate or write to the development data.',
-      )
-    }
+  // Without the development URL the two databases cannot be compared, so the
+  // safe answer is to refuse rather than to skip the check.
+  if (!devUrl || devUrl.trim() === '') {
+    throw new Error('DATABASE_URL is not set, so the test database cannot be checked against it. Refusing to run tests.')
+  }
+  const dev = identify(devUrl.trim(), 'DATABASE_URL')
+  if (dev.host === test.host && dev.port === test.port && dev.database === test.database) {
+    throw new Error(
+      `DATABASE_URL_TEST points to the same database as DATABASE_URL ("${test.database}"). ` +
+        'Use a separate test database; refusing to migrate or write to the development data.',
+    )
   }
   return { database: test.database }
 }
