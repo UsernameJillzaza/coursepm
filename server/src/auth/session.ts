@@ -17,9 +17,11 @@ export function hashToken(token: string): string {
 }
 
 export async function createSession(userId: number): Promise<string> {
+  const now = new Date()
   const token = randomBytes(32).toString('hex')
   await prisma.session.create({
-    data: { id: hashToken(token), userId, expiresAt: new Date(Date.now() + sessionTtlMs()) },
+    // One clock reading for both timestamps, so expiresAt - createdAt is exactly the TTL (AC-01-11).
+    data: { id: hashToken(token), userId, createdAt: now, expiresAt: new Date(now.getTime() + sessionTtlMs()) },
   })
   return token
 }
@@ -45,7 +47,10 @@ export function readSessionToken(req: Request): string | null {
   for (const part of header.split(';')) {
     const eq = part.indexOf('=')
     if (eq === -1 || part.slice(0, eq).trim() !== SESSION_COOKIE) continue
-    const value = decodeURIComponent(part.slice(eq + 1).trim())
+    // Our tokens are 64 hex characters, which never need URL-decoding. Checking
+    // the raw value (instead of decodeURIComponent, which throws on input such
+    // as "%") means a malformed cookie is simply "no session", never a 500.
+    const value = part.slice(eq + 1).trim()
     return /^[0-9a-f]{64}$/.test(value) ? value : null
   }
   return null

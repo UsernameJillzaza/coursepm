@@ -7,6 +7,10 @@ import { publicUser, requireAuth } from './middleware'
 
 export const authRouter = Router()
 
+// Compute the dummy hash at start-up, so even the first unknown-e-mail login
+// costs one scrypt verification, the same as a wrong password (SDS §5).
+void getDummyHash()
+
 // F-01 contract: one generic message for every credential failure (AC-01-2).
 const INVALID_CREDENTIALS = 'E-mail or password is incorrect.'
 
