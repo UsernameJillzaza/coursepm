@@ -1,0 +1,13 @@
+CoursePM manual checks MAN-01 / MAN-02 on v0.1.0 (scripted in Edge by Claude Code for the team)
+[2026-11-15T12:00:41.707Z] commit 5d76a78 (v0.1.0)
+[2026-11-15T12:00:43.291Z] API (pid 36856) and client are up
+[2026-11-15T12:00:44.000Z] MAN-02 login → 200; Set-Cookie: cpm_session=<token hidden>; Max-Age=28800; Path=/; Expires=Sun, 15 Nov 2026 20:00:43 GMT; HttpOnly; SameSite=Lax
+[2026-11-15T12:00:44.001Z] MAN-02 browser cookie store: {"name":"cpm_session","domain":"localhost","path":"/","httpOnly":true,"secure":false,"sameSite":"Lax","expiresInHours":"8.00"}
+[2026-11-15T12:00:44.003Z] MAN-02 document.cookie contains cpm_session: false (HttpOnly → must be false)
+[2026-11-15T12:00:44.003Z] MAN-02 result: PASS (expected HttpOnly, SameSite=Lax, Path=/, ~8 h expiry, Secure off on http://localhost in development)
+[2026-11-15T12:00:44.125Z] MAN-01 created milestone 9 "MAN-01 restart check 1794744044095" → 201
+[2026-11-15T12:00:44.531Z] MAN-01 API process stopped; /api/health unreachable
+[2026-11-15T12:00:46.061Z] MAN-01 API started again (new pid 38328)
+[2026-11-15T12:00:46.204Z] MAN-01 same browser session after restart: GET /api/auth/me → 200 {"id":1,"name":"Dr. Supervisor One","email":"supervisor1@coursepm.test","role":"SUPERVISOR"}
+[2026-11-15T12:00:46.224Z] MAN-01 GET /api/milestones/9 after restart → 200, title "MAN-01 restart check 1794744044095"
+[2026-11-15T12:00:46.357Z] MAN-01 result: PASS (milestone and session still present after the API restart)

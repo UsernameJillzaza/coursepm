@@ -1,12 +1,14 @@
 # Sprint 1 release notes: v0.1.0
 
-Status: **release candidate** on the feature branch `feature/9-e2e-release-docs` (PR #18), tested at `daefdff`. It reaches `sprint1-staging` only when PR #18 is merged. After that, the reviewed `sprint1-staging` → `main` release PR, tag `v0.1.0`, re-run the full suite on the tag, and record that commit here.
+Status: **released** as `v0.1.0` on `main` (commit `5d76a78`, release PR #19, 2026-11-15). The release candidate was tested at `daefdff` (PR #18); the full suite was re-run on the tagged commit, and MAN-01 / MAN-02 were done on it (below).
 
 | Field | Value |
 | --- | --- |
-| Release tag / commit | `v0.1.0` / `<commit on main after the release PR>` |
+| Release tag / commit | `v0.1.0` / `5d76a78` (merge commit of release PR #19 into `main`) |
 | Features | F-01 authentication · F-02 access scope · F-03 teams + demo seed · F-04 milestones · F-05 submissions (deadline + revision rules) · F-06 feedback · R-01/R-02 scaffold and shared UI states |
 | Pull requests | #10 (Parts A–D), #11 (Part E contracts), #12 (scaffold), #13 (F-01), #14 (F-02/F-03), #15 (F-04), #16 (F-05), #17 (F-06), the #9 PR (E2E, evidence, these notes) |
+| Release run on `v0.1.0` | `5d76a78`, clean working tree, 2026-11-15 18:40: server 112/112 · client 39/39 · E2E 3/3 (0 failed, 0 skipped) · server type-check OK · client build OK. Log: [sprint1-v0.1.0-main-run.txt](../../../artifacts/sprint-1/test-runs/sprint1-v0.1.0-main-run.txt) |
+| Manual checks on `v0.1.0` | MAN-01 and MAN-02 **PASS** (2026-11-15 19:00). Evidence: [artifacts/sprint-1/manual/](../../../artifacts/sprint-1/manual/) |
 | Release candidate run | `daefdff` on `feature/9-e2e-release-docs`, 2026-11-15, clean working tree: server 112/112 · client 39/39 · E2E 3/3 (0 failed, 0 skipped) · server type-check OK · client build OK. Screenshots 01–09 come from this run. The commits after `daefdff` on this branch change only docs and evidence files (no source or test code). Log: [sprint1-release-run.txt](../../../artifacts/sprint-1/test-runs/sprint1-release-run.txt) |
 | Requirements | every Sprint 1 FR/BR/NFR has a feature, AC and test in [traceability](../../traceability.md); results in the STS "Execution results" section |
 
@@ -34,7 +36,7 @@ Setup: `npm --prefix server run db:deploy`, then `npm --prefix server run db:see
 The forbidden **role** operations (student creates a milestone → 403, student records feedback → 403) are proven by API tests (TEST-02-04, TEST-02-05), because the UI never offers those controls; hiding a button is not authorization.
 
 ## Known limitations and incomplete work (disclosed)
-- **MAN-01** (restart the API and confirm the data is still there, NFR-06) and **MAN-02** (inspect the session cookie flags in DevTools, NFR-04) are manual checks still to be done on the release commit. Their automated counterparts pass: persistence across reloads and sessions (E2E-01, E2E-02) and the cookie flags (TEST-01-13).
+- **MAN-01** (restart the API; data is still there, NFR-06) and **MAN-02** (session cookie flags, NFR-04) passed on `v0.1.0`. They were scripted in Edge (`artifacts/sprint-1/manual/man-checks.js`) instead of clicked by hand: real login page, cookie read from the browser's cookie store (the same data DevTools shows), API process stopped and started again, then the same session and a milestone created before the restart were checked. Each run adds a "MAN-01 restart check <timestamp>" milestone to Team Alpha in the development database.
 - Not covered by an automated test: exhausting all 3 submission retries (409 `CONFLICT`) and a deadline passing during a retry (both need fault injection); the inclusive deadline is covered at unit level only (TEST-05-03).
 - TDD evidence gaps, stated in the PRs: the scaffold's basic health/404 behaviour (#12) and the F-06 API (#17) were committed together with their tests; some 404/401 guard tests passed before their routes existed because the catch-all route already answered 404.
 - One flaky client test was found by a first, uncommitted release run on `2e7a41d` (client 38/39): the F-06 "saving feedback refreshes the list" test held an element from before the list reloaded. `a0ddf35` makes it wait for the final state (assertions unchanged). It then passed in repeated local runs (logs not kept) and in the release run above. The self-review then found the same race in E2E-02: screenshot 07 had caught the list mid-reload. The E2E now waits for the settled list, and `shot()` waits until no loading spinner is shown.
