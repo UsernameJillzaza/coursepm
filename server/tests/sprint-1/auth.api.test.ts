@@ -72,6 +72,13 @@ describe('GET /api/auth/me and POST /api/auth/logout', () => {
     expect(res.body).toEqual({ user: { id: a1.id, name: a1.name, email: a1.email, role: 'STUDENT' } })
   })
 
+  it('a malformed session cookie is treated as no session (401 on /me, 200 on /health), never a 500', async () => {
+    for (const bad of ['cpm_session=%', 'cpm_session=%E0%A4%A', `cpm_session=${'z'.repeat(64)}`]) {
+      expect((await request(app).get('/api/auth/me').set('Cookie', bad)).status).toBe(401)
+      expect((await request(app).get('/api/health').set('Cookie', bad)).status).toBe(200)
+    }
+  })
+
   it('returns 401 UNAUTHENTICATED without a cookie', async () => {
     const res = await request(app).get('/api/auth/me')
     expect(res.status).toBe(401)
@@ -145,6 +152,7 @@ describe('TEST-01-13 (AC-01-11): session storage and cookie attributes', () => {
   afterEach(() => vi.unstubAllEnvs())
 
   it('stores SHA-256(token), not the token; expires 8 h after creation; cookie HttpOnly, SameSite=Lax, Path=/', async () => {
+    vi.stubEnv('SESSION_TTL_HOURS', '8') // the STS precondition, independent of the local .env
     const { raw } = await loginCookie(a1)
     expect(raw).toMatch(/;\s*HttpOnly/i)
     expect(raw).toMatch(/;\s*SameSite=Lax/i)
@@ -154,9 +162,9 @@ describe('TEST-01-13 (AC-01-11): session storage and cookie attributes', () => {
     const token = tokenOf(raw)
     expect(await prisma.session.count({ where: { id: token } })).toBe(0) // the raw token is never stored
     const row = await prisma.session.findUniqueOrThrow({ where: { id: sha256(token) } })
-    const ttl = row.expiresAt.getTime() - row.createdAt.getTime()
-    // createdAt is set by the database and expiresAt by the API, so allow 2 s of clock difference.
-    expect(Math.abs(ttl - 8 * 60 * 60 * 1000)).toBeLessThan(2000)
+    // Both timestamps are written by the API from one clock reading, so the
+    // difference is exactly the TTL (no database-clock or time-zone skew).
+    expect(row.expiresAt.getTime() - row.createdAt.getTime()).toBe(8 * 60 * 60 * 1000)
   })
 
   it('adds Secure to the cookie when NODE_ENV=production', async () => {
