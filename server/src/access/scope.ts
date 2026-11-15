@@ -6,8 +6,7 @@ import type { AuthUser } from '../auth/middleware'
 // through these helpers, so the "which teams may this user see" rule lives in
 // one place. Students reach teams they belong to; supervisors reach teams
 // they are assigned to. Anything else is treated as not found (D-03).
-// loadMilestoneForUser (F-04, #6) and loadSubmissionForUser (F-06, #8) are
-// added next to loadTeamForUser when those tables exist.
+// Milestone and submission loaders follow the same rule as the team loader.
 export function teamScopeWhere(user: AuthUser): Prisma.TeamWhereInput {
   return user.role === 'STUDENT'
     ? { members: { some: { userId: user.id } } }
@@ -53,5 +52,13 @@ export async function loadMilestoneForUser(user: AuthUser, milestoneId: number) 
   return prisma.milestone.findFirst({
     where: { id: milestoneId, team: teamScopeWhere(user) },
     include: { team: { select: { id: true, name: true } } },
+  })
+}
+
+// F-06: use the submission's database-constrained teamId for a scoped load.
+// The submission's composite FK guarantees that teamId matches its milestone.
+export async function loadSubmissionForUser(user: AuthUser, submissionId: number) {
+  return prisma.submission.findFirst({
+    where: { id: submissionId, team: teamScopeWhere(user) },
   })
 }

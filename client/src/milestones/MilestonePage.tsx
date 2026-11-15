@@ -9,7 +9,7 @@ import { bangkokTime, type Milestone } from './types'
 
 // F-05 milestone detail (SDS §3): deadline, "Revisions used: n / max", the
 // student submit form, and the revision list with its loading / empty /
-// error states (AC-02-10). F-06 (#8) adds feedback to each revision.
+// error states (AC-02-10), and revision-specific feedback (F-06).
 export default function MilestonePage() {
   const { milestoneId } = useParams()
   const { user } = useAuth()
@@ -60,7 +60,7 @@ export default function MilestonePage() {
       <h2 className="h6 mt-4">Submissions</h2>
       {subs.loading && <Loading />}
       {subs.error && <ErrorAlert message={subs.error.message} onRetry={subs.reload} />}
-      {!subs.loading && !subs.error && subs.data && <SubmissionList items={subs.data.items} />}
+      {!subs.loading && !subs.error && subs.data && <SubmissionList items={subs.data.items} onFeedbackSaved={subs.reload} />}
     </main>
   )
 }

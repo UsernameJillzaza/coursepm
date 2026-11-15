@@ -4,6 +4,7 @@ import { loadMilestoneForUser } from '../access/scope'
 import { requireAuth } from '../auth/middleware'
 import { AppError, parseId, sendError } from '../http'
 import { checkCanSubmit, validateSubmission, type SubmissionInput } from '../rules/submission'
+import { feedbackWithSupervisor, toFeedbackDto } from '../feedback/dto'
 
 // F-05 submission API (FR-06 … FR-08, BR-06 … BR-08, NFR-05).
 // Mounted at /api/milestones/:milestoneId/submissions.
@@ -27,8 +28,8 @@ type SubmissionRow = {
   submittedBy: { id: number; name: string }
 }
 
-// The F-05 contract's submission shape. The list adds `feedback`, which is
-// always null until F-06 (#8) adds the feedback table.
+// The F-05 contract's submission shape. The list also includes feedback from
+// the revision's own one-to-one relation (F-06).
 function toSubmissionDto(s: SubmissionRow) {
   return {
     id: s.id,
@@ -92,6 +93,12 @@ submissionsRouter.get('/', async (req, res) => {
   const id = parseId((req.params as { milestoneId?: string }).milestoneId)
   const m = id ? await loadMilestoneForUser(req.user!, id) : null
   if (!m) return sendError(res, 404, 'NOT_FOUND', 'Milestone not found.')
-  const rows = await prisma.submission.findMany({ where: { milestoneId: m.id }, include: submittedBy, orderBy: { revision: 'desc' } })
-  res.status(200).json({ items: rows.map((s) => ({ ...toSubmissionDto(s), feedback: null })) })
+  const rows = await prisma.submission.findMany({
+    where: { milestoneId: m.id },
+    include: { ...submittedBy, feedback: { include: feedbackWithSupervisor } },
+    orderBy: { revision: 'desc' },
+  })
+  res.status(200).json({
+    items: rows.map((s) => ({ ...toSubmissionDto(s), feedback: s.feedback ? toFeedbackDto(s.feedback) : null })),
+  })
 })

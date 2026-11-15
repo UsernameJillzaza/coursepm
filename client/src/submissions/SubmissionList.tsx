@@ -1,9 +1,12 @@
 import { bangkokTime } from '../milestones/types'
+import { useAuth } from '../auth/AuthContext'
+import FeedbackForm from '../feedback/FeedbackForm'
 import type { Submission } from './types'
 
-// F-05 revision list, newest first (FR-08, AC-05-7). F-06 (#8) adds each
-// revision's feedback to its card.
-export default function SubmissionList({ items }: { items: Submission[] }) {
+// Each revision owns its feedback. A later submission leaves the feedback on
+// the earlier revision's card (BR-09).
+export default function SubmissionList({ items, onFeedbackSaved }: { items: Submission[]; onFeedbackSaved: () => void }) {
+  const { user } = useAuth()
   if (items.length === 0) return <p className="text-body-secondary">No submissions yet.</p>
   return (
     <div className="d-flex flex-column gap-3">
@@ -23,6 +26,19 @@ export default function SubmissionList({ items }: { items: Submission[] }) {
             <a href={s.link} target="_blank" rel="noopener noreferrer" className="small text-break">
               {s.link}
             </a>
+            {s.feedback ? (
+              <section className="border-top mt-3 pt-3" aria-label={`Feedback for revision ${s.revision}`}>
+                <h4 className="h6">Feedback</h4>
+                <p className="small text-body-secondary mb-1">
+                  {s.feedback.supervisor.name} · {bangkokTime(s.feedback.createdAt)} (Bangkok)
+                </p>
+                <p className="mb-0" style={{ whiteSpace: 'pre-wrap' }}>{s.feedback.body}</p>
+              </section>
+            ) : user?.role === 'SUPERVISOR' ? (
+              <FeedbackForm submissionId={s.id} revision={s.revision} onSaved={onFeedbackSaved} />
+            ) : (
+              <p className="text-body-secondary mb-0 mt-3">No feedback yet</p>
+            )}
           </div>
         </article>
       ))}
