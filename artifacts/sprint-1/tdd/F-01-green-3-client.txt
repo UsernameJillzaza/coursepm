@@ -1,0 +1,15 @@
+# #4 TDD green run 3 — client tests after LoginPage (field errors) / AuthContext / RequireAuth / TopBar / HealthStatus
+# 2026-11-15T14:22:19+07:00  base commit 6e313de + the UI
+
+ RUN  v4.1.12 D:/Claude Projects/coursepm-build/client
+
+
+ Test Files  2 passed (2)
+      Tests  11 passed (11)
+   Start at  14:22:20
+   Duration  4.29s (transform 118ms, setup 511ms, import 225ms, tests 2.50s, environment 2.55s)
+
+## build
+dist/assets/index-_wn1U9Ww.js   263.01 kB │ gzip: 83.69 kB
+
+✓ built in 233ms
