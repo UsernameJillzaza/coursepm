@@ -108,3 +108,16 @@ non-numeric milestone id is 404. Not covered by an automated test (would need fa
 database layer): exhausting all 3 retry attempts (409 `CONFLICT`) and a deadline that passes during a
 retry; the inclusive deadline (`now == deadline`) is covered at unit level only (TEST-05-03). These
 supplement the planned STS rows above.
+
+**F-06 adds:** `feedback.api.test.ts` covers two concurrent first POSTs (one 201, one 409), a missing
+session (401), missing or malformed submission IDs (404), and client-supplied `supervisorId` /
+`submissionId` being ignored. `feedback-rules.unit.test.ts` and `feedback.api.test.ts` cover missing,
+whitespace-only and non-string bodies. `feedback-ui.test.tsx` checks that a student sees **No feedback
+yet** without a form, saving refreshes the list, and a 409 displays its message without clearing the
+draft. Report these with their test file and test name in Part F.
+
+**Part F TDD note for F-06.** The feedback body rule has a red/green pair (`34a77d7` → `1f57dce`),
+as does the initial feedback UI (`085bd92` → `beaedb9`). The API tests were committed with their
+implementation in `87246fb`, so there is no earlier failing API-test commit or red log. The 409 UI
+case was added with `beaedb9` and has no separate red run. These cases are passing coverage, not
+additional TDD evidence.
