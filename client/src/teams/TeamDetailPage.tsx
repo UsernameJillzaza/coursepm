@@ -2,6 +2,7 @@ import { Link, useParams } from 'react-router-dom'
 import { ErrorAlert, Loading } from '../components/States'
 import { useApi } from '../components/useApi'
 import type { Team } from './types'
+import MilestoneList from '../milestones/MilestoneList'
 
 // F-03 team detail: name, course, members, supervisors. The milestone list
 // is added here by F-04 (Issue #6).
@@ -48,6 +49,7 @@ export default function TeamDetailPage() {
           </ul>
         </section>
       </div>
+      <MilestoneList teamId={team.id} />
     </main>
   )
 }

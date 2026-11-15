@@ -17,16 +17,17 @@ enum Role {
 }
 
 model User {
-  id           Int       @id @default(autoincrement())
-  email        String    @unique // stored trimmed + lowercase
-  name         String
-  role         Role
-  passwordHash String // scrypt$N$r$p$salt$key (NFR-03)
-  isActive     Boolean   @default(true)
-  createdAt    DateTime  @default(now())
-  sessions     Session[]
-  memberships  TeamMember[]
-  supervising  SupervisorAssignment[]
+  id                Int                    @id @default(autoincrement())
+  email             String                 @unique // stored trimmed + lowercase
+  name              String
+  role              Role
+  passwordHash      String // scrypt$N$r$p$salt$key (NFR-03)
+  isActive          Boolean                @default(true)
+  createdAt         DateTime               @default(now())
+  sessions          Session[]
+  memberships       TeamMember[]
+  supervising       SupervisorAssignment[]
+  milestonesCreated Milestone[]
 }
 
 // NFR-04: the id is SHA-256(cookie token); the token itself is never stored.
@@ -48,6 +49,7 @@ model Team {
   createdAt   DateTime               @default(now())
   members     TeamMember[]
   supervisors SupervisorAssignment[]
+  milestones  Milestone[]
 
   @@unique([courseCode, name])
 }
@@ -70,4 +72,22 @@ model SupervisorAssignment {
 
   @@id([teamId, userId])
   @@index([userId])
+}
+
+// F-04 milestones. F-05 adds submissions and uses (id, teamId) as a
+// composite target so a submission's team always matches its milestone.
+model Milestone {
+  id           Int      @id @default(autoincrement())
+  teamId       Int
+  team         Team     @relation(fields: [teamId], references: [id])
+  title        String
+  description  String
+  deadline     DateTime @db.Timestamptz(3)
+  maxRevisions Int      @default(3)
+  createdById  Int
+  createdBy    User     @relation(fields: [createdById], references: [id])
+  createdAt    DateTime @default(now()) @db.Timestamptz(3)
+
+  @@unique([id, teamId])
+  @@index([teamId, deadline])
 }
