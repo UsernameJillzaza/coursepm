@@ -1,6 +1,6 @@
 # Sprint 1 release notes: v0.1.0
 
-Status: **release candidate** on `sprint1-staging`. After the reviewed `sprint1-staging` → `main` release PR, tag `v0.1.0`, re-run the full suite on the tag, and record that commit here.
+Status: **release candidate** on the feature branch `feature/9-e2e-release-docs` (PR #18), tested at `daefdff`. It reaches `sprint1-staging` only when PR #18 is merged. After that, the reviewed `sprint1-staging` → `main` release PR, tag `v0.1.0`, re-run the full suite on the tag, and record that commit here.
 
 | Field | Value |
 | --- | --- |
