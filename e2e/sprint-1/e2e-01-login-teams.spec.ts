@@ -1,9 +1,9 @@
 import { expect, test } from '@playwright/test'
-import { seedPassword } from '../helpers'
+import { seedPassword, shot } from '../helpers'
 
 // E2E-01 (AC-01-1, AC-01-2, AC-01-3, AC-01-4, AC-03-1) against the seeded
-// development database (npm --prefix server run db:seed). Part F screenshots
-// are added to this journey in #9.
+// development database (npm --prefix server run db:seed). Saves the Part F
+// login / logout screenshots (01–03).
 
 test('E2E-01: wrong password, login, own team only, reload keeps the session, logout', async ({ page }) => {
   await page.goto('/teams')
@@ -13,6 +13,7 @@ test('E2E-01: wrong password, login, own team only, reload keeps the session, lo
   await page.getByLabel('Password').fill('definitely-wrong-1')
   await page.getByRole('button', { name: 'Log in' }).click()
   await expect(page.getByRole('alert')).toHaveText('E-mail or password is incorrect.')
+  await shot(page, '01-login-invalid-credentials')
 
   await page.getByLabel('Password').fill(seedPassword())
   await page.getByRole('button', { name: 'Log in' }).click()
@@ -26,6 +27,7 @@ test('E2E-01: wrong password, login, own team only, reload keeps the session, lo
   // F-03 (AC-03-1): the seeded student sees only Team Alpha.
   await expect(page.getByRole('link', { name: 'Team Alpha' })).toBeVisible()
   await expect(page.getByRole('link', { name: 'Team Beta' })).toHaveCount(0)
+  await shot(page, '02-student-my-teams')
   await page.getByRole('link', { name: 'Team Alpha' }).click()
   await expect(page.getByRole('heading', { name: 'Team Alpha' })).toBeVisible()
   await expect(page.getByRole('listitem', { name: 'Alpha Student 2' })).toBeVisible()
@@ -38,4 +40,5 @@ test('E2E-01: wrong password, login, own team only, reload keeps the session, lo
   await expect(page.getByRole('heading', { name: 'Log in' })).toBeVisible()
   await page.goto('/teams')
   await expect(page.getByRole('heading', { name: 'Log in' })).toBeVisible()
+  await shot(page, '03-after-logout-redirected-to-login')
 })
