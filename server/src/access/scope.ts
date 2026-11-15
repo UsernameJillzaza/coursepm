@@ -46,3 +46,12 @@ export async function loadTeamForUser(user: AuthUser, teamId: number) {
   const row = await prisma.team.findFirst({ where: { id: teamId, ...teamScopeWhere(user) }, select: teamView })
   return row ? toTeamDto(row) : null
 }
+
+// F-04: the milestone and its team are fetched in the same scoped query.
+// A missing milestone and one owned by another team have the same result.
+export async function loadMilestoneForUser(user: AuthUser, milestoneId: number) {
+  return prisma.milestone.findFirst({
+    where: { id: milestoneId, team: teamScopeWhere(user) },
+    include: { team: { select: { id: true, name: true } } },
+  })
+}

@@ -41,7 +41,7 @@ describe('TEST-04-04 (AC-04-4): milestone validation boundaries', () => {
   })
 
   it('rejects deadlines at or before now, invalid dates, and descriptions above 2,000 characters', () => {
-    for (const deadline of [now.toISOString(), '2026-11-15T07:59:59.999Z', 'not-a-date']) {
+    for (const deadline of [now.toISOString(), '2026-11-15T07:59:59.999Z', 'not-a-date', '2026-02-31T08:00:00.000Z']) {
       const result = validateMilestone(input({ deadline }), now)
       expect(result.ok).toBe(false)
       if (!result.ok) expect(result.fields).toHaveProperty('deadline')
