@@ -86,4 +86,21 @@ describe('F-06 feedback UI', () => {
     expect(screen.queryByRole('button', { name: 'Save feedback' })).not.toBeInTheDocument()
     expect(listCalls).toBe(2)
   })
+
+  it('shows a 409 conflict without clearing the supervisor\'s draft', async () => {
+    fakeApi({
+      'GET /api/auth/me': ok({ user: supervisor }),
+      'GET /api/milestones/10': ok({ milestone, team }),
+      'GET /api/milestones/10/submissions': ok({ items: [revision(1)] }),
+      'POST /api/submissions/101/feedback': () => ({ status: 409, body: { error: {
+        code: 'FEEDBACK_EXISTS', message: 'This revision already has feedback.',
+      } } }),
+    })
+    renderAt('/milestones/10')
+    const textarea = await screen.findByRole('textbox', { name: 'Feedback for revision 1' })
+    await userEvent.type(textarea, 'My review')
+    await userEvent.click(screen.getByRole('button', { name: 'Save feedback' }))
+    expect(await screen.findByRole('alert')).toHaveTextContent('This revision already has feedback.')
+    expect(textarea).toHaveValue('My review')
+  })
 })

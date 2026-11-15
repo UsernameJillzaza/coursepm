@@ -1,5 +1,12 @@
-// F-05 submission as returned by GET /api/milestones/:id/submissions. The
-// feedback slot is null until F-06 (#8) adds feedback.
+// Submission and its revision-specific feedback as returned by the list API.
+export type Feedback = {
+  id: number
+  submissionId: number
+  body: string
+  createdAt: string
+  supervisor: { id: number; name: string }
+}
+
 export type Submission = {
   id: number
   revision: number
@@ -8,5 +15,5 @@ export type Submission = {
   link: string
   submittedAt: string
   submittedBy: { id: number; name: string }
-  feedback: null
+  feedback: Feedback | null
 }
