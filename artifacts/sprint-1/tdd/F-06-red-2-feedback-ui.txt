@@ -28,7 +28,7 @@ Ignored nodes: comments, script, style
         <span
           class="badge text-bg-primary me-2"
         >
-          Revision 
+          Revision
           1
         </span>
         Proposal v1
@@ -37,7 +37,7 @@ Ignored nodes: comments, script, style
         class="text-body-secondary"
       >
         Alpha Student 1
-         · 
+         ·
         16 Nov 2026 12:00
       </small>
     </div>
@@ -158,11 +158,11 @@ Ignored nodes: comments, script, style
       <p
         class="text-body-secondary mb-2"
       >
-        Deadline: 
+        Deadline:
         22 Nov 2026 23:59
-         (Bangkok) · Revisions used: 
+         (Bangkok) · Revisions used:
         2
-         / 
+         /
         3
       </p>
       <h2
@@ -189,7 +189,7 @@ Ignored nodes: comments, script, style
                 <span
                   class="badge text-bg-primary me-2"
                 >
-                  Revision 
+                  Revision
                   1
                 </span>
                 Proposal v1
@@ -198,7 +198,7 @@ Ignored nodes: comments, script, style
                 class="text-body-secondary"
               >
                 Alpha Student 1
-                 · 
+                 ·
                 16 Nov 2026 12:00
               </small>
             </div>
@@ -307,11 +307,11 @@ Ignored nodes: comments, script, style
       <p
         class="text-body-secondary mb-2"
       >
-        Deadline: 
+        Deadline:
         22 Nov 2026 23:59
-         (Bangkok) · Revisions used: 
+         (Bangkok) · Revisions used:
         2
-         / 
+         /
         3
       </p>
       <h2
@@ -338,7 +338,7 @@ Ignored nodes: comments, script, style
                 <span
                   class="badge text-bg-primary me-2"
                 >
-                  Revision 
+                  Revision
                   1
                 </span>
                 Proposal v1
@@ -347,7 +347,7 @@ Ignored nodes: comments, script, style
                 class="text-body-secondary"
               >
                 Alpha Student 1
-                 · 
+                 ·
                 16 Nov 2026 12:00
               </small>
             </div>
@@ -470,11 +470,11 @@ Ignored nodes: comments, script, style
       <p
         class="text-body-secondary mb-2"
       >
-        Deadline: 
+        Deadline:
         22 Nov 2026 23:59
-         (Bangkok) · Revisions used: 
+         (Bangkok) · Revisions used:
         2
-         / 
+         /
         3
       </p>
       <h2
@@ -501,7 +501,7 @@ Ignored nodes: comments, script, style
                 <span
                   class="badge text-bg-primary me-2"
                 >
-                  Revision 
+                  Revision
                   1
                 </span>
                 Proposal v1
@@ -510,7 +510,7 @@ Ignored nodes: comments, script, style
                 class="text-body-secondary"
               >
                 Alpha Student 1
-                 · 
+                 ·
                 16 Nov 2026 12:00
               </small>
             </div>
@@ -619,11 +619,11 @@ Ignored nodes: comments, script, style
       <p
         class="text-body-secondary mb-2"
       >
-        Deadline: 
+        Deadline:
         22 Nov 2026 23:59
-         (Bangkok) · Revisions used: 
+         (Bangkok) · Revisions used:
         2
-         / 
+         /
         3
       </p>
       <h2
@@ -650,7 +650,7 @@ Ignored nodes: comments, script, style
                 <span
                   class="badge text-bg-primary me-2"
                 >
-                  Revision 
+                  Revision
                   1
                 </span>
                 Proposal v1
@@ -659,7 +659,7 @@ Ignored nodes: comments, script, style
                 class="text-body-secondary"
               >
                 Alpha Student 1
-                 · 
+                 ·
                 16 Nov 2026 12:00
               </small>
             </div>
@@ -694,4 +694,3 @@ Ignored nodes: comments, script, style
       Tests  3 failed (3)
    Start at  16:43:13
    Duration  4.56s (transform 204ms, setup 415ms, import 365ms, tests 2.24s, environment 1.28s)
-
