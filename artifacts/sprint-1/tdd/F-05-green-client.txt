@@ -1,0 +1,14 @@
+# #7 TDD green run (client) — after MilestonePage, SubmitForm, SubmissionList, list links, route
+# 2026-11-15T16:18:01+07:00  base commit 7b9f09c + implementation
+
+ RUN  v4.1.12 D:/Claude Projects/coursepm-build/client
+
+
+ Test Files  5 passed (5)
+      Tests  35 passed (35)
+   Start at  16:18:02
+   Duration  4.72s (transform 453ms, setup 1.52s, import 1.13s, tests 5.96s, environment 6.87s)
+
+## build
+
+✓ built in 249ms

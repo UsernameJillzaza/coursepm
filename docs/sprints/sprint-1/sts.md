@@ -54,7 +54,7 @@ The **Actual test (file › name)** and **Result** columns remain blank until th
 | TEST-05-06 | AC-05-4 | I | maxRevisions 2; 2 stored | A1 POSTs | 409 REVISION_LIMIT_REACHED; count = 2 | | |
 | TEST-05-07 | AC-05-5 | U + I | — | validateSubmission with ftp:, javascript:, "not a url", a 2,049-char link, a 2-char title; the same via API | Each rejected; API 400 with `fields.link` / `fields.title` | | |
 | TEST-05-08 | AC-05-6 | I | Open milestone, limit 3 | Two POSTs with Promise.all | Two rows with revisions {1, 2}; no duplicate | | |
-| TEST-05-09 | AC-05-7 | I | Revisions 1 and 2, feedback on 1 | GET list | [rev 2 (feedback null), rev 1 (feedback present)] | | |
+| TEST-05-09 | AC-05-7 | I | Revisions 1 and 2, feedback on 1 (feedback part with #8) | GET list | [rev 2 (feedback null), rev 1 (feedback present)] | | |
 | TEST-05-10 | AC-05-9 | I | Open milestone, limit 1 | Two POSTs with Promise.all | Exactly one 201 revision 1 and one 409 REVISION_LIMIT_REACHED; one row stored | | |
 | TEST-UI-02 | AC-05-8 | C | Milestone props: deadline passed / limit reached; separately, mocked submission response = 409 | Render detail; submit while the UI appears open | Form absent for closed/used-up states; a 409 response displays its message | | |
 | TEST-UI-07 | AC-05-10 | C | Submission form; mocked 400 with `fields.link` | Submit an invalid link | Error appears beside Link and entered values remain | | |
@@ -88,7 +88,8 @@ confirm the data is still there (NFR-06); MAN-02 inspect the cookie flags in Dev
 **Delivered in parts (the routes and tables arrive with later Issues).** #5 delivers the team-route parts of
 TEST-02-01 and TEST-02-03 and the team-list part of TEST-UI-04. The milestone parts of TEST-02-01, TEST-02-02,
 TEST-02-03, TEST-UI-04 and TEST-02-04 / TEST-02-09 arrive with #6 (F-04); the submission parts of TEST-02-01,
-TEST-02-02, TEST-02-03 and TEST-UI-04 with #7 (F-05); TEST-02-05 with #8 (F-06).
+TEST-02-02, TEST-02-03 and TEST-UI-04 with #7 (F-05); TEST-02-05 and the feedback part of TEST-05-09 (#7 checks
+the newest-first order and a `feedback: null` slot) with #8 (F-06).
 
 **Additional automated cases.** Existing tests may strengthen an AC without receiving a separate STS ID.
 Retain and report these cases with their actual test file/name in Part F: e-mail normalization (AC-01-1),
@@ -99,5 +100,11 @@ session is sent to `/login` (AC-01-1), a successful login opens `/teams` with na
 credentials show the server message (AC-01-2) and Log out returns to the login page (AC-01-4), team member
 objects expose only `id` and `name` (AC-03-1), a member can open their own team (AC-03-1), a non-existent or
 non-numeric team id answers 404 like an out-of-scope one (AC-03-2), and the team detail page shows name,
-course and members (AC-03-1). These
+course and members (AC-03-1). F-05 adds: a supervisor of the team cannot submit (403 after the scope check, AC-05-1), milestones report
+`revisionsUsed` and `latestSubmittedAt` from stored revisions (AC-05-7), milestone titles link to their page,
+a student submit updates the list and counter, the revision list is newest first with submitter and link
+(AC-05-1, AC-05-7, UI), and an out-of-scope milestone page shows **Milestone not found** (AC-02-2). The submission routes check scope (404), role (403), fields (400) and rules (409) in that order, and a
+non-numeric milestone id is 404. Not covered by an automated test (would need fault injection into the
+database layer): exhausting all 3 retry attempts (409 `CONFLICT`) and a deadline that passes during a
+retry; the inclusive deadline (`now == deadline`) is covered at unit level only (TEST-05-03). These
 supplement the planned STS rows above.

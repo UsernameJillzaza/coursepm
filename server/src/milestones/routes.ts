@@ -6,9 +6,22 @@ import { parseId, sendError } from '../http'
 import { validateMilestone } from '../rules/milestone'
 import type { Milestone } from '../generated/prisma/client'
 
-// F-05 adds the submission relation and replaces these initial zero/null
-// values with an aggregate from stored revisions.
-function toMilestoneDto(row: Milestone, now: Date) {
+type Stats = { used: number; latest: Date | null }
+
+// F-05: how many revisions each milestone has, and when the latest arrived.
+async function submissionStats(milestoneIds: number[]): Promise<Map<number, Stats>> {
+  if (milestoneIds.length === 0) return new Map()
+  const groups = await prisma.submission.groupBy({
+    by: ['milestoneId'],
+    where: { milestoneId: { in: milestoneIds } },
+    _count: { _all: true },
+    _max: { submittedAt: true },
+  })
+  return new Map(groups.map((g) => [g.milestoneId, { used: g._count._all, latest: g._max.submittedAt }]))
+}
+
+// revisionsUsed / latestSubmittedAt come from the stored revisions (F-05).
+function toMilestoneDto(row: Milestone, now: Date, stats: Stats = { used: 0, latest: null }) {
   return {
     id: row.id,
     teamId: row.teamId,
@@ -18,9 +31,9 @@ function toMilestoneDto(row: Milestone, now: Date) {
     maxRevisions: row.maxRevisions,
     createdById: row.createdById,
     createdAt: row.createdAt,
-    revisionsUsed: 0,
+    revisionsUsed: stats.used,
     status: now.getTime() <= row.deadline.getTime() ? 'OPEN' : 'CLOSED',
-    latestSubmittedAt: null,
+    latestSubmittedAt: stats.latest,
   }
 }
 
@@ -37,7 +50,8 @@ export async function listTeamMilestones(req: Request, res: Response) {
   if (!team) return
   const rows = await prisma.milestone.findMany({ where: { teamId: team.id }, orderBy: [{ deadline: 'asc' }, { id: 'asc' }] })
   const now = new Date()
-  res.status(200).json({ items: rows.map((row) => toMilestoneDto(row, now)) })
+  const stats = await submissionStats(rows.map((row) => row.id))
+  res.status(200).json({ items: rows.map((row) => toMilestoneDto(row, now, stats.get(row.id))) })
 }
 
 export async function createTeamMilestone(req: Request, res: Response) {
@@ -60,5 +74,6 @@ milestonesRouter.get('/:milestoneId', async (req, res) => {
   const milestoneId = parseId(req.params.milestoneId)
   const row = milestoneId ? await loadMilestoneForUser(req.user!, milestoneId) : null
   if (!row) return sendError(res, 404, 'NOT_FOUND', 'Milestone not found.')
-  res.status(200).json({ milestone: toMilestoneDto(row, new Date()), team: row.team })
+  const stats = await submissionStats([row.id])
+  res.status(200).json({ milestone: toMilestoneDto(row, new Date(), stats.get(row.id)), team: row.team })
 })

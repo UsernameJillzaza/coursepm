@@ -1,6 +1,6 @@
 # F-05 Submission with deadline and revision rules — feature contract
 
-Version 1.0 · 2026-11-15 · Issue: #2 (contract); implementation: #7 · Links: FR-06, FR-07, FR-08, BR-06, BR-07, BR-08, NFR-05, D-05, D-06, D-08
+Version 1.1 · 2026-11-15 (data note updated in #7) · Issue: #2 (contract); implementation: #7 · Links: FR-06, FR-07, FR-08, BR-06, BR-07, BR-08, NFR-05, D-05, D-06, D-08
 
 ## Behavior and workflow
 1. A Student of the team opens `/milestones/:id` and fills in a title, description and link.
@@ -43,8 +43,8 @@ values. A 409 from the server shows the rule message, because the UI state may b
 submittedAt) with `UNIQUE(milestoneId, revision)` and the composite FK
 `(milestoneId, teamId) → Milestone(id, teamId)`. Migration `<timestamp>_submissions` creates the
 submission table and `UNIQUE(milestoneId, revision)`; a separate
-`<timestamp>_submission_team_matches_milestone` migration adds `Milestone UNIQUE(id, teamId)` and the
-composite FK.
+`<timestamp>_submission_team_matches_milestone` migration replaces the single-column milestone FK from the first
+migration with the composite FK (`Milestone UNIQUE(id, teamId)` already exists from the milestones migration). All submission FKs are RESTRICT: submissions are never deleted (BR-07).
 
 ## Acceptance criteria
 | ID | Given / When / Then |

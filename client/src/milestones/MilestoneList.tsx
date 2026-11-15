@@ -24,7 +24,7 @@ export default function MilestoneList({ teamId }: { teamId: number }) {
           {data.items.map((milestone) => (
             <li className="list-group-item" key={milestone.id}>
               <div className="d-flex justify-content-between gap-2">
-                <strong>{milestone.title}</strong>
+                <strong><Link to={`/milestones/${milestone.id}`}>{milestone.title}</Link></strong>
                 <span className={`badge ${milestone.status === 'OPEN' ? 'text-bg-success' : 'text-bg-secondary'}`}>
                   {milestone.status === 'OPEN' ? 'Open' : 'Closed'}
                 </span>

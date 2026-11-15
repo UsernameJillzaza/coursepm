@@ -5,6 +5,7 @@ import { authenticate } from './auth/middleware'
 import { authRouter } from './auth/routes'
 import { teamsRouter } from './teams/routes'
 import { milestonesRouter } from './milestones/routes'
+import { submissionsRouter } from './submissions/routes'
 
 // The app is exported without listen() so Supertest can import it; server.ts
 // owns listen().
@@ -16,6 +17,7 @@ app.use(express.json({ limit: '100kb' }))
 app.use(authenticate)
 app.use('/api/auth', authRouter)
 app.use('/api/teams', teamsRouter) // F-03
+app.use('/api/milestones/:milestoneId/submissions', submissionsRouter) // F-05
 app.use('/api/milestones', milestonesRouter) // F-04
 
 // GET /api/health — public liveness check (SDS §4).
