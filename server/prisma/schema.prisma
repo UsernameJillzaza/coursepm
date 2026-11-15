@@ -28,6 +28,7 @@ model User {
   memberships       TeamMember[]
   supervising       SupervisorAssignment[]
   milestonesCreated Milestone[]
+  submissions       Submission[]
 }
 
 // NFR-04: the id is SHA-256(cookie token); the token itself is never stored.
@@ -50,6 +51,7 @@ model Team {
   members     TeamMember[]
   supervisors SupervisorAssignment[]
   milestones  Milestone[]
+  submissions Submission[]
 
   @@unique([courseCode, name])
 }
@@ -87,7 +89,32 @@ model Milestone {
   createdById  Int
   createdBy    User     @relation(fields: [createdById], references: [id])
   createdAt    DateTime @default(now()) @db.Timestamptz(3)
+  submissions  Submission[]
 
   @@unique([id, teamId])
   @@index([teamId, deadline])
+}
+
+// F-05 submissions (SDS §2, BR-07, NFR-05). Rows are never updated or
+// deleted; UNIQUE(milestoneId, revision) stops two concurrent submissions
+// from both becoming the same revision. teamId is copied from the milestone so
+// scope checks are a single join.
+model Submission {
+  id            Int       @id @default(autoincrement())
+  milestoneId   Int
+  // Composite FK: the submission's team must be its milestone's team, so
+  // authorization can never use a different team (F-05 data contract).
+  milestone     Milestone @relation(fields: [milestoneId, teamId], references: [id, teamId])
+  teamId        Int
+  team          Team      @relation(fields: [teamId], references: [id])
+  revision      Int
+  title         String
+  description   String    @default("")
+  link          String
+  submittedById Int
+  submittedBy   User      @relation(fields: [submittedById], references: [id])
+  submittedAt   DateTime  @db.Timestamptz(3)
+
+  @@unique([milestoneId, revision])
+  @@index([teamId])
 }
