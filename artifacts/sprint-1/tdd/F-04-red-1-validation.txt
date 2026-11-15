@@ -1,0 +1,142 @@
+
+ RUN  v4.1.12 C:/Users/BTCOM/Desktop/coursepm/server
+
+Loaded Prisma config from prisma.config.ts.
+
+Prisma schema loaded from prisma\schema.prisma.
+Datasource "db": PostgreSQL database "coursepm_issue5_test", schema "public" at "127.0.0.1:55433"
+
+2 migrations found in prisma/migrations
+
+
+No pending migrations to apply.
+ ❯ tests/sprint-1/milestone-rules.unit.test.ts (12 tests | 9 failed) 12ms
+     × checks the trimmed title length for ab 6ms
+     × checks the trimmed title length for abc 1ms
+     × checks the trimmed title length for xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 0ms
+     × checks the trimmed title length for xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 0ms
+     × checks maxRevisions = 0 0ms
+     × checks maxRevisions = 6 0ms
+     × checks maxRevisions = 1.5 0ms
+     × rejects deadlines at or before now, invalid dates, and descriptions above 2,000 characters 1ms
+     × returns every failing field together 0ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 9 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/sprint-1/milestone-rules.unit.test.ts > TEST-04-04 (AC-04-4): milestone validation boundaries > checks the trimmed title length for ab
+ FAIL  tests/sprint-1/milestone-rules.unit.test.ts > TEST-04-04 (AC-04-4): milestone validation boundaries > checks the trimmed title length for xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+AssertionError: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ tests/sprint-1/milestone-rules.unit.test.ts:18:23
+     16|   ])('checks the trimmed title length for %s', (title, valid) => {
+     17|     const result = validateMilestone(input({ title: ` ${title} ` }), n…
+     18|     expect(result.ok).toBe(valid)
+       |                       ^
+     19|     if (valid && result.ok) expect(result.value.title).toBe(title)
+     20|     if (!valid && !result.ok) expect(result.fields).toHaveProperty('ti…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/9]⎯
+
+ FAIL  tests/sprint-1/milestone-rules.unit.test.ts > TEST-04-04 (AC-04-4): milestone validation boundaries > checks the trimmed title length for abc
+AssertionError: expected ' abc ' to be 'abc' // Object.is equality
+
+Expected: "abc"
+Received: " abc "
+
+ ❯ tests/sprint-1/milestone-rules.unit.test.ts:19:56
+     17|     const result = validateMilestone(input({ title: ` ${title} ` }), n…
+     18|     expect(result.ok).toBe(valid)
+     19|     if (valid && result.ok) expect(result.value.title).toBe(title)
+       |                                                        ^
+     20|     if (!valid && !result.ok) expect(result.fields).toHaveProperty('ti…
+     21|   })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/9]⎯
+
+ FAIL  tests/sprint-1/milestone-rules.unit.test.ts > TEST-04-04 (AC-04-4): milestone validation boundaries > checks the trimmed title length for xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+AssertionError: expected ' xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx…' to be 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx…' // Object.is equality
+
+Expected: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+Received: " xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx "
+
+ ❯ tests/sprint-1/milestone-rules.unit.test.ts:19:56
+     17|     const result = validateMilestone(input({ title: ` ${title} ` }), n…
+     18|     expect(result.ok).toBe(valid)
+     19|     if (valid && result.ok) expect(result.value.title).toBe(title)
+       |                                                        ^
+     20|     if (!valid && !result.ok) expect(result.fields).toHaveProperty('ti…
+     21|   })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/9]⎯
+
+ FAIL  tests/sprint-1/milestone-rules.unit.test.ts > TEST-04-04 (AC-04-4): milestone validation boundaries > checks maxRevisions = 0
+ FAIL  tests/sprint-1/milestone-rules.unit.test.ts > TEST-04-04 (AC-04-4): milestone validation boundaries > checks maxRevisions = 6
+ FAIL  tests/sprint-1/milestone-rules.unit.test.ts > TEST-04-04 (AC-04-4): milestone validation boundaries > checks maxRevisions = 1.5
+AssertionError: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ tests/sprint-1/milestone-rules.unit.test.ts:31:23
+     29|   ])('checks maxRevisions = %s', (maxRevisions, valid) => {
+     30|     const result = validateMilestone(input({ maxRevisions }), now)
+     31|     expect(result.ok).toBe(valid)
+       |                       ^
+     32|     if (valid && result.ok) expect(result.value.maxRevisions).toBe(max…
+     33|     if (!valid && !result.ok) expect(result.fields).toHaveProperty('ma…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/9]⎯
+
+ FAIL  tests/sprint-1/milestone-rules.unit.test.ts > TEST-04-04 (AC-04-4): milestone validation boundaries > rejects deadlines at or before now, invalid dates, and descriptions above 2,000 characters
+AssertionError: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ tests/sprint-1/milestone-rules.unit.test.ts:46:25
+     44|     for (const deadline of [now.toISOString(), '2026-11-15T07:59:59.99…
+     45|       const result = validateMilestone(input({ deadline }), now)
+     46|       expect(result.ok).toBe(false)
+       |                         ^
+     47|       if (!result.ok) expect(result.fields).toHaveProperty('deadline')
+     48|     }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/9]⎯
+
+ FAIL  tests/sprint-1/milestone-rules.unit.test.ts > TEST-04-04 (AC-04-4): milestone validation boundaries > returns every failing field together
+AssertionError: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ tests/sprint-1/milestone-rules.unit.test.ts:56:23
+     54|   it('returns every failing field together', () => {
+     55|     const result = validateMilestone(input({ title: 'ab', deadline: 'i…
+     56|     expect(result.ok).toBe(false)
+       |                       ^
+     57|     if (!result.ok) expect(Object.keys(result.fields).sort()).toEqual(…
+     58|   })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/9]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  9 failed | 3 passed (12)
+   Start at  15:24:07
+   Duration  2.55s (transform 12ms, setup 0ms, import 25ms, tests 12ms, environment 0ms)
+
