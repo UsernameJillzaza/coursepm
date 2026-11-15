@@ -12,7 +12,7 @@ The **Result** column is filled from the release-candidate run on `a0ddf35` (Par
 | BR-01 | F-01 | 1 | AC-01-6 | TEST-01-08 | Pass (1/1 tests) |
 | NFR-01 | F-01, F-02, R-01 | 1 | AC-R01-1, AC-02-1, AC-02-7, AC-01-9 | TEST-R01-01, TEST-02-01, TEST-UI-03, TEST-01-11 | Pass (4/4 tests) |
 | NFR-03 | F-01 | 1 | AC-01-5 | TEST-01-06, TEST-01-07, TEST-01-12 | Pass (3/3 tests) |
-| NFR-04 | F-01 | 1 | AC-01-4, AC-01-7, AC-01-8, AC-01-11 | TEST-01-05, TEST-01-09, TEST-01-10, TEST-01-13 | Pass (4/4 tests) |
+| NFR-04 | F-01 | 1 | AC-01-4, AC-01-7, AC-01-8, AC-01-11 | TEST-01-05, TEST-01-09, TEST-01-10, TEST-01-13, MAN-02 cookie-flag check | Pass (4/4 tests) |
 | BR-02 | F-02, F-03 | 1 | AC-02-2, AC-02-9, AC-03-2, AC-03-5 | TEST-02-02, TEST-02-09, TEST-03-02, E2E-03 | Pass (4/4 tests) |
 | BR-03 | F-02, F-03 | 1 | AC-02-3, AC-03-3 | TEST-02-03, TEST-03-03 | Pass (2/2 tests) |
 | NFR-02 | F-02 | 1 | AC-02-2 … AC-02-5, AC-02-9 | TEST-02-02 … TEST-02-05, TEST-02-09 | Pass (5/5 tests) |
