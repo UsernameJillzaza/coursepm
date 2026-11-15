@@ -29,7 +29,11 @@ Node.js 24, PostgreSQL 18 running locally, Microsoft Edge (used by the Playwrigh
    npm --prefix client run dev
    ```
 
-Database migrations and the demo seed arrive with F-01 (Issue #4) and F-03 (Issue #5).
+After pulling F-01 (Issue #4), apply the migrations to your development database:
+```bash
+npx --prefix server prisma migrate deploy
+```
+Login, logout and the session cookie work from F-01. The demo accounts and teams are loaded by the seed, which arrives with F-03 (Issue #5); until then the API tests create their own accounts.
 
 ## Tests
 | Command | What it runs |
