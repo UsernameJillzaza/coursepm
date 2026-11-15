@@ -1,18 +1,18 @@
 import request from 'supertest'
 import app from '../../src/app'
 
-// Issue #3 scaffold check: the API answers, and unknown routes use the
-// standard error shape (SDS §4).
+// R-01 scaffold checks (contract R-01-R-02-scaffold.md).
 describe('GET /api/health', () => {
-  it('returns 200 { status: "ok" } without a session', async () => {
+  it('TEST-R01-01 (AC-R01-1): returns 200 { status: "ok", service: "CoursePM API" } without a session', async () => {
     const res = await request(app).get('/api/health')
     expect(res.status).toBe(200)
     expect(res.body).toEqual({ status: 'ok', service: 'CoursePM API' })
   })
 
-  it('answers an unknown /api route with 404 in the standard error shape', async () => {
+  it('TEST-R01-03 / TEST-02-07 (AC-R01-3, AC-02-8): an unknown /api route → 404 NOT_FOUND "Not found." with no internal details', async () => {
     const res = await request(app).get('/api/does-not-exist')
     expect(res.status).toBe(404)
     expect(res.body).toEqual({ error: { code: 'NOT_FOUND', message: 'Not found.' } })
+    expect(res.text).not.toMatch(/stack|prisma|SELECT|at \w/i)
   })
 })
