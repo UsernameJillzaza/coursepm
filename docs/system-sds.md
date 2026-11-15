@@ -11,7 +11,7 @@ labs (spec §5.1 encourages this; we already know how to test it).
 | --- | --- | --- |
 | UI | React 19 + Vite + TypeScript, React Router, Bootstrap 5 | Screens, client-side form hints, calling the API with the session cookie. **No business rule is trusted here.** |
 | API / application | Node.js 24, Express 5, TypeScript | Authentication, authorization (role + record scope), validation, business rules BR-04 … BR-10, error mapping. |
-| Data | PostgreSQL 16 through Prisma ORM 7 (migrations + seed) | Persistent storage; uniqueness and foreign-key constraints back up the rules (for example NFR-05). |
+| Data | PostgreSQL 18 through Prisma ORM 7 (migrations + seed) | Persistent storage; uniqueness and foreign-key constraints back up the rules (for example NFR-05). |
 | Tests | Vitest (unit, API with Supertest against a real test database), React Testing Library, Playwright (E2E) | Verification at each level. |
 
 ```mermaid
@@ -19,15 +19,30 @@ flowchart LR
   B[Browser<br/>React SPA] -- "HTTPS JSON + HttpOnly cookie" --> A[Express API<br/>/api/*]
   A -- "Prisma Client" --> D[(PostgreSQL)]
   subgraph API
-    M1[authenticate] --> M2[requireRole] --> M3[scope loaders<br/>loadTeamForUser] --> S[route handler<br/>+ rule functions]
+    M1[authenticate] --> M2[requireAuth] --> M3[scope loader<br/>record in caller's scope?] -- "no → 404" --> X[ ]
+    M3 -- yes --> M4[role check<br/>for the operation] -- "wrong role → 403" --> Y[ ]
+    M4 -- ok --> S[validation → rule functions<br/>→ transaction]
   end
 ```
 
-**Where rules are enforced.** Every request passes `authenticate` (reads the session), then
-`requireRole` for role-only operations, then a **scope loader** that fetches the team, milestone or
-submission *together with* the current user's membership or assignment. Rule checks (deadline, revision
-limit, field validation) are small pure functions in `server/src/rules/`, so they are unit-testable.
-The handler writes inside a Prisma transaction.
+**Where rules are enforced.** Every request passes `authenticate` (reads the session) and
+`requireAuth` (401 without one). For a route that targets a record (a team, milestone or submission),
+the **scope loader runs first**: it fetches the record *together with* the caller's membership or
+assignment and answers 404 when the record is missing **or** outside the caller's scope. Only then is
+the **role checked for the operation** (403), so an outsider never learns that a record exists (D-03).
+Routes without a target record (for example `GET /api/teams`, which is filtered by scope) need no
+separate role check. Validation (400) and the rule checks (deadline, revision limit; 409) are small pure
+functions in `server/src/rules/`, so they are unit-testable. The handler writes inside a Prisma
+transaction.
+
+**Concurrent submissions (NFR-05).** Two requests can read the same number of revisions and both try
+revision *n + 1*. The insert runs in a transaction that re-reads the milestone and the current revision
+count and re-applies **both** rules (deadline and revision limit) with the server clock. `UNIQUE
+(milestoneId, revision)` makes the losing insert fail; the server then **retries the whole transaction
+(up to 3 attempts)**, so the loser gets the next free revision if capacity remains, or `409
+REVISION_LIMIT_REACHED` / `409 DEADLINE_PASSED` if the fresh state no longer allows it. If all
+attempts collide, the client receives `409 CONFLICT` ("try again"). Covered by TEST-05-08 (two at once
+with capacity → revisions 1 and 2) and a limit-1 variant (two at once → one 201, one 409).
 
 **Communication.** The client and API share one origin in development through the Vite proxy (`/api`
 → `localhost:3000`), so the cookie stays first-party. In production, Express serves the built client
@@ -51,17 +66,18 @@ erDiagram
 
 | Entity | Key fields | Constraints / ownership |
 | --- | --- | --- |
-| `User` | id, email, name, role (`STUDENT`\|`SUPERVISOR`), passwordHash, isActive, createdAt | email unique, lowercase. One role per user (BR-01). |
+| `User` | id, email, name, role (`STUDENT`\|`SUPERVISOR`; `ADMIN` added in Sprint 2), passwordHash, isActive, createdAt | email unique, lowercase. One role per user (BR-01). |
 | `Session` | id (SHA-256 of token), userId, expiresAt, createdAt | FK → User, cascade delete. |
 | `Team` | id, name, courseCode, createdAt | (courseCode, name) unique. |
 | `TeamMember` | teamId, userId | PK (teamId, userId); seed allows only `STUDENT` users. |
 | `SupervisorAssignment` | teamId, userId | PK (teamId, userId); seed allows only `SUPERVISOR` users. |
-| `Milestone` | id, teamId, title, description, deadline (UTC), maxRevisions (1–5), createdById, createdAt | FK → Team and the creator. A CHECK constraint keeps maxRevisions within 1–5. |
-| `Submission` | id, milestoneId, teamId, revision, title, description, link, submittedById, submittedAt | **UNIQUE (milestoneId, revision)** for NFR-05; teamId is copied from the milestone so scope checks are a single join. Never updated or deleted (BR-07). |
+| `Milestone` | id, teamId, title, description, deadline (UTC), maxRevisions (1–5), createdById, createdAt | FK → Team and the creator. A CHECK constraint keeps maxRevisions within 1–5. **UNIQUE (id, teamId)** so submissions can reference the pair. |
+| `Submission` | id, milestoneId, teamId, revision, title, description, link, submittedById, submittedAt | **UNIQUE (milestoneId, revision)** for NFR-05. teamId is copied from the milestone so scope checks are a single join, and a **composite FK (milestoneId, teamId) → Milestone (id, teamId)** makes the database reject a submission whose teamId differs from its milestone's team, so authorization can never use the wrong team. Never updated or deleted (BR-07). |
 | `Feedback` | id, submissionId (unique), supervisorId, body, createdAt | **UNIQUE (submissionId)** for BR-10; FK → Submission keeps the feedback/revision link. |
 
 **Setup.** `npx prisma migrate dev` builds the schema from versioned migrations.
-`npx prisma db seed` runs `prisma/seed.ts`, which is idempotent (upsert by e-mail and team name) and
+`npx prisma db seed` runs `prisma/seed.ts`, which is idempotent (users upserted by e-mail, teams by
+their unique key **(courseCode, name)**, memberships and assignments by their composite primary keys) and
 creates: 2 supervisors, 6 students, and 3 teams (Team Alpha supervised by Supervisor 1; Team Beta and
 Team Gamma supervised by Supervisor 2). Demo passwords come from `SEED_PASSWORD` in `.env` and are
 never written in the repository.
@@ -96,6 +112,7 @@ field, and keeps the typed values on error. Every list has a loading spinner, an
 | 403 | `FORBIDDEN` | The record is in scope but the role may not perform the operation (a student creating a milestone or recording feedback). |
 | 404 | `NOT_FOUND` | The record does not exist **or** is outside the user's scope (D-03). |
 | 409 | `DEADLINE_PASSED`, `REVISION_LIMIT_REACHED`, `FEEDBACK_EXISTS` | A business rule rejects the state change (BR-06, BR-07, BR-10). |
+| 409 | `CONFLICT` | A concurrent submission kept winning the same revision number through every retry (§1, NFR-05); the client may simply try again. |
 | 500 | `INTERNAL_ERROR` | Unexpected; generic message, details only in the server log. |
 
 Validation happens on the server for every input; client checks are only hints. Unknown body fields
@@ -115,20 +132,31 @@ are ignored. IDs in paths are positive integers; anything else returns 404.
 ## 5. Roles, permissions and authentication
 
 **Role / permission matrix.** "Own team" = a team the student belongs to; "assigned team" = a team the
-supervisor is assigned to. ✗ outside scope → 404; ✗ wrong role on an accessible record → 403.
+supervisor is assigned to. ✗ outside scope → 404; ✗ wrong role on an accessible record → 403. The
+**Administrator** column is the planned Sprint 2 design (F-09, FR-14); it is not implemented in Sprint 1,
+where teams and accounts come from the seed (D-04).
 
-| Operation | Student | Supervisor | Unauthenticated |
-| --- | --- | --- | --- |
-| Log in | ✓ | ✓ | ✓ |
-| View own identity, log out | ✓ | ✓ | 401 |
-| List teams | own teams only | assigned teams only | 401 |
-| View team + members | own team | assigned team | 401 |
-| List / view milestones | own team | assigned team | 401 |
-| Create milestone | 403 | assigned team only | 401 |
-| Submit / resubmit | own team, before the deadline, within the limit | 403 | 401 |
-| View submissions | own team | assigned team | 401 |
-| Record feedback | 403 | assigned team only, one per revision | 401 |
-| View feedback | own team | assigned team | 401 |
+| Operation | Student | Supervisor | Administrator (Sprint 2) | Unauthenticated |
+| --- | --- | --- | --- | --- |
+| Log in | ✓ | ✓ | ✓ | ✓ |
+| View own identity, log out | ✓ | ✓ | ✓ | 401 |
+| List teams | own teams only | assigned teams only | all teams | 401 |
+| View team + members | own team | assigned team | any team | 401 |
+| List / view milestones | own team | assigned team | any team (read-only) | 401 |
+| Create milestone | 403 | assigned team only | 403 (supervisors own milestones) | 401 |
+| Submit / resubmit | own team, before the deadline, within the limit | 403 | 403 | 401 |
+| View submissions | own team | assigned team | any team (read-only) | 401 |
+| Record feedback | 403 | assigned team only, one per revision | 403 | 401 |
+| View feedback | own team | assigned team | any team (read-only) | 401 |
+| Create teams, assign students/supervisors | 403 | 403 | ✓ | 401 |
+| Deactivate / reactivate an account | 403 | 403 | ✓ (not their own account) | 401 |
+
+**Account deactivation (`isActive`).** Sprint 1 already enforces it: an inactive account cannot log in
+(the same 401 `INVALID_CREDENTIALS` as a wrong password, so it reveals nothing), and every request
+re-reads the session's user, so an existing session of a deactivated user is **rejected on the next
+authenticated request** (401). From Sprint 2, the deactivation action (F-09) also **deletes all of that
+user's sessions immediately**, so the account is signed out everywhere at once rather than at its next
+request.
 
 **Credentials and sessions.**
 - Passwords are hashed with **scrypt** (`node:crypto`, N=16384, r=8, p=1, 16-byte random salt, 64-byte
