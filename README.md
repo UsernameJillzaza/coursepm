@@ -2,4 +2,34 @@
 
 CPE334 group project (theme 6), team TH-042_P6. Student teams submit milestone work; supervisors set milestones and give feedback on each submitted revision.
 
-Engineering documents arrive in Issue #1 (product baseline) and Issue #2 (Sprint 1 contracts); the application in Issues #3–#8.
+## Documents
+- [SRS](docs/srs.md) · [Feature inventory](docs/features.md) · [Traceability](docs/traceability.md)
+- [System-Level SDS](docs/system-sds.md) · [Three-sprint plan](docs/sprints/plan.md)
+- Sprint 1: [feature contracts, STS, Definition of Done, Issue plan](docs/sprints/sprint-1/)
+
+## Requirements
+Node.js 24, PostgreSQL 18 running locally, Microsoft Edge (used by the Playwright tests).
+
+## Setup
+1. Install dependencies (the server's `postinstall` generates the Prisma client):
+   ```bash
+   npm install
+   npm --prefix server install
+   npm --prefix client install
+   ```
+2. Copy `server/.env.example` to `server/.env` and fill in your PostgreSQL user and password. `DATABASE_URL_TEST` **must name a different database** from `DATABASE_URL`: the tests refuse to start otherwise, so they can never migrate or write your development data. `.env` is git-ignored; never commit it.
+3. Run the app in two terminals, then open http://localhost:5173 (the page shows `API status: connected` when the API is up):
+   ```bash
+   npm --prefix server run dev
+   npm --prefix client run dev
+   ```
+
+Database migrations and the demo seed arrive with F-01 (Issue #4) and F-03 (Issue #5).
+
+## Tests
+| Command | What it runs |
+| --- | --- |
+| `npm run test:server` | Vitest + Supertest against `DATABASE_URL_TEST` (checked to be a separate database, then migrated) |
+| `npm run test:client` | Vitest + React Testing Library component tests |
+| `npm --prefix client run build` | Type-check and production build of the client |
+| `npm run test:e2e` | Playwright journeys in Edge (journeys arrive with the features) |

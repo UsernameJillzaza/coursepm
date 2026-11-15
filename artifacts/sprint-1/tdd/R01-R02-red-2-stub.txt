@@ -1,0 +1,199 @@
+# #3 TDD red run 2 — the same tests against a STUB guard (no checks) and the presence-only setup
+# 2026-11-15T13:54:06+07:00  commit 1e0099b + uncommitted tests/stub
+## npm --prefix server test
+
+> coursepm-server@0.1.0 test
+> vitest run
+
+
+ RUN  v4.1.12 D:/Claude Projects/coursepm-build/server
+
+Loaded Prisma config from prisma.config.ts.
+
+Prisma schema loaded from prisma\schema.prisma.
+Datasource "db": PostgreSQL database "coursepm_test", schema "public" at "localhost:5432"
+
+No migration found in prisma/migrations
+
+
+No pending migrations to apply.
+ ❯ tests/sprint-1/test-database.test.ts (10 tests | 8 failed) 10ms
+     × refuses a missing or empty DATABASE_URL_TEST 4ms
+     × refuses the identical URL as the test database 1ms
+     × refuses the same database with different query parameters as the test database 0ms
+     × refuses the same database through 127.0.0.1 as the test database 0ms
+     × refuses the same database with the default port omitted as the test database 0ms
+     × refuses a test URL that is not a PostgreSQL URL 0ms
+     × fails before running any migration when the test URL is missing or points to the dev database 1ms
+     × SELECT current_database() returns the DATABASE_URL_TEST database, not the development one 0ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 8 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/sprint-1/test-database.test.ts > TEST-R01-02 assertSeparateTestDatabase > refuses a missing or empty DATABASE_URL_TEST
+AssertionError: expected [Function] to throw error matching /DATABASE_URL_TEST is not set/ but got 'Invalid URL'
+
+- Expected:
+/DATABASE_URL_TEST is not set/
+
++ Received:
+"Invalid URL"
+
+ ❯ tests/sprint-1/test-database.test.ts:20:62
+     18|
+     19|   it('refuses a missing or empty DATABASE_URL_TEST', () => {
+     20|     expect(() => assertSeparateTestDatabase(DEV, undefined)).toThrow(/…
+       |                                                              ^
+     21|     expect(() => assertSeparateTestDatabase(DEV, '  ')).toThrow(/DATAB…
+     22|   })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/8]⎯
+
+ FAIL  tests/sprint-1/test-database.test.ts > TEST-R01-02 assertSeparateTestDatabase > refuses the identical URL as the test database
+ FAIL  tests/sprint-1/test-database.test.ts > TEST-R01-02 assertSeparateTestDatabase > refuses the same database with different query parameters as the test database
+ FAIL  tests/sprint-1/test-database.test.ts > TEST-R01-02 assertSeparateTestDatabase > refuses the same database through 127.0.0.1 as the test database
+ FAIL  tests/sprint-1/test-database.test.ts > TEST-R01-02 assertSeparateTestDatabase > refuses the same database with the default port omitted as the test database
+AssertionError: expected [Function] to throw an error
+
+- Expected:
+null
+
++ Received:
+undefined
+
+ ❯ tests/sprint-1/test-database.test.ts:30:56
+     28|     ['the same database with the default port omitted', 'postgresql://…
+     29|   ])('refuses %s as the test database', (_label, url) => {
+     30|     expect(() => assertSeparateTestDatabase(DEV, url)).toThrow(/same d…
+       |                                                        ^
+     31|   })
+     32|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/8]⎯
+
+ FAIL  tests/sprint-1/test-database.test.ts > TEST-R01-02 assertSeparateTestDatabase > refuses a test URL that is not a PostgreSQL URL
+AssertionError: expected [Function] to throw error matching /not a valid PostgreSQL URL/ but got 'Invalid URL'
+
+- Expected:
+/not a valid PostgreSQL URL/
+
++ Received:
+"Invalid URL"
+
+ ❯ tests/sprint-1/test-database.test.ts:34:64
+     32|
+     33|   it('refuses a test URL that is not a PostgreSQL URL', () => {
+     34|     expect(() => assertSeparateTestDatabase(DEV, 'not a url')).toThrow…
+       |                                                                ^
+     35|   })
+     36| })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/8]⎯
+
+ FAIL  tests/sprint-1/test-database.test.ts > TEST-R01-02 global setup > fails before running any migration when the test URL is missing or points to the dev database
+AssertionError: expected [Function] to throw an error
+ ❯ tests/sprint-1/test-database.test.ts:42:47
+     40|     for (const env of [{ DATABASE_URL: DEV }, { DATABASE_URL: DEV, DAT…
+     41|       const exec = vi.fn()
+     42|       expect(() => runGlobalSetup(env, exec)).toThrow()
+       |                                               ^
+     43|       expect(exec).not.toHaveBeenCalled()
+     44|     }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/8]⎯
+
+ FAIL  tests/sprint-1/test-database.test.ts > TEST-R01-02 the test connection really selects the test database > SELECT current_database() returns the DATABASE_URL_TEST database, not the development one
+AssertionError: expected undefined to be truthy
+
+- Expected:
+true
+
++ Received:
+undefined
+
+ ❯ tests/sprint-1/test-database.test.ts:59:42
+     57|     // vitest.config keeps the original development URL as DATABASE_UR…
+     58|     // because it points DATABASE_URL at the test database for the app…
+     59|     expect(process.env.DATABASE_URL_DEV).toBeTruthy()
+       |                                          ^
+     60|     const expected = new URL(process.env.DATABASE_URL_TEST!).pathname.…
+     61|     const dev = new URL(process.env.DATABASE_URL_DEV!).pathname.slice(…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/8]⎯
+
+
+ Test Files  1 failed | 1 passed (2)
+      Tests  8 failed | 4 passed (12)
+   Start at  13:54:07
+   Duration  3.02s (transform 95ms, setup 0ms, import 340ms, tests 39ms, environment 0ms)
+
+## npm --prefix client test
+
+> coursepm-client@0.1.0 test
+> vitest run
+
+
+ RUN  v4.1.12 D:/Claude Projects/coursepm-build/client
+
+ ❯ tests/sprint-1/app-health.test.tsx (5 tests | 1 failed) 1084ms
+     × shows "API status: unreachable" for an unhealthy 200 response 1012ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/sprint-1/app-health.test.tsx > TEST-R02-01 starter app API status > shows "API status: unreachable" for an unhealthy 200 response
+TestingLibraryElementError: Unable to find an element with the text: API status: unreachable. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <main
+      class="container py-5"
+    >
+      <h1
+        class="h3"
+      >
+        CoursePM
+      </h1>
+      <p>
+        API status: 
+        connected
+      </p>
+    </main>
+  </div>
+</body>
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <main
+      class="container py-5"
+    >
+      <h1
+        class="h3"
+      >
+        CoursePM
+      </h1>
+      <p>
+        API status: 
+        connected
+      </p>
+    </main>
+  </div>
+</body>
+ ❯ waitForWrapper ../../coursepm/client/node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ ../../coursepm/client/node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ tests/sprint-1/app-health.test.tsx:42:25
+     40|     vi.stubGlobal('fetch', vi.fn(async () => new Response(JSON.stringi…
+     41|     renderApp()
+     42|     expect(await screen.findByText('API status: unreachable')).toBeInT…
+       |                         ^
+     43|   })
+     44|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 4 passed (5)
+   Start at  13:54:11
+   Duration  2.62s (transform 42ms, setup 249ms, import 52ms, tests 1.08s, environment 1.07s)
+
