@@ -24,20 +24,19 @@ Node.js 24, PostgreSQL 18 running locally, Microsoft Edge (used by the Playwrigh
    CREATE DATABASE coursepm_test;
    ```
 3. Copy `server/.env.example` to `server/.env` and fill in your PostgreSQL user and password. `DATABASE_URL_TEST` **must name a different database** from `DATABASE_URL`: the tests refuse to start otherwise, so they can never migrate or write your development data. `.env` is git-ignored; never commit it.
-4. Run the app in two terminals, then open http://localhost:5173 (the page shows `API status: connected` when the API is up):
+4. Apply the migrations to your development database:
+   ```bash
+   npm --prefix server run db:deploy
+   ```
+5. Load the synthetic demo data (8 accounts, 3 teams). Every demo account uses the `SEED_PASSWORD` from your `server/.env`, and the seed is safe to run again:
+   ```bash
+   npm --prefix server run db:seed
+   ```
+6. Run the app in two terminals, then open http://localhost:5173 (the page shows `API status: connected` when the API is up) and log in with a demo account below:
    ```bash
    npm --prefix server run dev
    npm --prefix client run dev
    ```
-
-Apply the migrations to your development database:
-```bash
-npm --prefix server run db:deploy
-```
-Then load the synthetic demo data (8 accounts, 3 teams). Every demo account uses the `SEED_PASSWORD` from your `server/.env`, and the seed is safe to run again:
-```bash
-npm --prefix server run db:seed
-```
 
 ## Demo accounts (synthetic)
 | E-mail | Role | Team |
