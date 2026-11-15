@@ -18,7 +18,7 @@ The scaffold PR follows the Part E contract PR and precedes F-01 implementation.
   as `DATABASE_URL`. In this scaffold PR, connect with the test URL and verify the selected database
   using `SELECT current_database()`; domain writes begin after F-01 adds the first migration. The
   development database must not be reset or written by test setup.
-- **UI:** the starter app requests `/api/health` and displays `API status: checking…` while the
+- **UI:** the starter app (from F-01 on: the API status indicator in the login page footer) requests `/api/health` and displays `API status: checking…` while the
   request is pending, `API status: connected` on success, and `API status: unreachable` on request
   failure or an unhealthy response. The client build must succeed.
 - **Data:** the health endpoint and API status require no domain tables or migration. Prisma schema,

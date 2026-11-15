@@ -9,3 +9,31 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+// F-01 / BR-01: exactly one role per account. ADMIN arrives in Sprint 2 (F-09).
+enum Role {
+  STUDENT
+  SUPERVISOR
+}
+
+model User {
+  id           Int       @id @default(autoincrement())
+  email        String    @unique // stored trimmed + lowercase
+  name         String
+  role         Role
+  passwordHash String // scrypt$N$r$p$salt$key (NFR-03)
+  isActive     Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+  sessions     Session[]
+}
+
+// NFR-04: the id is SHA-256(cookie token); the token itself is never stored.
+model Session {
+  id        String   @id
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}

@@ -88,4 +88,8 @@ confirm the data is still there (NFR-06); MAN-02 inspect the cookie flags in Dev
 **Additional automated cases.** Existing tests may strengthen an AC without receiving a separate STS ID.
 Retain and report these cases with their actual test file/name in Part F: e-mail normalization (AC-01-1),
 inactive login (AC-01-8), the `maxRevisions` CHECK constraint (AC-04-4), and the composite-FK integrity
-check for submission/team ownership (AC-05-1). These supplement the planned STS rows above.
+check for submission/team ownership (AC-05-1), a malformed session cookie treated as no session (AC-02-1),
+`/api/auth/me` without a cookie (AC-01-3), and the login UI cases in `auth-ui.test.tsx`: a visitor without a
+session is sent to `/login` (AC-01-1), a successful login opens `/teams` with name and role (AC-01-1), wrong
+credentials show the server message (AC-01-2) and Log out returns to the login page (AC-01-4). These
+supplement the planned STS rows above.

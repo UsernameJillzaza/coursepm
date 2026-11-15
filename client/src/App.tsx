@@ -1,20 +1,27 @@
-import { useEffect, useState } from 'react'
-import { api } from './api'
+import { Navigate, Route, Routes } from 'react-router-dom'
+import { AuthProvider } from './auth/AuthContext'
+import LoginPage from './auth/LoginPage'
+import RequireAuth from './auth/RequireAuth'
+import TopBar from './components/TopBar'
+import TeamsPage from './teams/TeamsPage'
 
-// Issue #3 scaffold: proves UI → API wiring. Replaced by the routed app in F-01.
+// SDS §3 route map. Later features add /teams/:teamId and /milestones/:id.
 export default function App() {
-  const [status, setStatus] = useState<'loading' | 'ok' | 'error'>('loading')
-  useEffect(() => {
-    // AC-R02-1: only a 200 whose body says status "ok" counts as connected;
-    // an unhealthy body, an error status or a network failure is unreachable.
-    api<{ status?: string }>('/health')
-      .then((body) => setStatus(body?.status === 'ok' ? 'ok' : 'error'))
-      .catch(() => setStatus('error'))
-  }, [])
   return (
-    <main className="container py-5">
-      <h1 className="h3">CoursePM</h1>
-      <p>API status: {status === 'loading' ? 'checking…' : status === 'ok' ? 'connected' : 'unreachable'}</p>
-    </main>
+    <AuthProvider>
+      <TopBar />
+      <Routes>
+        <Route path="/login" element={<LoginPage />} />
+        <Route
+          path="/teams"
+          element={
+            <RequireAuth>
+              <TeamsPage />
+            </RequireAuth>
+          }
+        />
+        <Route path="*" element={<Navigate to="/teams" replace />} />
+      </Routes>
+    </AuthProvider>
   )
 }
