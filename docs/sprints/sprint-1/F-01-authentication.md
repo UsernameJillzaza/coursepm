@@ -12,7 +12,7 @@ Version 1.0 · 2026-11-15 · Issue: #2 (contract); implementation: #4 · Links: 
 5. `POST /api/auth/logout` deletes the session row and clears the cookie (idempotent: 204 even without a session).
 
 **Rules and failure cases.** A wrong password, an unknown e-mail and an inactive account all return
-the same 401 `INVALID_CREDENTIALS` message, "E-mail or password is incorrect". Missing fields return
+the same 401 `INVALID_CREDENTIALS` message, "E-mail or password is incorrect." Missing fields return
 400 `VALIDATION_ERROR`. A session belonging to an account that becomes inactive returns 401 on its next
 authenticated request. The role always comes from the database. Any `role` field in the request is ignored.
 
