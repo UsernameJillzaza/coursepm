@@ -29,7 +29,7 @@ The milestone list on `/teams/:teamId` uses badges `Open` / `Closed` and "2 / 3 
 
 ## Data
 `Milestone` (teamId FK, title, description, deadline timestamptz, maxRevisions int with CHECK 1–5,
-createdById FK, createdAt). Migration `003_milestones`.
+createdById FK, createdAt). Migration `<timestamp>_milestones`.
 
 ## Acceptance criteria
 | ID | Given / When / Then |
@@ -40,3 +40,4 @@ createdById FK, createdAt). Migration `003_milestones`.
 | AC-04-4 | A title of 2 or 121 characters, a past deadline, or maxRevisions 0 or 6 → 400 with each failing field named. A title of 3 or 120 characters and maxRevisions 1 or 5 are accepted. |
 | AC-04-5 | The list is ordered by deadline and shows `revisionsUsed` and `status`. |
 | AC-04-6 | In the UI form, a 400 response shows the message under the matching field and keeps the typed values. |
+| AC-04-7 | A Student viewing their own team does not see the **New milestone** control. The API restriction remains covered by AC-04-2. |

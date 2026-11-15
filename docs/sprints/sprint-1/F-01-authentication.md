@@ -31,11 +31,11 @@ On success go to `/teams`. The top bar shows name + role and **Log out** (→ `/
 
 ## Data
 `User` (email unique, role enum `STUDENT`\|`SUPERVISOR`, passwordHash, isActive) and `Session`
-(id = token hash, userId FK cascade, expiresAt). Migration `001_users_sessions`. This issue also
-introduces the account portion of the repeatable `prisma/seed.ts`: active Student A1 and Supervisor 1
-with passwords hashed from `SEED_PASSWORD`. Its API tests create isolated users in `DATABASE_URL_TEST`
-or run this account seed. F-03 extends the same seed with the other accounts, teams, memberships and
-supervisor assignments; F-01 does not depend on F-03 to make login testable.
+(id = token hash, userId FK cascade, expiresAt). Migration `<timestamp>_users_sessions`.
+The single idempotent demo seed is `src/seed/demo.ts`, which creates accounts, teams, memberships and
+supervisor assignments together once F-03 adds the team tables. F-01 API tests use its account
+creation helper to set up isolated users in `DATABASE_URL_TEST` (including Student A1 and Supervisor 1
+with passwords hashed from `SEED_PASSWORD`); no separate partial demo seed is needed.
 
 ## Acceptance criteria
 | ID | Given / When / Then |

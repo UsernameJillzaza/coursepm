@@ -23,7 +23,8 @@ text. Students see "No feedback yet".
 | `POST /api/submissions/:submissionId/feedback` | `{ body }` | 201 `{ feedback: { id, submissionId, body, createdAt, supervisor:{id,name} } }` | 400, 401, 403, 404, 409 |
 
 ## Data
-`Feedback` (submissionId FK **unique**, supervisorId FK, body text, createdAt). Migration `005_feedback`.
+`Feedback` (submissionId FK **unique**, supervisorId FK, body text, createdAt). Migration
+`<timestamp>_feedback`.
 
 ## Acceptance criteria
 | ID | Given / When / Then |

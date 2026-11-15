@@ -16,9 +16,8 @@ Version 1.0 · 2026-11-15 · Issue: #2 (contract); implementation: #5 · Links: 
 - Error handler: a known `AppError` maps to its status/code; anything else returns 500 `INTERNAL_ERROR`
   with a generic message (the stack goes only to the server log).
 
-The forced-error integration check uses a throw handler registered only by the test app factory when
-`NODE_ENV=test`; it is absent from the production route table. The check authenticates first so the
-handler cannot accidentally bypass `requireAuth`.
+The forced-error integration check creates a small probe app in the test file that reuses the exported
+`errorHandler`. No test-only route or handler is registered in the application.
 
 **UI (cross-cutting).** A protected request returning 401 redirects to `/login`. Team, milestone and
 submission lists show loading, empty and error states; an error offers **Retry** (R-02). No data model
@@ -32,8 +31,8 @@ change is required for this feature. The error shape and status codes apply to e
 | AC-02-3 | A supervisor not assigned to Team Alpha gets 404 for Alpha's team, milestones and submissions. |
 | AC-02-4 | A student of Team Alpha calling `POST /api/teams/{alpha}/milestones` gets 403, and no milestone is stored. |
 | AC-02-5 | A student of Team Alpha calling `POST /api/submissions/{id}/feedback` gets 403, and no feedback is stored. |
-| AC-02-6 | A forced internal error returns 500 `{ error: { code: "INTERNAL_ERROR", message } }` with no stack or SQL text. |
+| AC-02-6 | A forced internal error in a probe app using the exported `errorHandler` returns 500 `{ error: { code: "INTERNAL_ERROR", message } }` with no stack or SQL text. |
 | AC-02-7 | When a protected API request returns 401 while a page is open, the client redirects to `/login` without showing private data. |
-| AC-02-8 | Malformed JSON returns 400 `VALIDATION_ERROR`; an unknown `/api/*` route returns 404 `NOT_FOUND`; both use the standard error shape without stack or SQL text. |
+| AC-02-8 | Malformed JSON returns 400 `VALIDATION_ERROR`; a JSON body over 100 kB returns 413 `PAYLOAD_TOO_LARGE`; an unknown `/api/*` route returns 404 `NOT_FOUND`. Each uses the standard error shape without stack or SQL text. |
 | AC-02-9 | A student posting a milestone to another team's ID receives 404, even though the same operation on their own team would return 403. Neither request stores a milestone. |
 | AC-02-10 | Team, milestone and submission lists each show a loading state, an empty state and an error state with **Retry**. |

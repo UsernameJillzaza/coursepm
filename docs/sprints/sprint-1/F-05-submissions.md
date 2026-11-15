@@ -9,7 +9,8 @@ Version 1.0 · 2026-11-15 · Issue: #2 (contract); implementation: #7 · Links: 
    revisionsUsed, now })`.
    - `now > deadline` → 409 `DEADLINE_PASSED` (BR-06; `now == deadline` is accepted, D-05).
    - `revisionsUsed >= maxRevisions` → 409 `REVISION_LIMIT_REACHED` (BR-07).
-3. It stores the submission with `revision = revisionsUsed + 1`, `submittedById = req.user.id`, and
+3. It stores the submission with `revision = nextRevision` from `checkCanSubmit`,
+   `submittedById = req.user.id`, and
    `submittedAt = now` (server clock). The `UNIQUE (milestoneId, revision)` constraint makes a
    concurrent duplicate fail. On that conflict, the server retries the whole transaction for up to
    **3 attempts**, reading the current milestone and revision count and checking the deadline and limit
@@ -21,7 +22,7 @@ Version 1.0 · 2026-11-15 · Issue: #2 (contract); implementation: #7 · Links: 
 
 **Rule functions** — `server/src/rules/submission.ts`: `validateSubmission(input)` (title 3–120,
 description ≤ 2,000, link parsed with `new URL()`, protocol `http:`/`https:`, ≤ 2,048 characters) and
-`checkCanSubmit(state)`, which returns `{ ok: true } | { ok: false, code }`. Both are pure functions,
+`checkCanSubmit(state)`, which returns `{ ok: true, nextRevision } | { ok: false, code }`. Both are pure functions,
 so they are unit-tested without a database. **TDD: the unit tests for `checkCanSubmit` are committed
 failing first.**
 
@@ -40,7 +41,10 @@ values. A 409 from the server shows the rule message, because the UI state may b
 ## Data
 `Submission` (milestoneId, teamId, revision int, title, description, link, submittedById FK,
 submittedAt) with `UNIQUE(milestoneId, revision)` and the composite FK
-`(milestoneId, teamId) → Milestone(id, teamId)`. Migration `004_submissions`.
+`(milestoneId, teamId) → Milestone(id, teamId)`. Migration `<timestamp>_submissions` creates the
+submission table and `UNIQUE(milestoneId, revision)`; a separate
+`<timestamp>_submission_team_matches_milestone` migration adds `Milestone UNIQUE(id, teamId)` and the
+composite FK.
 
 ## Acceptance criteria
 | ID | Given / When / Then |

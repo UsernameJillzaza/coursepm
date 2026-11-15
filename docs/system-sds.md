@@ -81,15 +81,15 @@ erDiagram
 **Integrity: database-enforced vs application-enforced.** Enforced by the database: unique e-mail, unique (courseCode, name), membership/assignment primary keys, UNIQUE (milestoneId, revision), the composite FK that ties a submission to its milestone's team, UNIQUE (submissionId) on Feedback, and the maxRevisions CHECK. **Enforced by the application only (accepted for Sprint 1):** that team members are `STUDENT` users and assigned supervisors are `SUPERVISOR` users (only the seed writes these tables until F-09 adds admin screens with the same checks); that `Milestone.createdById` is an assigned supervisor, `Submission.submittedById` a member and `Feedback.supervisorId` an assigned supervisor (each set from the signed-in user after the scope and role checks, never from the request); and that submissions are never updated or deleted (BR-07: no API route can, and teams/milestones, whose deletion would cascade, are never deleted through the API either).
 
 **Setup.** `npx prisma migrate dev` builds the schema from versioned migrations.
-`npx prisma db seed` runs `prisma/seed.ts`, which is idempotent (users upserted by e-mail, teams by
+`npx prisma db seed` runs `src/seed/demo.ts`, which is idempotent (users upserted by e-mail, teams by
 their unique key **(courseCode, name)**, memberships and assignments by their composite primary keys; re-running it also resets the demo accounts' names, roles and passwords to the seed values and re-activates them) and
 creates: 2 supervisors, 6 students, and 3 teams (Team Alpha supervised by Supervisor 1; Team Beta and
 Team Gamma supervised by Supervisor 2). Demo passwords come from `SEED_PASSWORD` in `.env` and are
 never written in the repository.
 
-The seed is delivered in two steps: F-01 creates the `User`/`Session` migration and initial Student A1
-and Supervisor 1 accounts so authentication is testable on its own; F-03 adds the team tables and
-extends the seed to the full set above. The final seed remains one repeatable command.
+F-01 creates the `User`/`Session` migration and uses the account creation helper in `src/seed/demo.ts`
+for isolated authentication test fixtures. After F-03 adds the team tables, the single idempotent demo
+seed creates the complete set above in one repeatable command.
 
 ## 3. UI structure and conventions
 
