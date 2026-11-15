@@ -1,0 +1,697 @@
+
+ RUN  v4.1.12 C:/Users/BTCOM/Desktop/coursepm/client
+
+ ❯ tests/sprint-1/feedback-ui.test.tsx (3 tests | 3 failed) 2243ms
+     × shows the feedback on its own revision and keeps revision 2 empty for a student 217ms
+     × TEST-UI-06 (AC-06-6): a 400 field error stays beside the textarea and preserves the text 1013ms
+     × saving feedback refreshes the revision list and replaces the form with the saved feedback 1010ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/sprint-1/feedback-ui.test.tsx > F-06 feedback UI > shows the feedback on its own revision and keeps revision 2 empty for a student
+TestingLibraryElementError: Unable to find an element with the text: Please clarify the scope.. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+<article
+  aria-label="Revision 1"
+  class="card"
+>
+  <div
+    class="card-body"
+  >
+    <div
+      class="d-flex justify-content-between flex-wrap gap-2"
+    >
+      <h3
+        class="h6 mb-1"
+      >
+        <span
+          class="badge text-bg-primary me-2"
+        >
+          Revision 
+          1
+        </span>
+        Proposal v1
+      </h3>
+      <small
+        class="text-body-secondary"
+      >
+        Alpha Student 1
+         · 
+        16 Nov 2026 12:00
+      </small>
+    </div>
+    <a
+      class="small text-break"
+      href="https://example.com/v1"
+      rel="noopener noreferrer"
+      target="_blank"
+    >
+      https://example.com/v1
+    </a>
+  </div>
+</article>
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ tests/sprint-1/feedback-ui.test.tsx:41:26
+     39|     const first = await screen.findByRole('article', { name: 'Revision…
+     40|     const second = screen.getByRole('article', { name: 'Revision 2' })
+     41|     expect(within(first).getByText(savedFeedback.body)).toBeInTheDocum…
+       |                          ^
+     42|     expect(within(first).getByText(supervisor.name, { exact: false }))…
+     43|     expect(within(second).getByText('No feedback yet')).toBeInTheDocum…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  tests/sprint-1/feedback-ui.test.tsx > F-06 feedback UI > TEST-UI-06 (AC-06-6): a 400 field error stays beside the textarea and preserves the text
+TestingLibraryElementError: Unable to find role="textbox" and name "Feedback for revision 1"
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <nav
+      class="navbar navbar-expand bg-body-tertiary border-bottom mb-4"
+    >
+      <div
+        class="container"
+      >
+        <a
+          class="navbar-brand fw-semibold"
+          data-discover="true"
+          href="/teams"
+        >
+          CoursePM
+        </a>
+        <div
+          class="d-flex align-items-center gap-3"
+        >
+          <span>
+            Dr. Supervisor One
+          </span>
+          <span
+            class="badge text-bg-secondary"
+          >
+            Supervisor
+          </span>
+          <button
+            class="btn btn-outline-secondary btn-sm"
+            type="button"
+          >
+            Log out
+          </button>
+        </div>
+      </div>
+    </nav>
+    <main
+      class="container"
+    >
+      <nav
+        aria-label="breadcrumb"
+      >
+        <ol
+          class="breadcrumb"
+        >
+          <li
+            class="breadcrumb-item"
+          >
+            <a
+              data-discover="true"
+              href="/teams"
+            >
+              My teams
+            </a>
+          </li>
+          <li
+            class="breadcrumb-item"
+          >
+            <a
+              data-discover="true"
+              href="/teams/1"
+            >
+              Team Alpha
+            </a>
+          </li>
+          <li
+            aria-current="page"
+            class="breadcrumb-item active"
+          >
+            Proposal
+          </li>
+        </ol>
+      </nav>
+      <div
+        class="d-flex align-items-center gap-2 mb-1"
+      >
+        <h1
+          class="h4 mb-0"
+        >
+          Proposal
+        </h1>
+        <span
+          class="badge text-bg-success"
+        >
+          Open
+        </span>
+      </div>
+      <p
+        class="text-body-secondary mb-2"
+      >
+        Deadline: 
+        22 Nov 2026 23:59
+         (Bangkok) · Revisions used: 
+        2
+         / 
+        3
+      </p>
+      <h2
+        class="h6 mt-4"
+      >
+        Submissions
+      </h2>
+      <div
+        class="d-flex flex-column gap-3"
+      >
+        <article
+          aria-label="Revision 1"
+          class="card"
+        >
+          <div
+            class="card-body"
+          >
+            <div
+              class="d-flex justify-content-between flex-wrap gap-2"
+            >
+              <h3
+                class="h6 mb-1"
+              >
+                <span
+                  class="badge text-bg-primary me-2"
+                >
+                  Revision 
+                  1
+                </span>
+                Proposal v1
+              </h3>
+              <small
+                class="text-body-secondary"
+              >
+                Alpha Student 1
+                 · 
+                16 Nov 2026 12:00
+              </small>
+            </div>
+            <a
+              class="small text-break"
+              href="https://example.com/v1"
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              https://example.com/v1
+            </a>
+          </div>
+        </article>
+      </div>
+    </main>
+  </div>
+</body>
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <nav
+      class="navbar navbar-expand bg-body-tertiary border-bottom mb-4"
+    >
+      <div
+        class="container"
+      >
+        <a
+          class="navbar-brand fw-semibold"
+          data-discover="true"
+          href="/teams"
+        >
+          CoursePM
+        </a>
+        <div
+          class="d-flex align-items-center gap-3"
+        >
+          <span>
+            Dr. Supervisor One
+          </span>
+          <span
+            class="badge text-bg-secondary"
+          >
+            Supervisor
+          </span>
+          <button
+            class="btn btn-outline-secondary btn-sm"
+            type="button"
+          >
+            Log out
+          </button>
+        </div>
+      </div>
+    </nav>
+    <main
+      class="container"
+    >
+      <nav
+        aria-label="breadcrumb"
+      >
+        <ol
+          class="breadcrumb"
+        >
+          <li
+            class="breadcrumb-item"
+          >
+            <a
+              data-discover="true"
+              href="/teams"
+            >
+              My teams
+            </a>
+          </li>
+          <li
+            class="breadcrumb-item"
+          >
+            <a
+              data-discover="true"
+              href="/teams/1"
+            >
+              Team Alpha
+            </a>
+          </li>
+          <li
+            aria-current="page"
+            class="breadcrumb-item active"
+          >
+            Proposal
+          </li>
+        </ol>
+      </nav>
+      <div
+        class="d-flex align-items-center gap-2 mb-1"
+      >
+        <h1
+          class="h4 mb-0"
+        >
+          Proposal
+        </h1>
+        <span
+          class="badge text-bg-success"
+        >
+          Open
+        </span>
+      </div>
+      <p
+        class="text-body-secondary mb-2"
+      >
+        Deadline: 
+        22 Nov 2026 23:59
+         (Bangkok) · Revisions used: 
+        2
+         / 
+        3
+      </p>
+      <h2
+        class="h6 mt-4"
+      >
+        Submissions
+      </h2>
+      <div
+        class="d-flex flex-column gap-3"
+      >
+        <article
+          aria-label="Revision 1"
+          class="card"
+        >
+          <div
+            class="card-body"
+          >
+            <div
+              class="d-flex justify-content-between flex-wrap gap-2"
+            >
+              <h3
+                class="h6 mb-1"
+              >
+                <span
+                  class="badge text-bg-primary me-2"
+                >
+                  Revision 
+                  1
+                </span>
+                Proposal v1
+              </h3>
+              <small
+                class="text-body-secondary"
+              >
+                Alpha Student 1
+                 · 
+                16 Nov 2026 12:00
+              </small>
+            </div>
+            <a
+              class="small text-break"
+              href="https://example.com/v1"
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              https://example.com/v1
+            </a>
+          </div>
+        </article>
+      </div>
+    </main>
+  </div>
+</body>
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ tests/sprint-1/feedback-ui.test.tsx:59:35
+     57|     })
+     58|     renderAt('/milestones/10')
+     59|     const textarea = await screen.findByRole('textbox', { name: 'Feedb…
+       |                                   ^
+     60|     await userEvent.type(textarea, 'Draft feedback')
+     61|     await userEvent.click(screen.getByRole('button', { name: 'Save fee…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  tests/sprint-1/feedback-ui.test.tsx > F-06 feedback UI > saving feedback refreshes the revision list and replaces the form with the saved feedback
+TestingLibraryElementError: Unable to find role="textbox" and name "Feedback for revision 1"
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <nav
+      class="navbar navbar-expand bg-body-tertiary border-bottom mb-4"
+    >
+      <div
+        class="container"
+      >
+        <a
+          class="navbar-brand fw-semibold"
+          data-discover="true"
+          href="/teams"
+        >
+          CoursePM
+        </a>
+        <div
+          class="d-flex align-items-center gap-3"
+        >
+          <span>
+            Dr. Supervisor One
+          </span>
+          <span
+            class="badge text-bg-secondary"
+          >
+            Supervisor
+          </span>
+          <button
+            class="btn btn-outline-secondary btn-sm"
+            type="button"
+          >
+            Log out
+          </button>
+        </div>
+      </div>
+    </nav>
+    <main
+      class="container"
+    >
+      <nav
+        aria-label="breadcrumb"
+      >
+        <ol
+          class="breadcrumb"
+        >
+          <li
+            class="breadcrumb-item"
+          >
+            <a
+              data-discover="true"
+              href="/teams"
+            >
+              My teams
+            </a>
+          </li>
+          <li
+            class="breadcrumb-item"
+          >
+            <a
+              data-discover="true"
+              href="/teams/1"
+            >
+              Team Alpha
+            </a>
+          </li>
+          <li
+            aria-current="page"
+            class="breadcrumb-item active"
+          >
+            Proposal
+          </li>
+        </ol>
+      </nav>
+      <div
+        class="d-flex align-items-center gap-2 mb-1"
+      >
+        <h1
+          class="h4 mb-0"
+        >
+          Proposal
+        </h1>
+        <span
+          class="badge text-bg-success"
+        >
+          Open
+        </span>
+      </div>
+      <p
+        class="text-body-secondary mb-2"
+      >
+        Deadline: 
+        22 Nov 2026 23:59
+         (Bangkok) · Revisions used: 
+        2
+         / 
+        3
+      </p>
+      <h2
+        class="h6 mt-4"
+      >
+        Submissions
+      </h2>
+      <div
+        class="d-flex flex-column gap-3"
+      >
+        <article
+          aria-label="Revision 1"
+          class="card"
+        >
+          <div
+            class="card-body"
+          >
+            <div
+              class="d-flex justify-content-between flex-wrap gap-2"
+            >
+              <h3
+                class="h6 mb-1"
+              >
+                <span
+                  class="badge text-bg-primary me-2"
+                >
+                  Revision 
+                  1
+                </span>
+                Proposal v1
+              </h3>
+              <small
+                class="text-body-secondary"
+              >
+                Alpha Student 1
+                 · 
+                16 Nov 2026 12:00
+              </small>
+            </div>
+            <a
+              class="small text-break"
+              href="https://example.com/v1"
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              https://example.com/v1
+            </a>
+          </div>
+        </article>
+      </div>
+    </main>
+  </div>
+</body>
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <nav
+      class="navbar navbar-expand bg-body-tertiary border-bottom mb-4"
+    >
+      <div
+        class="container"
+      >
+        <a
+          class="navbar-brand fw-semibold"
+          data-discover="true"
+          href="/teams"
+        >
+          CoursePM
+        </a>
+        <div
+          class="d-flex align-items-center gap-3"
+        >
+          <span>
+            Dr. Supervisor One
+          </span>
+          <span
+            class="badge text-bg-secondary"
+          >
+            Supervisor
+          </span>
+          <button
+            class="btn btn-outline-secondary btn-sm"
+            type="button"
+          >
+            Log out
+          </button>
+        </div>
+      </div>
+    </nav>
+    <main
+      class="container"
+    >
+      <nav
+        aria-label="breadcrumb"
+      >
+        <ol
+          class="breadcrumb"
+        >
+          <li
+            class="breadcrumb-item"
+          >
+            <a
+              data-discover="true"
+              href="/teams"
+            >
+              My teams
+            </a>
+          </li>
+          <li
+            class="breadcrumb-item"
+          >
+            <a
+              data-discover="true"
+              href="/teams/1"
+            >
+              Team Alpha
+            </a>
+          </li>
+          <li
+            aria-current="page"
+            class="breadcrumb-item active"
+          >
+            Proposal
+          </li>
+        </ol>
+      </nav>
+      <div
+        class="d-flex align-items-center gap-2 mb-1"
+      >
+        <h1
+          class="h4 mb-0"
+        >
+          Proposal
+        </h1>
+        <span
+          class="badge text-bg-success"
+        >
+          Open
+        </span>
+      </div>
+      <p
+        class="text-body-secondary mb-2"
+      >
+        Deadline: 
+        22 Nov 2026 23:59
+         (Bangkok) · Revisions used: 
+        2
+         / 
+        3
+      </p>
+      <h2
+        class="h6 mt-4"
+      >
+        Submissions
+      </h2>
+      <div
+        class="d-flex flex-column gap-3"
+      >
+        <article
+          aria-label="Revision 1"
+          class="card"
+        >
+          <div
+            class="card-body"
+          >
+            <div
+              class="d-flex justify-content-between flex-wrap gap-2"
+            >
+              <h3
+                class="h6 mb-1"
+              >
+                <span
+                  class="badge text-bg-primary me-2"
+                >
+                  Revision 
+                  1
+                </span>
+                Proposal v1
+              </h3>
+              <small
+                class="text-body-secondary"
+              >
+                Alpha Student 1
+                 · 
+                16 Nov 2026 12:00
+              </small>
+            </div>
+            <a
+              class="small text-break"
+              href="https://example.com/v1"
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              https://example.com/v1
+            </a>
+          </div>
+        </article>
+      </div>
+    </main>
+  </div>
+</body>
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ tests/sprint-1/feedback-ui.test.tsx:83:39
+     81|     })
+     82|     renderAt('/milestones/10')
+     83|     await userEvent.type(await screen.findByRole('textbox', { name: 'F…
+       |                                       ^
+     84|     await userEvent.click(screen.getByRole('button', { name: 'Save fee…
+     85|     expect(await screen.findByText(savedFeedback.body)).toBeInTheDocum…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  3 failed (3)
+   Start at  16:43:13
+   Duration  4.56s (transform 204ms, setup 415ms, import 365ms, tests 2.24s, environment 1.28s)
+
