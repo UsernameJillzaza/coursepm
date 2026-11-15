@@ -1,0 +1,8 @@
+
+ RUN  v4.1.12 C:/Users/BTCOM/Desktop/coursepm/client
+
+
+ Test Files  1 passed (1)
+      Tests  3 passed (3)
+   Start at  16:44:09
+   Duration  2.99s (transform 347ms, setup 243ms, import 514ms, tests 1.01s, environment 911ms)

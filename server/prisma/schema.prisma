@@ -1,0 +1,135 @@
+// CoursePM data model — docs/system-sds.md §2. Each feature adds its tables
+// through its own migration (F-01 users/sessions, F-03 teams, …).
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// F-01 / BR-01: exactly one role per account. ADMIN arrives in Sprint 2 (F-09).
+enum Role {
+  STUDENT
+  SUPERVISOR
+}
+
+model User {
+  id                Int                    @id @default(autoincrement())
+  email             String                 @unique // stored trimmed + lowercase
+  name              String
+  role              Role
+  passwordHash      String // scrypt$N$r$p$salt$key (NFR-03)
+  isActive          Boolean                @default(true)
+  createdAt         DateTime               @default(now())
+  sessions          Session[]
+  memberships       TeamMember[]
+  supervising       SupervisorAssignment[]
+  milestonesCreated Milestone[]
+  submissions       Submission[]
+  feedbackGiven     Feedback[]
+}
+
+// NFR-04: the id is SHA-256(cookie token); the token itself is never stored.
+model Session {
+  id        String   @id
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+// F-03 teams and membership (SDS §2). D-07: a student may be in several teams.
+model Team {
+  id          Int                    @id @default(autoincrement())
+  name        String
+  courseCode  String
+  createdAt   DateTime               @default(now())
+  members     TeamMember[]
+  supervisors SupervisorAssignment[]
+  milestones  Milestone[]
+  submissions Submission[]
+
+  @@unique([courseCode, name])
+}
+
+model TeamMember {
+  teamId Int
+  userId Int
+  team   Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([teamId, userId])
+  @@index([userId])
+}
+
+model SupervisorAssignment {
+  teamId Int
+  userId Int
+  team   Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([teamId, userId])
+  @@index([userId])
+}
+
+// F-04 milestones. F-05 adds submissions and uses (id, teamId) as a
+// composite target so a submission's team always matches its milestone.
+model Milestone {
+  id           Int          @id @default(autoincrement())
+  teamId       Int
+  team         Team         @relation(fields: [teamId], references: [id])
+  title        String
+  description  String
+  deadline     DateTime     @db.Timestamptz(3)
+  maxRevisions Int          @default(3)
+  createdById  Int
+  createdBy    User         @relation(fields: [createdById], references: [id])
+  createdAt    DateTime     @default(now()) @db.Timestamptz(3)
+  submissions  Submission[]
+
+  @@unique([id, teamId])
+  @@index([teamId, deadline])
+}
+
+// F-05 submissions (SDS §2, BR-07, NFR-05). Rows are never updated or
+// deleted; UNIQUE(milestoneId, revision) stops two concurrent submissions
+// from both becoming the same revision. teamId is copied from the milestone so
+// scope checks are a single join.
+model Submission {
+  id            Int       @id @default(autoincrement())
+  milestoneId   Int
+  // Composite FK: the submission's team must be its milestone's team, so
+  // authorization can never use a different team (F-05 data contract).
+  milestone     Milestone @relation(fields: [milestoneId, teamId], references: [id, teamId])
+  teamId        Int
+  team          Team      @relation(fields: [teamId], references: [id])
+  revision      Int
+  title         String
+  description   String    @default("")
+  link          String
+  submittedById Int
+  submittedBy   User      @relation(fields: [submittedById], references: [id])
+  submittedAt   DateTime  @db.Timestamptz(3)
+  feedback      Feedback?
+
+  @@unique([milestoneId, revision])
+  @@index([teamId])
+}
+
+// F-06: one feedback row belongs to exactly one submission revision.
+model Feedback {
+  id           Int        @id @default(autoincrement())
+  submissionId Int        @unique
+  submission   Submission @relation(fields: [submissionId], references: [id])
+  supervisorId Int
+  supervisor   User       @relation(fields: [supervisorId], references: [id])
+  body         String
+  createdAt    DateTime   @default(now()) @db.Timestamptz(3)
+
+  @@index([supervisorId])
+}

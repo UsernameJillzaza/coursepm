@@ -1,0 +1,146 @@
+# #7 TDD red run — TEST-05-03 / TEST-05-05 / TEST-05-07 (unit) against a STUB that accepts every submission
+# 2026-11-15T16:14:08+07:00  base commit 87d3daa + tests and stub
+
+ RUN  v4.1.12 D:/Claude Projects/coursepm-build/server
+
+Loaded Prisma config from prisma.config.ts.
+
+Prisma schema loaded from prisma\schema.prisma.
+Datasource "db": PostgreSQL database "coursepm_b7_test", schema "public" at "localhost:5432"
+
+5 migrations found in prisma/migrations
+
+
+No pending migrations to apply.
+ ❯ tests/sprint-1/submission-rules.unit.test.ts (15 tests | 10 failed) 14ms
+     × rejects 1 ms after the deadline with DEADLINE_PASSED 5ms
+     × rejects a third revision with REVISION_LIMIT_REACHED 1ms
+     × reports DEADLINE_PASSED first when both rules fail 1ms
+     × rejects the link "ftp://files.example.com/a.pdf" 1ms
+     × rejects the link "javascript:alert(1)" 1ms
+     × rejects the link "not a url" 0ms
+     × rejects the link "www.example.com/no-scheme" 0ms
+     × rejects the link "https://example.com/xxx…(2,049 chars)" 0ms
+     × rejects the link "" 0ms
+     × rejects a 2-character title and an over-long description, reporting both 0ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 10 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/sprint-1/submission-rules.unit.test.ts > TEST-05-03 checkCanSubmit: deadline rule (BR-06, D-05) > rejects 1 ms after the deadline with DEADLINE_PASSED
+AssertionError: expected { ok: true, nextRevision: 1 } to deeply equal { ok: false, code: 'DEADLINE_PASSED' }
+
+- Expected
++ Received
+
+  {
+-   "code": "DEADLINE_PASSED",
+-   "ok": false,
++   "nextRevision": 1,
++   "ok": true,
+  }
+
+ ❯ tests/sprint-1/submission-rules.unit.test.ts:21:42
+     19|
+     20|   it('rejects 1 ms after the deadline with DEADLINE_PASSED', () => {
+     21|     expect(checkCanSubmit(state(ms(1)))).toEqual({ ok: false, code: 'D…
+       |                                          ^
+     22|   })
+     23| })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/10]⎯
+
+ FAIL  tests/sprint-1/submission-rules.unit.test.ts > TEST-05-05 checkCanSubmit: revision limit (BR-07) > rejects a third revision with REVISION_LIMIT_REACHED
+AssertionError: expected { ok: true, nextRevision: 3 } to deeply equal { ok: false, …(1) }
+
+- Expected
++ Received
+
+  {
+-   "code": "REVISION_LIMIT_REACHED",
+-   "ok": false,
++   "nextRevision": 3,
++   "ok": true,
+  }
+
+ ❯ tests/sprint-1/submission-rules.unit.test.ts:34:38
+     32|
+     33|   it('rejects a third revision with REVISION_LIMIT_REACHED', () => {
+     34|     expect(checkCanSubmit(state(2))).toEqual({ ok: false, code: 'REVIS…
+       |                                      ^
+     35|   })
+     36|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/10]⎯
+
+ FAIL  tests/sprint-1/submission-rules.unit.test.ts > TEST-05-05 checkCanSubmit: revision limit (BR-07) > reports DEADLINE_PASSED first when both rules fail
+AssertionError: expected { ok: true, nextRevision: 2 } to deeply equal { ok: false, code: 'DEADLINE_PASSED' }
+
+- Expected
++ Received
+
+  {
+-   "code": "DEADLINE_PASSED",
+-   "ok": false,
++   "nextRevision": 2,
++   "ok": true,
+  }
+
+ ❯ tests/sprint-1/submission-rules.unit.test.ts:38:99
+     36|
+     37|   it('reports DEADLINE_PASSED first when both rules fail', () => {
+     38|     expect(checkCanSubmit({ deadline: DEADLINE, maxRevisions: 1, revis…
+       |                                                                                                   ^
+     39|       ok: false,
+     40|       code: 'DEADLINE_PASSED',
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/10]⎯
+
+ FAIL  tests/sprint-1/submission-rules.unit.test.ts > TEST-05-07 validateSubmission (BR-08) > rejects the link "ftp://files.example.com/a.pdf"
+ FAIL  tests/sprint-1/submission-rules.unit.test.ts > TEST-05-07 validateSubmission (BR-08) > rejects the link "javascript:alert(1)"
+ FAIL  tests/sprint-1/submission-rules.unit.test.ts > TEST-05-07 validateSubmission (BR-08) > rejects the link "not a url"
+ FAIL  tests/sprint-1/submission-rules.unit.test.ts > TEST-05-07 validateSubmission (BR-08) > rejects the link "www.example.com/no-scheme"
+ FAIL  tests/sprint-1/submission-rules.unit.test.ts > TEST-05-07 validateSubmission (BR-08) > rejects the link "https://example.com/xxx…(2,049 chars)"
+ FAIL  tests/sprint-1/submission-rules.unit.test.ts > TEST-05-07 validateSubmission (BR-08) > rejects the link ""
+AssertionError: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ tests/sprint-1/submission-rules.unit.test.ts:61:18
+     59|   ])('rejects the link %j', (link) => {
+     60|     const r = validateSubmission({ ...valid, link })
+     61|     expect(r.ok).toBe(false)
+       |                  ^
+     62|     if (!r.ok) expect(r.fields.link).toBeDefined()
+     63|   })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/10]⎯
+
+ FAIL  tests/sprint-1/submission-rules.unit.test.ts > TEST-05-07 validateSubmission (BR-08) > rejects a 2-character title and an over-long description, reporting both
+AssertionError: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ tests/sprint-1/submission-rules.unit.test.ts:74:18
+     72|   it('rejects a 2-character title and an over-long description, report…
+     73|     const r = validateSubmission({ title: 'ab', description: 'x'.repea…
+     74|     expect(r.ok).toBe(false)
+       |                  ^
+     75|     if (!r.ok) expect(Object.keys(r.fields).sort()).toEqual(['descript…
+     76|   })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/10]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  10 failed | 5 passed (15)
+   Start at  16:14:10
+   Duration  2.52s (transform 9ms, setup 0ms, import 19ms, tests 14ms, environment 0ms)
+

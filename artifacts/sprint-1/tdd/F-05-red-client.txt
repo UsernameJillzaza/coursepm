@@ -1,0 +1,1591 @@
+# #7 TDD red run (client) — milestone page / submit form / revision list tests before the page exists
+# 2026-11-15T16:17:14+07:00  base commit 37b956c + the new tests
+
+ RUN  v4.1.12 D:/Claude Projects/coursepm-build/client
+
+ ❯ tests/sprint-1/submissions-ui.test.tsx (11 tests | 11 failed) 10178ms
+     × AC-05-7: lists revisions newest first with submitter and link; a supervisor gets no submit form 1035ms
+     × the milestone list on the team page links each title to its milestone page 1008ms
+     × AC-05-1: a student submits; the new revision appears and the counter updates 1005ms
+     × TEST-UI-02 (AC-05-8): after the deadline the form is replaced by an explanation 1018ms
+     × TEST-UI-02 (AC-05-8): at the revision limit the form is replaced by an explanation 1016ms
+     × TEST-UI-02 (AC-05-8): a 409 from the server (state changed meanwhile) shows its message 1011ms
+     × TEST-UI-07 (AC-05-10): a 400 shows the message beside Link and keeps the entered values 1014ms
+     × shows a loading state while the revisions are pending 1017ms
+     × shows the empty state when there are no revisions 1015ms
+     × shows an error with Retry, and Retry loads the revisions again 21ms
+     × a milestone outside the user's scope shows "Milestone not found" 1015ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 11 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/sprint-1/submissions-ui.test.tsx > F-05 milestone page: revisions > AC-05-7: lists revisions newest first with submitter and link; a supervisor gets no submit form
+TestingLibraryElementError: Unable to find role="article"
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <nav
+      class="navbar navbar-expand bg-body-tertiary border-bottom mb-4"
+    >
+      <div
+        class="container"
+      >
+        <a
+          class="navbar-brand fw-semibold"
+          data-discover="true"
+          href="/teams"
+        >
+          CoursePM
+        </a>
+        <div
+          class="d-flex align-items-center gap-3"
+        >
+          <span>
+            Dr. Supervisor One
+          </span>
+          <span
+            class="badge text-bg-secondary"
+          >
+            Supervisor
+          </span>
+          <button
+            class="btn btn-outline-secondary btn-sm"
+            type="button"
+          >
+            Log out
+          </button>
+        </div>
+      </div>
+    </nav>
+    <main
+      class="container"
+    >
+      <h1
+        class="h4 mb-3"
+      >
+        My teams
+      </h1>
+      <div
+        class="alert alert-danger d-flex justify-content-between align-items-center"
+        role="alert"
+      >
+        <span>
+          Not found.
+        </span>
+        <button
+          class="btn btn-outline-danger btn-sm"
+          type="button"
+        >
+          Retry
+        </button>
+      </div>
+    </main>
+  </div>
+</body>
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <nav
+      class="navbar navbar-expand bg-body-tertiary border-bottom mb-4"
+    >
+      <div
+        class="container"
+      >
+        <a
+          class="navbar-brand fw-semibold"
+          data-discover="true"
+          href="/teams"
+        >
+          CoursePM
+        </a>
+        <div
+          class="d-flex align-items-center gap-3"
+        >
+          <span>
+            Dr. Supervisor One
+          </span>
+          <span
+            class="badge text-bg-secondary"
+          >
+            Supervisor
+          </span>
+          <button
+            class="btn btn-outline-secondary btn-sm"
+            type="button"
+          >
+            Log out
+          </button>
+        </div>
+      </div>
+    </nav>
+    <main
+      class="container"
+    >
+      <h1
+        class="h4 mb-3"
+      >
+        My teams
+      </h1>
+      <div
+        class="alert alert-danger d-flex justify-content-between align-items-center"
+        role="alert"
+      >
+        <span>
+          Not found.
+        </span>
+        <button
+          class="btn btn-outline-danger btn-sm"
+          type="button"
+        >
+          Retry
+        </button>
+      </div>
+    </main>
+  </div>
+</body>
+ ❯ waitForWrapper ../../coursepm/client/node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ ../../coursepm/client/node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ tests/sprint-1/submissions-ui.test.tsx:56:32
+     54|     })
+     55|     renderAt('/milestones/10')
+     56|     const cards = await screen.findAllByRole('article')
+       |                                ^
+     57|     expect(within(cards[0]).getByText(/Revision 2/)).toBeInTheDocument…
+     58|     expect(within(cards[0]).getByText('Second try')).toBeInTheDocument…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/11]⎯
+
+ FAIL  tests/sprint-1/submissions-ui.test.tsx > F-05 milestone page: revisions > the milestone list on the team page links each title to its milestone page
+TestingLibraryElementError: Unable to find role="link" and name "Proposal"
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <nav
+      class="navbar navbar-expand bg-body-tertiary border-bottom mb-4"
+    >
+      <div
+        class="container"
+      >
+        <a
+          class="navbar-brand fw-semibold"
+          data-discover="true"
+          href="/teams"
+        >
+          CoursePM
+        </a>
+        <div
+          class="d-flex align-items-center gap-3"
+        >
+          <span>
+            Alpha Student 1
+          </span>
+          <span
+            class="badge text-bg-secondary"
+          >
+            Student
+          </span>
+          <button
+            class="btn btn-outline-secondary btn-sm"
+            type="button"
+          >
+            Log out
+          </button>
+        </div>
+      </div>
+    </nav>
+    <main
+      class="container"
+    >
+      <nav
+        aria-label="breadcrumb"
+      >
+        <ol
+          class="breadcrumb"
+        >
+          <li
+            class="breadcrumb-item"
+          >
+            <a
+              data-discover="true"
+              href="/teams"
+            >
+              My teams
+            </a>
+          </li>
+          <li
+            aria-current="page"
+            class="breadcrumb-item active"
+          >
+            Team Alpha
+          </li>
+        </ol>
+      </nav>
+      <h1
+        class="h4 mb-0"
+      >
+        Team Alpha
+      </h1>
+      <p
+        class="text-body-secondary"
+      >
+        CPE334-DEMO
+      </p>
+      <div
+        class="row g-4"
+      >
+        <section
+          class="col-md-4"
+        >
+          <h2
+            class="h6"
+          >
+            Members
+          </h2>
+          <ul
+            class="list-group mb-3"
+          />
+          <h2
+            class="h6"
+          >
+            Supervisors
+          </h2>
+          <ul
+            class="list-group"
+          />
+        </section>
+      </div>
+      <section
+        aria-labelledby="milestones-heading"
+        class="mt-4"
+      >
+        <div
+          class="d-flex justify-content-between align-items-center mb-3"
+        >
+          <h2
+            class="h5 mb-0"
+            id="milestones-heading"
+          >
+            Milestones
+          </h2>
+        </div>
+        <ul
+          class="list-group"
+        >
+          <li
+            class="list-group-item"
+          >
+            <div
+              class="d-flex justify-content-between gap-2"
+            >
+              <strong>
+                Proposal
+              </strong>
+              <span
+                class="badge text-bg-success"
+              >
+                Open
+              </span>
+            </div>
+            <div
+              class="text-body-secondary small"
+            >
+              Deadline: 
+              22 Nov 2026 23:59
+               (Bangkok)
+            </div>
+            <div
+              class="small"
+            >
+              0
+               / 
+              3
+               revisions
+            </div>
+          </li>
+        </ul>
+      </section>
+    </main>
+  </div>
+</body>
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <nav
+      class="navbar navbar-expand bg-body-tertiary border-bottom mb-4"
+    >
+      <div
+        class="container"
+      >
+        <a
+          class="navbar-brand fw-semibold"
+          data-discover="true"
+          href="/teams"
+        >
+          CoursePM
+        </a>
+        <div
+          class="d-flex align-items-center gap-3"
+        >
+          <span>
+            Alpha Student 1
+          </span>
+          <span
+            class="badge text-bg-secondary"
+          >
+            Student
+          </span>
+          <button
+            class="btn btn-outline-secondary btn-sm"
+            type="button"
+          >
+            Log out
+          </button>
+        </div>
+      </div>
+    </nav>
+    <main
+      class="container"
+    >
+      <nav
+        aria-label="breadcrumb"
+      >
+        <ol
+          class="breadcrumb"
+        >
+          <li
+            class="breadcrumb-item"
+          >
+            <a
+              data-discover="true"
+              href="/teams"
+            >
+              My teams
+            </a>
+          </li>
+          <li
+            aria-current="page"
+            class="breadcrumb-item active"
+          >
+            Team Alpha
+          </li>
+        </ol>
+      </nav>
+      <h1
+        class="h4 mb-0"
+      >
+        Team Alpha
+      </h1>
+      <p
+        class="text-body-secondary"
+      >
+        CPE334-DEMO
+      </p>
+      <div
+        class="row g-4"
+      >
+        <section
+          class="col-md-4"
+        >
+          <h2
+            class="h6"
+          >
+            Members
+          </h2>
+          <ul
+            class="list-group mb-3"
+          />
+          <h2
+            class="h6"
+          >
+            Supervisors
+          </h2>
+          <ul
+            class="list-group"
+          />
+        </section>
+      </div>
+      <section
+        aria-labelledby="milestones-heading"
+        class="mt-4"
+      >
+        <div
+          class="d-flex justify-content-between align-items-center mb-3"
+        >
+          <h2
+            class="h5 mb-0"
+            id="milestones-heading"
+          >
+            Milestones
+          </h2>
+        </div>
+        <ul
+          class="list-group"
+        >
+          <li
+            class="list-group-item"
+          >
+            <div
+              class="d-flex justify-content-between gap-2"
+            >
+              <strong>
+                Proposal
+              </strong>
+              <span
+                class="badge text-bg-success"
+              >
+                Open
+              </span>
+            </div>
+            <div
+              class="text-body-secondary small"
+            >
+              Deadline: 
+              22 Nov 2026 23:59
+               (Bangkok)
+            </div>
+            <div
+              class="small"
+            >
+              0
+               / 
+              3
+               revisions
+            </div>
+          </li>
+        </ul>
+      </section>
+    </main>
+  </div>
+</body>
+ ❯ waitForWrapper ../../coursepm/client/node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ ../../coursepm/client/node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ tests/sprint-1/submissions-ui.test.tsx:72:25
+     70|     })
+     71|     renderAt('/teams/1')
+     72|     expect(await screen.findByRole('link', { name: 'Proposal' })).toHa…
+       |                         ^
+     73|   })
+     74| })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/11]⎯
+
+ FAIL  tests/sprint-1/submissions-ui.test.tsx > F-05 submit form > AC-05-1: a student submits; the new revision appears and the counter updates
+TestingLibraryElementError: Unable to find an element with the text: No submissions yet.. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <nav
+      class="navbar navbar-expand bg-body-tertiary border-bottom mb-4"
+    >
+      <div
+        class="container"
+      >
+        <a
+          class="navbar-brand fw-semibold"
+          data-discover="true"
+          href="/teams"
+        >
+          CoursePM
+        </a>
+        <div
+          class="d-flex align-items-center gap-3"
+        >
+          <span>
+            Alpha Student 1
+          </span>
+          <span
+            class="badge text-bg-secondary"
+          >
+            Student
+          </span>
+          <button
+            class="btn btn-outline-secondary btn-sm"
+            type="button"
+          >
+            Log out
+          </button>
+        </div>
+      </div>
+    </nav>
+    <main
+      class="container"
+    >
+      <h1
+        class="h4 mb-3"
+      >
+        My teams
+      </h1>
+      <div
+        class="alert alert-danger d-flex justify-content-between align-items-center"
+        role="alert"
+      >
+        <span>
+          Not found.
+        </span>
+        <button
+          class="btn btn-outline-danger btn-sm"
+          type="button"
+        >
+          Retry
+        </button>
+      </div>
+    </main>
+  </div>
+</body>
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <nav
+      class="navbar navbar-expand bg-body-tertiary border-bottom mb-4"
+    >
+      <div
+        class="container"
+      >
+        <a
+          class="navbar-brand fw-semibold"
+          data-discover="true"
+          href="/teams"
+        >
+          CoursePM
+        </a>
+        <div
+          class="d-flex align-items-center gap-3"
+        >
+          <span>
+            Alpha Student 1
+          </span>
+          <span
+            class="badge text-bg-secondary"
+          >
+            Student
+          </span>
+          <button
+            class="btn btn-outline-secondary btn-sm"
+            type="button"
+          >
+            Log out
+          </button>
+        </div>
+      </div>
+    </nav>
+    <main
+      class="container"
+    >
+      <h1
+        class="h4 mb-3"
+      >
+        My teams
+      </h1>
+      <div
+        class="alert alert-danger d-flex justify-content-between align-items-center"
+        role="alert"
+      >
+        <span>
+          Not found.
+        </span>
+        <button
+          class="btn btn-outline-danger btn-sm"
+          type="button"
+        >
+          Retry
+        </button>
+      </div>
+    </main>
+  </div>
+</body>
+ ❯ waitForWrapper ../../coursepm/client/node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ ../../coursepm/client/node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ tests/sprint-1/submissions-ui.test.tsx:90:25
+     88|     })
+     89|     renderAt('/milestones/10')
+     90|     expect(await screen.findByText('No submissions yet.')).toBeInTheDo…
+       |                         ^
+     91|     await userEvent.type(screen.getByLabelText('Title'), 'Our proposal…
+     92|     await userEvent.type(screen.getByLabelText('Description'), 'Draft')
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/11]⎯
+
+ FAIL  tests/sprint-1/submissions-ui.test.tsx > F-05 submit form > TEST-UI-02 (AC-05-8): after the deadline the form is replaced by an explanation
+TestingLibraryElementError: Unable to find an element with the text: The deadline has passed. Submissions are closed.. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <nav
+      class="navbar navbar-expand bg-body-tertiary border-bottom mb-4"
+    >
+      <div
+        class="container"
+      >
+        <a
+          class="navbar-brand fw-semibold"
+          data-discover="true"
+          href="/teams"
+        >
+          CoursePM
+        </a>
+        <div
+          class="d-flex align-items-center gap-3"
+        >
+          <span>
+            Alpha Student 1
+          </span>
+          <span
+            class="badge text-bg-secondary"
+          >
+            Student
+          </span>
+          <button
+            class="btn btn-outline-secondary btn-sm"
+            type="button"
+          >
+            Log out
+          </button>
+        </div>
+      </div>
+    </nav>
+    <main
+      class="container"
+    >
+      <h1
+        class="h4 mb-3"
+      >
+        My teams
+      </h1>
+      <div
+        class="alert alert-danger d-flex justify-content-between align-items-center"
+        role="alert"
+      >
+        <span>
+          Not found.
+        </span>
+        <button
+          class="btn btn-outline-danger btn-sm"
+          type="button"
+        >
+          Retry
+        </button>
+      </div>
+    </main>
+  </div>
+</body>
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <nav
+      class="navbar navbar-expand bg-body-tertiary border-bottom mb-4"
+    >
+      <div
+        class="container"
+      >
+        <a
+          class="navbar-brand fw-semibold"
+          data-discover="true"
+          href="/teams"
+        >
+          CoursePM
+        </a>
+        <div
+          class="d-flex align-items-center gap-3"
+        >
+          <span>
+            Alpha Student 1
+          </span>
+          <span
+            class="badge text-bg-secondary"
+          >
+            Student
+          </span>
+          <button
+            class="btn btn-outline-secondary btn-sm"
+            type="button"
+          >
+            Log out
+          </button>
+        </div>
+      </div>
+    </nav>
+    <main
+      class="container"
+    >
+      <h1
+        class="h4 mb-3"
+      >
+        My teams
+      </h1>
+      <div
+        class="alert alert-danger d-flex justify-content-between align-items-center"
+        role="alert"
+      >
+        <span>
+          Not found.
+        </span>
+        <button
+          class="btn btn-outline-danger btn-sm"
+          type="button"
+        >
+          Retry
+        </button>
+      </div>
+    </main>
+  </div>
+</body>
+ ❯ waitForWrapper ../../coursepm/client/node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ ../../coursepm/client/node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ tests/sprint-1/submissions-ui.test.tsx:106:25
+    104|     })
+    105|     renderAt('/milestones/10')
+    106|     expect(await screen.findByText('The deadline has passed. Submissio…
+       |                         ^
+    107|     expect(screen.queryByRole('button', { name: /submit work/i })).not…
+    108|   })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/11]⎯
+
+ FAIL  tests/sprint-1/submissions-ui.test.tsx > F-05 submit form > TEST-UI-02 (AC-05-8): at the revision limit the form is replaced by an explanation
+TestingLibraryElementError: Unable to find an element with the text: All 3 revisions used.. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <nav
+      class="navbar navbar-expand bg-body-tertiary border-bottom mb-4"
+    >
+      <div
+        class="container"
+      >
+        <a
+          class="navbar-brand fw-semibold"
+          data-discover="true"
+          href="/teams"
+        >
+          CoursePM
+        </a>
+        <div
+          class="d-flex align-items-center gap-3"
+        >
+          <span>
+            Alpha Student 1
+          </span>
+          <span
+            class="badge text-bg-secondary"
+          >
+            Student
+          </span>
+          <button
+            class="btn btn-outline-secondary btn-sm"
+            type="button"
+          >
+            Log out
+          </button>
+        </div>
+      </div>
+    </nav>
+    <main
+      class="container"
+    >
+      <h1
+        class="h4 mb-3"
+      >
+        My teams
+      </h1>
+      <div
+        class="alert alert-danger d-flex justify-content-between align-items-center"
+        role="alert"
+      >
+        <span>
+          Not found.
+        </span>
+        <button
+          class="btn btn-outline-danger btn-sm"
+          type="button"
+        >
+          Retry
+        </button>
+      </div>
+    </main>
+  </div>
+</body>
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <nav
+      class="navbar navbar-expand bg-body-tertiary border-bottom mb-4"
+    >
+      <div
+        class="container"
+      >
+        <a
+          class="navbar-brand fw-semibold"
+          data-discover="true"
+          href="/teams"
+        >
+          CoursePM
+        </a>
+        <div
+          class="d-flex align-items-center gap-3"
+        >
+          <span>
+            Alpha Student 1
+          </span>
+          <span
+            class="badge text-bg-secondary"
+          >
+            Student
+          </span>
+          <button
+            class="btn btn-outline-secondary btn-sm"
+            type="button"
+          >
+            Log out
+          </button>
+        </div>
+      </div>
+    </nav>
+    <main
+      class="container"
+    >
+      <h1
+        class="h4 mb-3"
+      >
+        My teams
+      </h1>
+      <div
+        class="alert alert-danger d-flex justify-content-between align-items-center"
+        role="alert"
+      >
+        <span>
+          Not found.
+        </span>
+        <button
+          class="btn btn-outline-danger btn-sm"
+          type="button"
+        >
+          Retry
+        </button>
+      </div>
+    </main>
+  </div>
+</body>
+ ❯ waitForWrapper ../../coursepm/client/node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ ../../coursepm/client/node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ tests/sprint-1/submissions-ui.test.tsx:117:25
+    115|     })
+    116|     renderAt('/milestones/10')
+    117|     expect(await screen.findByText('All 3 revisions used.')).toBeInThe…
+       |                         ^
+    118|     expect(screen.queryByRole('button', { name: /submit work/i })).not…
+    119|   })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/11]⎯
+
+ FAIL  tests/sprint-1/submissions-ui.test.tsx > F-05 submit form > TEST-UI-02 (AC-05-8): a 409 from the server (state changed meanwhile) shows its message
+TestingLibraryElementError: Unable to find a label with the text of: Title
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <nav
+      class="navbar navbar-expand bg-body-tertiary border-bottom mb-4"
+    >
+      <div
+        class="container"
+      >
+        <a
+          class="navbar-brand fw-semibold"
+          data-discover="true"
+          href="/teams"
+        >
+          CoursePM
+        </a>
+        <div
+          class="d-flex align-items-center gap-3"
+        >
+          <span>
+            Alpha Student 1
+          </span>
+          <span
+            class="badge text-bg-secondary"
+          >
+            Student
+          </span>
+          <button
+            class="btn btn-outline-secondary btn-sm"
+            type="button"
+          >
+            Log out
+          </button>
+        </div>
+      </div>
+    </nav>
+    <main
+      class="container"
+    >
+      <h1
+        class="h4 mb-3"
+      >
+        My teams
+      </h1>
+      <div
+        class="alert alert-danger d-flex justify-content-between align-items-center"
+        role="alert"
+      >
+        <span>
+          Not found.
+        </span>
+        <button
+          class="btn btn-outline-danger btn-sm"
+          type="button"
+        >
+          Retry
+        </button>
+      </div>
+    </main>
+  </div>
+</body>
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <nav
+      class="navbar navbar-expand bg-body-tertiary border-bottom mb-4"
+    >
+      <div
+        class="container"
+      >
+        <a
+          class="navbar-brand fw-semibold"
+          data-discover="true"
+          href="/teams"
+        >
+          CoursePM
+        </a>
+        <div
+          class="d-flex align-items-center gap-3"
+        >
+          <span>
+            Alpha Student 1
+          </span>
+          <span
+            class="badge text-bg-secondary"
+          >
+            Student
+          </span>
+          <button
+            class="btn btn-outline-secondary btn-sm"
+            type="button"
+          >
+            Log out
+          </button>
+        </div>
+      </div>
+    </nav>
+    <main
+      class="container"
+    >
+      <h1
+        class="h4 mb-3"
+      >
+        My teams
+      </h1>
+      <div
+        class="alert alert-danger d-flex justify-content-between align-items-center"
+        role="alert"
+      >
+        <span>
+          Not found.
+        </span>
+        <button
+          class="btn btn-outline-danger btn-sm"
+          type="button"
+        >
+          Retry
+        </button>
+      </div>
+    </main>
+  </div>
+</body>
+ ❯ waitForWrapper ../../coursepm/client/node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ ../../coursepm/client/node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ tests/sprint-1/submissions-ui.test.tsx:129:39
+    127|     })
+    128|     renderAt('/milestones/10')
+    129|     await userEvent.type(await screen.findByLabelText('Title'), 'Late …
+       |                                       ^
+    130|     await userEvent.type(screen.getByLabelText(/link/i), 'https://exam…
+    131|     await userEvent.click(screen.getByRole('button', { name: /submit w…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/11]⎯
+
+ FAIL  tests/sprint-1/submissions-ui.test.tsx > F-05 submit form > TEST-UI-07 (AC-05-10): a 400 shows the message beside Link and keeps the entered values
+TestingLibraryElementError: Unable to find a label with the text of: Title
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <nav
+      class="navbar navbar-expand bg-body-tertiary border-bottom mb-4"
+    >
+      <div
+        class="container"
+      >
+        <a
+          class="navbar-brand fw-semibold"
+          data-discover="true"
+          href="/teams"
+        >
+          CoursePM
+        </a>
+        <div
+          class="d-flex align-items-center gap-3"
+        >
+          <span>
+            Alpha Student 1
+          </span>
+          <span
+            class="badge text-bg-secondary"
+          >
+            Student
+          </span>
+          <button
+            class="btn btn-outline-secondary btn-sm"
+            type="button"
+          >
+            Log out
+          </button>
+        </div>
+      </div>
+    </nav>
+    <main
+      class="container"
+    >
+      <h1
+        class="h4 mb-3"
+      >
+        My teams
+      </h1>
+      <div
+        class="alert alert-danger d-flex justify-content-between align-items-center"
+        role="alert"
+      >
+        <span>
+          Not found.
+        </span>
+        <button
+          class="btn btn-outline-danger btn-sm"
+          type="button"
+        >
+          Retry
+        </button>
+      </div>
+    </main>
+  </div>
+</body>
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <nav
+      class="navbar navbar-expand bg-body-tertiary border-bottom mb-4"
+    >
+      <div
+        class="container"
+      >
+        <a
+          class="navbar-brand fw-semibold"
+          data-discover="true"
+          href="/teams"
+        >
+          CoursePM
+        </a>
+        <div
+          class="d-flex align-items-center gap-3"
+        >
+          <span>
+            Alpha Student 1
+          </span>
+          <span
+            class="badge text-bg-secondary"
+          >
+            Student
+          </span>
+          <button
+            class="btn btn-outline-secondary btn-sm"
+            type="button"
+          >
+            Log out
+          </button>
+        </div>
+      </div>
+    </nav>
+    <main
+      class="container"
+    >
+      <h1
+        class="h4 mb-3"
+      >
+        My teams
+      </h1>
+      <div
+        class="alert alert-danger d-flex justify-content-between align-items-center"
+        role="alert"
+      >
+        <span>
+          Not found.
+        </span>
+        <button
+          class="btn btn-outline-danger btn-sm"
+          type="button"
+        >
+          Retry
+        </button>
+      </div>
+    </main>
+  </div>
+</body>
+ ❯ waitForWrapper ../../coursepm/client/node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ ../../coursepm/client/node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ tests/sprint-1/submissions-ui.test.tsx:146:39
+    144|     })
+    145|     renderAt('/milestones/10')
+    146|     await userEvent.type(await screen.findByLabelText('Title'), 'Desig…
+       |                                       ^
+    147|     await userEvent.type(screen.getByLabelText(/link/i), 'javascript:a…
+    148|     await userEvent.click(screen.getByRole('button', { name: /submit w…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/11]⎯
+
+ FAIL  tests/sprint-1/submissions-ui.test.tsx > TEST-UI-04 submission part (AC-02-10): revision list states > shows a loading state while the revisions are pending
+TestingLibraryElementError: Unable to find role="heading" and name "Proposal"
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <nav
+      class="navbar navbar-expand bg-body-tertiary border-bottom mb-4"
+    >
+      <div
+        class="container"
+      >
+        <a
+          class="navbar-brand fw-semibold"
+          data-discover="true"
+          href="/teams"
+        >
+          CoursePM
+        </a>
+        <div
+          class="d-flex align-items-center gap-3"
+        >
+          <span>
+            Alpha Student 1
+          </span>
+          <span
+            class="badge text-bg-secondary"
+          >
+            Student
+          </span>
+          <button
+            class="btn btn-outline-secondary btn-sm"
+            type="button"
+          >
+            Log out
+          </button>
+        </div>
+      </div>
+    </nav>
+    <main
+      class="container"
+    >
+      <h1
+        class="h4 mb-3"
+      >
+        My teams
+      </h1>
+      <div
+        aria-label="Loading"
+        class="d-flex justify-content-center py-4"
+        role="status"
+      >
+        <div
+          class="spinner-border"
+        />
+      </div>
+    </main>
+  </div>
+</body>
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <nav
+      class="navbar navbar-expand bg-body-tertiary border-bottom mb-4"
+    >
+      <div
+        class="container"
+      >
+        <a
+          class="navbar-brand fw-semibold"
+          data-discover="true"
+          href="/teams"
+        >
+          CoursePM
+        </a>
+        <div
+          class="d-flex align-items-center gap-3"
+        >
+          <span>
+            Alpha Student 1
+          </span>
+          <span
+            class="badge text-bg-secondary"
+          >
+            Student
+          </span>
+          <button
+            class="btn btn-outline-secondary btn-sm"
+            type="button"
+          >
+            Log out
+          </button>
+        </div>
+      </div>
+    </nav>
+    <main
+      class="container"
+    >
+      <h1
+        class="h4 mb-3"
+      >
+        My teams
+      </h1>
+      <div
+        aria-label="Loading"
+        class="d-flex justify-content-center py-4"
+        role="status"
+      >
+        <div
+          class="spinner-border"
+        />
+      </div>
+    </main>
+  </div>
+</body>
+ ❯ waitForWrapper ../../coursepm/client/node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ ../../coursepm/client/node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ tests/sprint-1/submissions-ui.test.tsx:167:25
+    165|     )
+    166|     renderAt('/milestones/10')
+    167|     expect(await screen.findByRole('heading', { name: 'Proposal' })).t…
+       |                         ^
+    168|     expect(screen.getByRole('status', { name: /loading/i })).toBeInThe…
+    169|     expect(screen.queryByText('No submissions yet.')).not.toBeInTheDoc…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/11]⎯
+
+ FAIL  tests/sprint-1/submissions-ui.test.tsx > TEST-UI-04 submission part (AC-02-10): revision list states > shows the empty state when there are no revisions
+TestingLibraryElementError: Unable to find an element with the text: No submissions yet.. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <nav
+      class="navbar navbar-expand bg-body-tertiary border-bottom mb-4"
+    >
+      <div
+        class="container"
+      >
+        <a
+          class="navbar-brand fw-semibold"
+          data-discover="true"
+          href="/teams"
+        >
+          CoursePM
+        </a>
+        <div
+          class="d-flex align-items-center gap-3"
+        >
+          <span>
+            Dr. Supervisor One
+          </span>
+          <span
+            class="badge text-bg-secondary"
+          >
+            Supervisor
+          </span>
+          <button
+            class="btn btn-outline-secondary btn-sm"
+            type="button"
+          >
+            Log out
+          </button>
+        </div>
+      </div>
+    </nav>
+    <main
+      class="container"
+    >
+      <h1
+        class="h4 mb-3"
+      >
+        My teams
+      </h1>
+      <div
+        class="alert alert-danger d-flex justify-content-between align-items-center"
+        role="alert"
+      >
+        <span>
+          Not found.
+        </span>
+        <button
+          class="btn btn-outline-danger btn-sm"
+          type="button"
+        >
+          Retry
+        </button>
+      </div>
+    </main>
+  </div>
+</body>
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <nav
+      class="navbar navbar-expand bg-body-tertiary border-bottom mb-4"
+    >
+      <div
+        class="container"
+      >
+        <a
+          class="navbar-brand fw-semibold"
+          data-discover="true"
+          href="/teams"
+        >
+          CoursePM
+        </a>
+        <div
+          class="d-flex align-items-center gap-3"
+        >
+          <span>
+            Dr. Supervisor One
+          </span>
+          <span
+            class="badge text-bg-secondary"
+          >
+            Supervisor
+          </span>
+          <button
+            class="btn btn-outline-secondary btn-sm"
+            type="button"
+          >
+            Log out
+          </button>
+        </div>
+      </div>
+    </nav>
+    <main
+      class="container"
+    >
+      <h1
+        class="h4 mb-3"
+      >
+        My teams
+      </h1>
+      <div
+        class="alert alert-danger d-flex justify-content-between align-items-center"
+        role="alert"
+      >
+        <span>
+          Not found.
+        </span>
+        <button
+          class="btn btn-outline-danger btn-sm"
+          type="button"
+        >
+          Retry
+        </button>
+      </div>
+    </main>
+  </div>
+</body>
+ ❯ waitForWrapper ../../coursepm/client/node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ ../../coursepm/client/node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ tests/sprint-1/submissions-ui.test.tsx:179:25
+    177|     })
+    178|     renderAt('/milestones/10')
+    179|     expect(await screen.findByText('No submissions yet.')).toBeInTheDo…
+       |                         ^
+    180|   })
+    181|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/11]⎯
+
+ FAIL  tests/sprint-1/submissions-ui.test.tsx > TEST-UI-04 submission part (AC-02-10): revision list states > shows an error with Retry, and Retry loads the revisions again
+Error: expect(element).toHaveTextContent()
+
+Expected element to have text content:
+  Unexpected server error.
+Received:
+  Not found.Retry
+ ❯ tests/sprint-1/submissions-ui.test.tsx:191:46
+    189|     })
+    190|     renderAt('/milestones/10')
+    191|     expect(await screen.findByRole('alert')).toHaveTextContent('Unexpe…
+       |                                              ^
+    192|     await userEvent.click(screen.getByRole('button', { name: /retry/i …
+    193|     expect(await screen.findByText('First try')).toBeInTheDocument()
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/11]⎯
+
+ FAIL  tests/sprint-1/submissions-ui.test.tsx > TEST-UI-04 submission part (AC-02-10): revision list states > a milestone outside the user's scope shows "Milestone not found"
+TestingLibraryElementError: Unable to find role="heading" and name "Milestone not found"
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <nav
+      class="navbar navbar-expand bg-body-tertiary border-bottom mb-4"
+    >
+      <div
+        class="container"
+      >
+        <a
+          class="navbar-brand fw-semibold"
+          data-discover="true"
+          href="/teams"
+        >
+          CoursePM
+        </a>
+        <div
+          class="d-flex align-items-center gap-3"
+        >
+          <span>
+            Alpha Student 1
+          </span>
+          <span
+            class="badge text-bg-secondary"
+          >
+            Student
+          </span>
+          <button
+            class="btn btn-outline-secondary btn-sm"
+            type="button"
+          >
+            Log out
+          </button>
+        </div>
+      </div>
+    </nav>
+    <main
+      class="container"
+    >
+      <h1
+        class="h4 mb-3"
+      >
+        My teams
+      </h1>
+      <div
+        class="alert alert-danger d-flex justify-content-between align-items-center"
+        role="alert"
+      >
+        <span>
+          Not found.
+        </span>
+        <button
+          class="btn btn-outline-danger btn-sm"
+          type="button"
+        >
+          Retry
+        </button>
+      </div>
+    </main>
+  </div>
+</body>
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <nav
+      class="navbar navbar-expand bg-body-tertiary border-bottom mb-4"
+    >
+      <div
+        class="container"
+      >
+        <a
+          class="navbar-brand fw-semibold"
+          data-discover="true"
+          href="/teams"
+        >
+          CoursePM
+        </a>
+        <div
+          class="d-flex align-items-center gap-3"
+        >
+          <span>
+            Alpha Student 1
+          </span>
+          <span
+            class="badge text-bg-secondary"
+          >
+            Student
+          </span>
+          <button
+            class="btn btn-outline-secondary btn-sm"
+            type="button"
+          >
+            Log out
+          </button>
+        </div>
+      </div>
+    </nav>
+    <main
+      class="container"
+    >
+      <h1
+        class="h4 mb-3"
+      >
+        My teams
+      </h1>
+      <div
+        class="alert alert-danger d-flex justify-content-between align-items-center"
+        role="alert"
+      >
+        <span>
+          Not found.
+        </span>
+        <button
+          class="btn btn-outline-danger btn-sm"
+          type="button"
+        >
+          Retry
+        </button>
+      </div>
+    </main>
+  </div>
+</body>
+ ❯ waitForWrapper ../../coursepm/client/node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ ../../coursepm/client/node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ tests/sprint-1/submissions-ui.test.tsx:199:25
+    197|     fakeApi({ 'GET /api/auth/me': ok({ user: student }), 'GET /api/mil…
+    198|     renderAt('/milestones/99')
+    199|     expect(await screen.findByRole('heading', { name: 'Milestone not f…
+       |                         ^
+    200|   })
+    201| })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/11]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  11 failed (11)
+   Start at  16:17:16
+   Duration  11.83s (transform 102ms, setup 215ms, import 203ms, tests 10.18s, environment 1.06s)
+

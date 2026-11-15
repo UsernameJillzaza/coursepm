@@ -1,0 +1,117 @@
+Issue #6 final verification — local isolated PostgreSQL cluster
+npm run test:server
+
+> coursepm@0.1.0 test:server
+> npm --prefix server test
+
+
+> coursepm-server@0.1.0 test
+> vitest run
+
+
+ RUN  v4.1.12 C:/Users/BTCOM/Desktop/coursepm/server
+
+Loaded Prisma config from prisma.config.ts.
+
+Prisma schema loaded from prisma\schema.prisma.
+Datasource "db": PostgreSQL database "coursepm_issue5_test", schema "public" at "127.0.0.1:55433"
+
+3 migrations found in prisma/migrations
+
+
+No pending migrations to apply.
+
+ Test Files  8 passed (8)
+      Tests  68 passed (68)
+   Start at  15:31:18
+   Duration  8.29s (transform 209ms, setup 0ms, import 1.33s, tests 3.38s, environment 1ms)
+
+npm run test:client
+
+> coursepm@0.1.0 test:client
+> npm --prefix client test
+
+
+> coursepm-client@0.1.0 test
+> vitest run
+
+
+ RUN  v4.1.12 C:/Users/BTCOM/Desktop/coursepm/client
+
+
+ Test Files  4 passed (4)
+      Tests  24 passed (24)
+   Start at  15:31:27
+   Duration  4.02s (transform 355ms, setup 859ms, import 756ms, tests 3.49s, environment 3.80s)
+
+npm --prefix server run build
+
+> coursepm-server@0.1.0 build
+> prisma generate && tsc
+
+Loaded Prisma config from prisma.config.ts.
+
+Prisma schema loaded from prisma\schema.prisma.
+
+✔ Generated Prisma Client (7.10.1) to .\src\generated\prisma in 65ms
+
+npm --prefix client run build
+
+> coursepm-client@0.1.0 build
+> tsc -b && vite build
+
+vite v8.3.8 building client environment for production...
+transforming...
+✓ 36 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.40 kB │ gzip:  0.27 kB
+dist/assets/index-BbRluUcX.css  230.30 kB │ gzip: 30.70 kB
+dist/assets/index-C1cGYWLJ.js   271.55 kB │ gzip: 85.51 kB
+
+✓ built in 295ms
+npm run test:e2e (seeded isolated development database)
+
+> coursepm@0.1.0 test:e2e
+> playwright test
+
+[WebServer] (node:35896) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:30628) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:36140) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 1 test using 1 worker
+
+(node:36012) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 1 e2e\sprint-1\e2e-01-login-teams.spec.ts:8:1 › E2E-01: wrong password, login, own team only, reload keeps the session, logout (2.8s)
+
+  1 passed (7.3s)
+Post-review server rerun after additional AC-04-1 and description-boundary assertions
+
+> coursepm@0.1.0 test:server
+> npm --prefix server test
+
+
+> coursepm-server@0.1.0 test
+> vitest run
+
+
+ RUN  v4.1.12 C:/Users/BTCOM/Desktop/coursepm/server
+
+Loaded Prisma config from prisma.config.ts.
+
+Prisma schema loaded from prisma\schema.prisma.
+Datasource "db": PostgreSQL database "coursepm_issue5_test", schema "public" at "127.0.0.1:55433"
+
+3 migrations found in prisma/migrations
+
+
+No pending migrations to apply.
+
+ Test Files  8 passed (8)
+      Tests  68 passed (68)
+   Start at  15:32:50
+   Duration  8.44s (transform 196ms, setup 0ms, import 1.34s, tests 3.61s, environment 1ms)

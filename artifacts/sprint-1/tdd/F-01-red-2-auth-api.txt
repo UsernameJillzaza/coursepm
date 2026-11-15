@@ -1,0 +1,282 @@
+# #4 TDD red run 2 — auth API tests (TEST-01-01…13) before session/middleware/routes exist (routes answer 404)
+# 2026-11-15T14:20:19+07:00  base commit f40402b + the new tests
+
+ RUN  v4.1.12 D:/Claude Projects/coursepm-build/server
+
+Loaded Prisma config from prisma.config.ts.
+
+Prisma schema loaded from prisma\schema.prisma.
+Datasource "db": PostgreSQL database "coursepm_build_test", schema "public" at "localhost:5432"
+
+1 migration found in prisma/migrations
+
+
+No pending migrations to apply.
+ ❯ tests/sprint-1/auth.api.test.ts (16 tests | 15 failed) 324ms
+     × TEST-01-01 (AC-01-1): valid credentials → 200, public user, HttpOnly cpm_session cookie 25ms
+     × accepts the e-mail in a different case with spaces around it 4ms
+     × TEST-01-02 (AC-01-2): wrong password → 401 INVALID_CREDENTIALS, no cookie 3ms
+     × TEST-01-03 (AC-01-2): unknown e-mail → the same 401 body; empty body → 400 naming both fields 4ms
+     × TEST-01-08 (AC-01-6): a "role" sent by the client is ignored 3ms
+     × TEST-01-04 (AC-01-3): returns { user } for a valid session 4ms
+     × returns 401 UNAUTHENTICATED without a cookie 4ms
+     × TEST-01-05 (AC-01-4): logout deletes the session; the old cookie is then rejected 3ms
+     × TEST-01-11 (AC-01-9): logout without a session → 204 with no body 2ms
+     × TEST-01-09 (AC-01-7): an expired session → 401 and the row is deleted 2ms
+     × an inactive account cannot log in: the same generic 401 INVALID_CREDENTIALS 35ms
+     × a session saved before deactivation gets 401 UNAUTHENTICATED on its next request 34ms
+     × TEST-01-07: login and /me bodies contain no password or hash 2ms
+     × stores SHA-256(token), not the token; expires 8 h after creation; cookie HttpOnly, SameSite=Lax, Path=/ 3ms
+     × adds Secure to the cookie when NODE_ENV=production 2ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 15 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/sprint-1/auth.api.test.ts > POST /api/auth/login > TEST-01-01 (AC-01-1): valid credentials → 200, public user, HttpOnly cpm_session cookie
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ tests/sprint-1/auth.api.test.ts:31:24
+     29|   it('TEST-01-01 (AC-01-1): valid credentials → 200, public user, Http…
+     30|     const res = await request(app).post('/api/auth/login').send({ emai…
+     31|     expect(res.status).toBe(200)
+       |                        ^
+     32|     expect(res.body.user).toEqual({ id: a1.id, name: a1.name, email: a…
+     33|     const cookie = sessionCookie(res.headers['set-cookie'])
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/15]⎯
+
+ FAIL  tests/sprint-1/auth.api.test.ts > POST /api/auth/login > accepts the e-mail in a different case with spaces around it
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ tests/sprint-1/auth.api.test.ts:40:24
+     38|   it('accepts the e-mail in a different case with spaces around it', a…
+     39|     const res = await request(app).post('/api/auth/login').send({ emai…
+     40|     expect(res.status).toBe(200)
+       |                        ^
+     41|   })
+     42|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/15]⎯
+
+ FAIL  tests/sprint-1/auth.api.test.ts > POST /api/auth/login > TEST-01-02 (AC-01-2): wrong password → 401 INVALID_CREDENTIALS, no cookie
+AssertionError: expected 404 to be 401 // Object.is equality
+
+- Expected
++ Received
+
+- 401
++ 404
+
+ ❯ tests/sprint-1/auth.api.test.ts:45:24
+     43|   it('TEST-01-02 (AC-01-2): wrong password → 401 INVALID_CREDENTIALS, …
+     44|     const res = await request(app).post('/api/auth/login').send({ emai…
+     45|     expect(res.status).toBe(401)
+       |                        ^
+     46|     expect(res.body.error.code).toBe('INVALID_CREDENTIALS')
+     47|     expect(sessionCookie(res.headers['set-cookie'])).toBeUndefined()
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/15]⎯
+
+ FAIL  tests/sprint-1/auth.api.test.ts > POST /api/auth/login > TEST-01-03 (AC-01-2): unknown e-mail → the same 401 body; empty body → 400 naming both fields
+AssertionError: expected 404 to be 401 // Object.is equality
+
+- Expected
++ Received
+
+- 401
++ 404
+
+ ❯ tests/sprint-1/auth.api.test.ts:53:28
+     51|     const wrongPw = await request(app).post('/api/auth/login').send({ …
+     52|     const unknown = await request(app).post('/api/auth/login').send({ …
+     53|     expect(unknown.status).toBe(401)
+       |                            ^
+     54|     expect(unknown.body).toEqual(wrongPw.body)
+     55|     const empty = await request(app).post('/api/auth/login').send({})
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/15]⎯
+
+ FAIL  tests/sprint-1/auth.api.test.ts > POST /api/auth/login > TEST-01-08 (AC-01-6): a "role" sent by the client is ignored
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ tests/sprint-1/auth.api.test.ts:63:24
+     61|   it('TEST-01-08 (AC-01-6): a "role" sent by the client is ignored', a…
+     62|     const res = await request(app).post('/api/auth/login').send({ emai…
+     63|     expect(res.status).toBe(200)
+       |                        ^
+     64|     expect(res.body.user.role).toBe('STUDENT')
+     65|   })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/15]⎯
+
+ FAIL  tests/sprint-1/auth.api.test.ts > GET /api/auth/me and POST /api/auth/logout > TEST-01-04 (AC-01-3): returns { user } for a valid session
+Error: login failed: 404 {"error":{"code":"NOT_FOUND","message":"Not found."}}
+ ❯ loginAgent tests/helpers/users.ts:39:33
+     37|   const agent = request.agent(app)
+     38|   const res = await agent.post('/api/auth/login').send({ email: user.e…
+     39|   if (res.status !== 200) throw new Error(`login failed: ${res.status}…
+       |                                 ^
+     40|   return agent
+     41| }
+ ❯ tests/sprint-1/auth.api.test.ts:70:24
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/15]⎯
+
+ FAIL  tests/sprint-1/auth.api.test.ts > GET /api/auth/me and POST /api/auth/logout > returns 401 UNAUTHENTICATED without a cookie
+AssertionError: expected 404 to be 401 // Object.is equality
+
+- Expected
++ Received
+
+- 401
++ 404
+
+ ❯ tests/sprint-1/auth.api.test.ts:77:24
+     75|   it('returns 401 UNAUTHENTICATED without a cookie', async () => {
+     76|     const res = await request(app).get('/api/auth/me')
+     77|     expect(res.status).toBe(401)
+       |                        ^
+     78|     expect(res.body).toEqual({ error: { code: 'UNAUTHENTICATED', messa…
+     79|   })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/15]⎯
+
+ FAIL  tests/sprint-1/auth.api.test.ts > GET /api/auth/me and POST /api/auth/logout > TEST-01-05 (AC-01-4): logout deletes the session; the old cookie is then rejected
+TypeError: Cannot read properties of undefined (reading 'split')
+ ❯ loginCookie tests/sprint-1/auth.api.test.ts:17:34
+     15|   const res = await request(app).post('/api/auth/login').send({ email:…
+     16|   const raw = sessionCookie(res.headers['set-cookie'])!
+     17|   return { res, raw, cookie: raw.split(';')[0] }
+       |                                  ^
+     18| }
+     19|
+ ❯ tests/sprint-1/auth.api.test.ts:82:24
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/15]⎯
+
+ FAIL  tests/sprint-1/auth.api.test.ts > GET /api/auth/me and POST /api/auth/logout > TEST-01-11 (AC-01-9): logout without a session → 204 with no body
+AssertionError: expected 404 to be 204 // Object.is equality
+
+- Expected
++ Received
+
+- 204
++ 404
+
+ ❯ tests/sprint-1/auth.api.test.ts:93:24
+     91|   it('TEST-01-11 (AC-01-9): logout without a session → 204 with no bod…
+     92|     const res = await request(app).post('/api/auth/logout')
+     93|     expect(res.status).toBe(204)
+       |                        ^
+     94|     expect(res.text).toBe('')
+     95|   })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/15]⎯
+
+ FAIL  tests/sprint-1/auth.api.test.ts > GET /api/auth/me and POST /api/auth/logout > TEST-01-09 (AC-01-7): an expired session → 401 and the row is deleted
+TypeError: Cannot read properties of undefined (reading 'split')
+ ❯ loginCookie tests/sprint-1/auth.api.test.ts:17:34
+     15|   const res = await request(app).post('/api/auth/login').send({ email:…
+     16|   const raw = sessionCookie(res.headers['set-cookie'])!
+     17|   return { res, raw, cookie: raw.split(';')[0] }
+       |                                  ^
+     18| }
+     19|
+ ❯ tests/sprint-1/auth.api.test.ts:98:24
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/15]⎯
+
+ FAIL  tests/sprint-1/auth.api.test.ts > TEST-01-10 (AC-01-8): inactive accounts > an inactive account cannot log in: the same generic 401 INVALID_CREDENTIALS
+AssertionError: expected 404 to be 401 // Object.is equality
+
+- Expected
++ Received
+
+- 401
++ 404
+
+ ❯ tests/sprint-1/auth.api.test.ts:111:24
+    109|     const wrongPw = await request(app).post('/api/auth/login').send({ …
+    110|     const res = await request(app).post('/api/auth/login').send({ emai…
+    111|     expect(res.status).toBe(401)
+       |                        ^
+    112|     expect(res.body).toEqual(wrongPw.body)
+    113|   })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/15]⎯
+
+ FAIL  tests/sprint-1/auth.api.test.ts > TEST-01-10 (AC-01-8): inactive accounts > a session saved before deactivation gets 401 UNAUTHENTICATED on its next request
+Error: login failed: 404 {"error":{"code":"NOT_FOUND","message":"Not found."}}
+ ❯ loginAgent tests/helpers/users.ts:39:33
+     37|   const agent = request.agent(app)
+     38|   const res = await agent.post('/api/auth/login').send({ email: user.e…
+     39|   if (res.status !== 200) throw new Error(`login failed: ${res.status}…
+       |                                 ^
+     40|   return agent
+     41| }
+ ❯ tests/sprint-1/auth.api.test.ts:117:19
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/15]⎯
+
+ FAIL  tests/sprint-1/auth.api.test.ts > TEST-01-07 / TEST-01-12 (AC-01-5): password storage > TEST-01-07: login and /me bodies contain no password or hash
+TypeError: Cannot read properties of undefined (reading 'split')
+ ❯ loginCookie tests/sprint-1/auth.api.test.ts:17:34
+     15|   const res = await request(app).post('/api/auth/login').send({ email:…
+     16|   const raw = sessionCookie(res.headers['set-cookie'])!
+     17|   return { res, raw, cookie: raw.split(';')[0] }
+       |                                  ^
+     18| }
+     19|
+ ❯ tests/sprint-1/auth.api.test.ts:128:36
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/15]⎯
+
+ FAIL  tests/sprint-1/auth.api.test.ts > TEST-01-13 (AC-01-11): session storage and cookie attributes > stores SHA-256(token), not the token; expires 8 h after creation; cookie HttpOnly, SameSite=Lax, Path=/
+TypeError: Cannot read properties of undefined (reading 'split')
+ ❯ loginCookie tests/sprint-1/auth.api.test.ts:17:34
+     15|   const res = await request(app).post('/api/auth/login').send({ email:…
+     16|   const raw = sessionCookie(res.headers['set-cookie'])!
+     17|   return { res, raw, cookie: raw.split(';')[0] }
+       |                                  ^
+     18| }
+     19|
+ ❯ tests/sprint-1/auth.api.test.ts:148:21
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/15]⎯
+
+ FAIL  tests/sprint-1/auth.api.test.ts > TEST-01-13 (AC-01-11): session storage and cookie attributes > adds Secure to the cookie when NODE_ENV=production
+TypeError: Cannot read properties of undefined (reading 'split')
+ ❯ loginCookie tests/sprint-1/auth.api.test.ts:17:34
+     15|   const res = await request(app).post('/api/auth/login').send({ email:…
+     16|   const raw = sessionCookie(res.headers['set-cookie'])!
+     17|   return { res, raw, cookie: raw.split(';')[0] }
+       |                                  ^
+     18| }
+     19|
+ ❯ tests/sprint-1/auth.api.test.ts:164:21
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[15/15]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  15 failed | 1 passed (16)
+   Start at  14:20:20
+   Duration  2.86s (transform 75ms, setup 0ms, import 282ms, tests 324ms, environment 0ms)
+

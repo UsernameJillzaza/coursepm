@@ -1,0 +1,20 @@
+# #7 TDD green run — the same rule tests after the real checkCanSubmit / validateSubmission
+# 2026-11-15T16:14:24+07:00  base commit 73c2337 + real rules
+
+ RUN  v4.1.12 D:/Claude Projects/coursepm-build/server
+
+Loaded Prisma config from prisma.config.ts.
+
+Prisma schema loaded from prisma\schema.prisma.
+Datasource "db": PostgreSQL database "coursepm_b7_test", schema "public" at "localhost:5432"
+
+5 migrations found in prisma/migrations
+
+
+No pending migrations to apply.
+
+ Test Files  1 passed (1)
+      Tests  15 passed (15)
+   Start at  16:14:25
+   Duration  2.65s (transform 13ms, setup 0ms, import 24ms, tests 18ms, environment 0ms)
+

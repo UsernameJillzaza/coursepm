@@ -1,0 +1,356 @@
+# #4 TDD red run 3 — client login UI tests (incl. TEST-UI-05) before the login page / auth context exist
+# 2026-11-15T14:21:15+07:00  base commit 0451f5a + the new tests
+
+ RUN  v4.1.12 D:/Claude Projects/coursepm-build/client
+
+ ❯ tests/sprint-1/app-health.test.tsx (0 test)
+ ❯ tests/sprint-1/auth-ui.test.tsx (6 tests | 6 failed) 6071ms
+     × redirects a visitor without a session from /teams to the login page 1019ms
+     × AC-01-2: shows the server message for wrong credentials and keeps the e-mail 1012ms
+     × AC-01-1: a successful login opens /teams and shows the user name and role 1008ms
+     × AC-01-4: Log out calls the API and returns to the login page 1003ms
+     × a missing field shows a message beside that field and keeps what was typed 1009ms
+     × invalid credentials show one generic alert, mark no field, and keep the typed values 1019ms
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/sprint-1/app-health.test.tsx [ tests/sprint-1/app-health.test.tsx ]
+Error: Failed to resolve import "../../src/components/HealthStatus" from "tests/sprint-1/app-health.test.tsx". Does the file exist?
+  Plugin: vite:import-analysis
+  File: D:/Claude Projects/coursepm-build/client/tests/sprint-1/app-health.test.tsx:2:25
+  1  |  import { render, screen } from "@testing-library/react";
+  2  |  import HealthStatus from "../../src/components/HealthStatus";
+     |                            ^
+  3  |  var _jsxFileName = "D:/Claude Projects/coursepm-build/client/tests/sprint-1/app-health.test.tsx";
+  4  |  import { jsxDEV as _jsxDEV } from "react/jsx-dev-runtime";
+ ❯ TransformPluginContext._formatLog ../../../Claude%20Projects/coursepm/client/node_modules/vite/dist/node/chunks/node.js:8865:39
+ ❯ TransformPluginContext.error ../../../Claude%20Projects/coursepm/client/node_modules/vite/dist/node/chunks/node.js:8862:14
+ ❯ resolveId ../../../Claude%20Projects/coursepm/client/node_modules/vite/dist/node/chunks/node.js:26552:18
+ ❯ ../../../Claude%20Projects/coursepm/client/node_modules/vite/dist/node/chunks/node.js:26651:23
+ ❯ TransformPluginContext.transform ../../../Claude%20Projects/coursepm/client/node_modules/vite/dist/node/chunks/node.js:26624:4
+ ❯ EnvironmentPluginContainer.transform ../../../Claude%20Projects/coursepm/client/node_modules/vite/dist/node/chunks/node.js:8636:14
+ ❯ loadAndTransform ../../../Claude%20Projects/coursepm/client/node_modules/vite/dist/node/chunks/node.js:20112:26
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/7]⎯
+
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 6 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/sprint-1/auth-ui.test.tsx > F-01 authentication UI > redirects a visitor without a session from /teams to the login page
+TestingLibraryElementError: Unable to find role="heading" and name `/log in/i`
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <main
+      class="container py-5"
+    >
+      <h1
+        class="h3"
+      >
+        CoursePM
+      </h1>
+      <p>
+        API status: 
+        connected
+      </p>
+    </main>
+  </div>
+</body>
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <main
+      class="container py-5"
+    >
+      <h1
+        class="h3"
+      >
+        CoursePM
+      </h1>
+      <p>
+        API status: 
+        connected
+      </p>
+    </main>
+  </div>
+</body>
+ ❯ waitForWrapper ../../coursepm/client/node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ ../../coursepm/client/node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ tests/sprint-1/auth-ui.test.tsx:42:25
+     40|     fakeApi({ 'GET /api/auth/me': unauthenticated, 'GET /api/health': …
+     41|     renderAt('/teams')
+     42|     expect(await screen.findByRole('heading', { name: /log in/i })).to…
+       |                         ^
+     43|   })
+     44|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/7]⎯
+
+ FAIL  tests/sprint-1/auth-ui.test.tsx > F-01 authentication UI > AC-01-2: shows the server message for wrong credentials and keeps the e-mail
+TestingLibraryElementError: Unable to find a label with the text of: /e-mail/i
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <main
+      class="container py-5"
+    >
+      <h1
+        class="h3"
+      >
+        CoursePM
+      </h1>
+      <p>
+        API status: 
+        connected
+      </p>
+    </main>
+  </div>
+</body>
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <main
+      class="container py-5"
+    >
+      <h1
+        class="h3"
+      >
+        CoursePM
+      </h1>
+      <p>
+        API status: 
+        connected
+      </p>
+    </main>
+  </div>
+</body>
+ ❯ waitForWrapper ../../coursepm/client/node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ ../../coursepm/client/node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ tests/sprint-1/auth-ui.test.tsx:55:39
+     53|     })
+     54|     renderAt('/login')
+     55|     await userEvent.type(await screen.findByLabelText(/e-mail/i), 'alp…
+       |                                       ^
+     56|     await userEvent.type(screen.getByLabelText(/password/i), 'wrong-pa…
+     57|     await userEvent.click(screen.getByRole('button', { name: /log in/i…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/7]⎯
+
+ FAIL  tests/sprint-1/auth-ui.test.tsx > F-01 authentication UI > AC-01-1: a successful login opens /teams and shows the user name and role
+TestingLibraryElementError: Unable to find a label with the text of: /e-mail/i
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <main
+      class="container py-5"
+    >
+      <h1
+        class="h3"
+      >
+        CoursePM
+      </h1>
+      <p>
+        API status: 
+        connected
+      </p>
+    </main>
+  </div>
+</body>
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <main
+      class="container py-5"
+    >
+      <h1
+        class="h3"
+      >
+        CoursePM
+      </h1>
+      <p>
+        API status: 
+        connected
+      </p>
+    </main>
+  </div>
+</body>
+ ❯ waitForWrapper ../../coursepm/client/node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ ../../coursepm/client/node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ tests/sprint-1/auth-ui.test.tsx:75:39
+     73|     })
+     74|     renderAt('/login')
+     75|     await userEvent.type(await screen.findByLabelText(/e-mail/i), 'alp…
+       |                                       ^
+     76|     await userEvent.type(screen.getByLabelText(/password/i), 'right-pa…
+     77|     await userEvent.click(screen.getByRole('button', { name: /log in/i…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/7]⎯
+
+ FAIL  tests/sprint-1/auth-ui.test.tsx > F-01 authentication UI > AC-01-4: Log out calls the API and returns to the login page
+TestingLibraryElementError: Unable to find role="button" and name `/log out/i`
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <main
+      class="container py-5"
+    >
+      <h1
+        class="h3"
+      >
+        CoursePM
+      </h1>
+      <p>
+        API status: 
+        connected
+      </p>
+    </main>
+  </div>
+</body>
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <main
+      class="container py-5"
+    >
+      <h1
+        class="h3"
+      >
+        CoursePM
+      </h1>
+      <p>
+        API status: 
+        connected
+      </p>
+    </main>
+  </div>
+</body>
+ ❯ waitForWrapper ../../coursepm/client/node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ ../../coursepm/client/node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ tests/sprint-1/auth-ui.test.tsx:94:40
+     92|     })
+     93|     renderAt('/teams')
+     94|     await userEvent.click(await screen.findByRole('button', { name: /l…
+       |                                        ^
+     95|     expect(await screen.findByRole('heading', { name: /log in/i })).to…
+     96|     expect(calls).toContain('POST /api/auth/logout')
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/7]⎯
+
+ FAIL  tests/sprint-1/auth-ui.test.tsx > TEST-UI-05 (AC-01-10): login form errors > a missing field shows a message beside that field and keeps what was typed
+TestingLibraryElementError: Unable to find a label with the text of: /e-mail/i
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <main
+      class="container py-5"
+    >
+      <h1
+        class="h3"
+      >
+        CoursePM
+      </h1>
+      <p>
+        API status: 
+        connected
+      </p>
+    </main>
+  </div>
+</body>
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <main
+      class="container py-5"
+    >
+      <h1
+        class="h3"
+      >
+        CoursePM
+      </h1>
+      <p>
+        API status: 
+        connected
+      </p>
+    </main>
+  </div>
+</body>
+ ❯ waitForWrapper ../../coursepm/client/node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ ../../coursepm/client/node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ tests/sprint-1/auth-ui.test.tsx:114:39
+    112|     })
+    113|     renderAt('/login')
+    114|     await userEvent.type(await screen.findByLabelText(/e-mail/i), 'alp…
+       |                                       ^
+    115|     await userEvent.click(screen.getByRole('button', { name: /log in/i…
+    116|     expect(await screen.findByText('Password is required.')).toBeInThe…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/7]⎯
+
+ FAIL  tests/sprint-1/auth-ui.test.tsx > TEST-UI-05 (AC-01-10): login form errors > invalid credentials show one generic alert, mark no field, and keep the typed values
+TestingLibraryElementError: Unable to find a label with the text of: /e-mail/i
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <main
+      class="container py-5"
+    >
+      <h1
+        class="h3"
+      >
+        CoursePM
+      </h1>
+      <p>
+        API status: 
+        connected
+      </p>
+    </main>
+  </div>
+</body>
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <main
+      class="container py-5"
+    >
+      <h1
+        class="h3"
+      >
+        CoursePM
+      </h1>
+      <p>
+        API status: 
+        connected
+      </p>
+    </main>
+  </div>
+</body>
+ ❯ waitForWrapper ../../coursepm/client/node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ ../../coursepm/client/node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ tests/sprint-1/auth-ui.test.tsx:133:39
+    131|     })
+    132|     renderAt('/login')
+    133|     await userEvent.type(await screen.findByLabelText(/e-mail/i), 'alp…
+       |                                       ^
+    134|     await userEvent.type(screen.getByLabelText(/password/i), 'wrong-pa…
+    135|     await userEvent.click(screen.getByRole('button', { name: /log in/i…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/7]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  6 failed (6)
+   Start at  14:21:16
+   Duration  7.67s (transform 77ms, setup 457ms, import 144ms, tests 6.07s, environment 2.13s)
+
