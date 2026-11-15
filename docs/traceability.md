@@ -11,14 +11,14 @@ The **Result** column is filled from the release test run (Part F).
 | FR-02 | F-01 | 1 | AC-01-3, AC-01-4 | TEST-01-04, TEST-01-05, E2E-01 | |
 | BR-01 | F-01 | 1 | AC-01-6 | TEST-01-08 | |
 | NFR-01 | F-01, F-02 | 1 | AC-02-1, AC-02-7, AC-01-9 | TEST-02-01, TEST-UI-03, TEST-01-11 | |
-| NFR-03 | F-01 | 1 | AC-01-5 | TEST-01-06, TEST-01-07 | |
-| NFR-04 | F-01 | 1 | AC-01-4, AC-01-7, AC-01-8 | TEST-01-05, TEST-01-09, TEST-01-10 | |
-| BR-02 | F-02, F-03 | 1 | AC-02-2, AC-03-2 | TEST-02-02, TEST-03-02, E2E-03 | |
+| NFR-03 | F-01 | 1 | AC-01-5 | TEST-01-06, TEST-01-07, TEST-01-12 | |
+| NFR-04 | F-01 | 1 | AC-01-4, AC-01-7, AC-01-8, AC-01-11 | TEST-01-05, TEST-01-09, TEST-01-10, TEST-01-13 | |
+| BR-02 | F-02, F-03 | 1 | AC-02-2, AC-02-9, AC-03-2 | TEST-02-02, TEST-02-09, TEST-03-02, E2E-03 | |
 | BR-03 | F-02, F-03 | 1 | AC-02-3, AC-03-3 | TEST-02-03, TEST-03-03 | |
-| NFR-02 | F-02 | 1 | AC-02-2 … AC-02-5 | TEST-02-02 … TEST-02-05, E2E-03 | |
-| NFR-07 | F-02 | 1 | AC-02-6, AC-02-8 | TEST-02-06, TEST-02-08 | |
+| NFR-02 | F-02 | 1 | AC-02-2 … AC-02-5, AC-02-9 | TEST-02-02 … TEST-02-05, TEST-02-09, E2E-03 | |
+| NFR-07 | F-02, R-01 | 1 | AC-02-6, AC-02-8, AC-R01-3 | TEST-02-06, TEST-02-08, TEST-R01-03 | |
 | FR-03 | F-03 | 1 | AC-03-1 | TEST-03-01, E2E-01 | |
-| NFR-06 | F-03, R-01 | 1 | AC-03-4 | TEST-03-04, setup check | |
+| NFR-06 | F-03, R-01 | 1 | AC-03-4, AC-R01-2 | TEST-03-04, TEST-R01-02, setup check | |
 | FR-04 | F-04 | 1 | AC-04-1 | TEST-04-01, E2E-02 | |
 | BR-04 | F-04 | 1 | AC-04-2, AC-04-3 | TEST-04-02, TEST-04-03 | |
 | BR-05 | F-04 | 1 | AC-04-4 | TEST-04-04, TEST-04-05 | |
@@ -34,7 +34,7 @@ The **Result** column is filled from the release test run (Part F).
 | FR-10 | F-06 | 1 | AC-06-4 | TEST-06-05, E2E-02 | |
 | BR-09 | F-06 | 1 | AC-06-2, AC-06-3 | TEST-06-02, TEST-06-03 | |
 | BR-10 | F-06 | 1 | AC-06-5 | TEST-06-04, TEST-06-06 | |
-| NFR-10 | R-02 | 1 | AC-04-6, AC-05-8 | TEST-UI-01, TEST-UI-02 | |
+| NFR-10 | R-02 | 1 | AC-R02-1, AC-01-10, AC-02-10, AC-04-6, AC-05-8, AC-05-10, AC-06-6 | TEST-R02-01, TEST-UI-05, TEST-UI-04, TEST-UI-01, TEST-UI-02, TEST-UI-07, TEST-UI-06 | |
 | FR-11 | F-07 | 2 | (Sprint 2 contract) | | |
 | FR-12 | F-08 | 2 | (Sprint 2 contract) | | |
 | FR-13, BR-11 | F-08 | 2 | (Sprint 2 contract) | | |
