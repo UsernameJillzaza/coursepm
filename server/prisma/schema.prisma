@@ -29,6 +29,7 @@ model User {
   supervising       SupervisorAssignment[]
   milestonesCreated Milestone[]
   submissions       Submission[]
+  feedbackGiven     Feedback[]
 }
 
 // NFR-04: the id is SHA-256(cookie token); the token itself is never stored.
@@ -79,16 +80,16 @@ model SupervisorAssignment {
 // F-04 milestones. F-05 adds submissions and uses (id, teamId) as a
 // composite target so a submission's team always matches its milestone.
 model Milestone {
-  id           Int      @id @default(autoincrement())
+  id           Int          @id @default(autoincrement())
   teamId       Int
-  team         Team     @relation(fields: [teamId], references: [id])
+  team         Team         @relation(fields: [teamId], references: [id])
   title        String
   description  String
-  deadline     DateTime @db.Timestamptz(3)
-  maxRevisions Int      @default(3)
+  deadline     DateTime     @db.Timestamptz(3)
+  maxRevisions Int          @default(3)
   createdById  Int
-  createdBy    User     @relation(fields: [createdById], references: [id])
-  createdAt    DateTime @default(now()) @db.Timestamptz(3)
+  createdBy    User         @relation(fields: [createdById], references: [id])
+  createdAt    DateTime     @default(now()) @db.Timestamptz(3)
   submissions  Submission[]
 
   @@unique([id, teamId])
@@ -114,7 +115,21 @@ model Submission {
   submittedById Int
   submittedBy   User      @relation(fields: [submittedById], references: [id])
   submittedAt   DateTime  @db.Timestamptz(3)
+  feedback      Feedback?
 
   @@unique([milestoneId, revision])
   @@index([teamId])
+}
+
+// F-06: one feedback row belongs to exactly one submission revision.
+model Feedback {
+  id           Int        @id @default(autoincrement())
+  submissionId Int        @unique
+  submission   Submission @relation(fields: [submissionId], references: [id])
+  supervisorId Int
+  supervisor   User       @relation(fields: [supervisorId], references: [id])
+  body         String
+  createdAt    DateTime   @default(now()) @db.Timestamptz(3)
+
+  @@index([supervisorId])
 }
