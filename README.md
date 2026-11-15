@@ -32,7 +32,12 @@ Node.js 24, PostgreSQL 18 running locally, Microsoft Edge (used by the Playwrigh
    ```bash
    npm --prefix server run db:seed
    ```
-6. Run the app in two terminals, then open http://localhost:5173 (the page shows `API status: connected` when the API is up) and log in with a demo account below:
+6. Run the tests. `npm test` runs the server tests (against `DATABASE_URL_TEST`, which they migrate themselves) and the client tests; the Playwright journeys need the seeded development database from step 5 and start both dev servers on their own. The [Tests](#tests) section lists every command.
+   ```bash
+   npm test
+   npm run test:e2e
+   ```
+7. Run the app in two terminals, then open http://localhost:5173 (the page shows `API status: connected` when the API is up) and log in with a demo account below:
    ```bash
    npm --prefix server run dev
    npm --prefix client run dev
