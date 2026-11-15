@@ -1,0 +1,18 @@
+
+ RUN  v4.1.12 C:/Users/BTCOM/Desktop/coursepm/server
+
+Loaded Prisma config from prisma.config.ts.
+
+Prisma schema loaded from prisma\schema.prisma.
+Datasource "db": PostgreSQL database "coursepm_issue5_test", schema "public" at "127.0.0.1:55433"
+
+5 migrations found in prisma/migrations
+
+
+No pending migrations to apply.
+
+ Test Files  1 passed (1)
+      Tests  6 passed (6)
+   Start at  16:39:49
+   Duration  3.37s (transform 18ms, setup 0ms, import 34ms, tests 4ms, environment 0ms)
+
