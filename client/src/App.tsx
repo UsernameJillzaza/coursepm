@@ -5,8 +5,10 @@ import { api } from './api'
 export default function App() {
   const [status, setStatus] = useState<'loading' | 'ok' | 'error'>('loading')
   useEffect(() => {
-    api<{ status: string }>('/health')
-      .then(() => setStatus('ok'))
+    // AC-R02-1: only a 200 whose body says status "ok" counts as connected;
+    // an unhealthy body, an error status or a network failure is unreachable.
+    api<{ status?: string }>('/health')
+      .then((body) => setStatus(body?.status === 'ok' ? 'ok' : 'error'))
       .catch(() => setStatus('error'))
   }, [])
   return (
