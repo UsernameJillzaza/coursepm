@@ -17,8 +17,13 @@ Node.js 24, PostgreSQL 18 running locally, Microsoft Edge (used by the Playwrigh
    npm --prefix server install
    npm --prefix client install
    ```
-2. Copy `server/.env.example` to `server/.env` and fill in your PostgreSQL user and password. `DATABASE_URL_TEST` **must name a different database** from `DATABASE_URL`: the tests refuse to start otherwise, so they can never migrate or write your development data. `.env` is git-ignored; never commit it.
-3. Run the app in two terminals, then open http://localhost:5173 (the page shows `API status: connected` when the API is up):
+2. Create two empty PostgreSQL databases, one for development and one for the tests (for example with `psql -U postgres`):
+   ```sql
+   CREATE DATABASE coursepm;
+   CREATE DATABASE coursepm_test;
+   ```
+3. Copy `server/.env.example` to `server/.env` and fill in your PostgreSQL user and password. `DATABASE_URL_TEST` **must name a different database** from `DATABASE_URL`: the tests refuse to start otherwise, so they can never migrate or write your development data. `.env` is git-ignored; never commit it.
+4. Run the app in two terminals, then open http://localhost:5173 (the page shows `API status: connected` when the API is up):
    ```bash
    npm --prefix server run dev
    npm --prefix client run dev

@@ -1,11 +1,11 @@
 import express from 'express'
 import type { NextFunction, Request, Response } from 'express'
-import { AppError, sendError } from './http'
+import { sendError } from './http'
 
 // The app is exported without listen() so Supertest can import it; server.ts
 // owns listen().
 const app = express()
-app.use(express.json({ limit: '100kb' }))
+app.use(express.json())
 
 // GET /api/health — public liveness check (SDS §4).
 app.get('/api/health', (_req, res) => {
@@ -17,12 +17,11 @@ app.use('/api', (_req, res) => {
   sendError(res, 404, 'NOT_FOUND', 'Not found.')
 })
 
-// Last-resort error handler (Express 5 forwards rejected async handlers here).
+// Last-resort error handler (Express 5 forwards rejected async handlers here):
+// unexpected errors use the standard envelope with no stack or SQL (R-01).
+// Mapping request-body errors to 400/413 and exporting the handler for
+// TEST-02-06 belong to F-02 (Issue #5).
 app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
-  if (err instanceof AppError) return sendError(res, err.status, err.code, err.message, err.fields)
-  if ((err as { type?: string }).type === 'entity.parse.failed') {
-    return sendError(res, 400, 'VALIDATION_ERROR', 'Malformed JSON body.')
-  }
   console.error(err)
   return sendError(res, 500, 'INTERNAL_ERROR', 'Unexpected server error.')
 })
