@@ -93,7 +93,8 @@ never written in the repository.
 | `/milestones/:milestoneId` | Milestone detail: deadline countdown, revisions used / limit, submit form (Student, while open), revision list with feedback, feedback form (Supervisor) | Student, Supervisor |
 
 **Shared behavior (R-02).** A top bar shows the user's name and role and a **Log out** button. A
-`RequireAuth` route wrapper sends a user with no session to `/login`. Every form disables its submit
+`RequireAuth` route wrapper sends a user with no session to `/login`, and any 401 from the API while a
+page is open (session expired, logged out elsewhere, account deactivated) does the same. Every form disables its submit
 button while saving (no duplicate submissions), shows field errors returned from the API next to the
 field, and keeps the typed values on error. Every list has a loading spinner, an empty state
 ("No milestones yet") and an error alert with **Retry**. Times are shown in Asia/Bangkok

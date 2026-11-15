@@ -10,9 +10,9 @@ The **Result** column is filled from the release test run (Part F).
 | FR-01 | F-01 | 1 | AC-01-1, AC-01-2 | TEST-01-01, TEST-01-02, TEST-01-03, E2E-01 | |
 | FR-02 | F-01 | 1 | AC-01-3, AC-01-4 | TEST-01-04, TEST-01-05, E2E-01 | |
 | BR-01 | F-01 | 1 | AC-01-6 | TEST-01-08 | |
-| NFR-01 | F-01, F-02 | 1 | AC-02-1 | TEST-02-01 | |
+| NFR-01 | F-01, F-02 | 1 | AC-02-1, AC-02-7 | TEST-02-01, TEST-UI-03 | |
 | NFR-03 | F-01 | 1 | AC-01-5 | TEST-01-06, TEST-01-07 | |
-| NFR-04 | F-01 | 1 | AC-01-4, AC-01-7 | TEST-01-05, TEST-01-09 | |
+| NFR-04 | F-01 | 1 | AC-01-4, AC-01-7, AC-01-8 | TEST-01-05, TEST-01-09, TEST-01-10 | |
 | BR-02 | F-02, F-03 | 1 | AC-02-2, AC-03-2 | TEST-02-02, TEST-03-02 | |
 | BR-03 | F-02, F-03 | 1 | AC-02-3, AC-03-3 | TEST-02-03, TEST-03-03 | |
 | NFR-02 | F-02 | 1 | AC-02-2 … AC-02-5 | TEST-02-02 … TEST-02-05 | |
@@ -29,7 +29,7 @@ The **Result** column is filled from the release test run (Part F).
 | BR-06 | F-05 | 1 | AC-05-3 | TEST-05-03, TEST-05-04 | |
 | BR-07 | F-05 | 1 | AC-05-4 | TEST-05-05, TEST-05-06 | |
 | BR-08 | F-05 | 1 | AC-05-5 | TEST-05-07 | |
-| NFR-05 | F-05 | 1 | AC-05-6 | TEST-05-08 | |
+| NFR-05 | F-05 | 1 | AC-05-6, AC-05-9 | TEST-05-08, TEST-05-10 | |
 | FR-09 | F-06 | 1 | AC-06-1 | TEST-06-01, E2E-02 | |
 | FR-10 | F-06 | 1 | AC-06-4 | TEST-06-05, E2E-02 | |
 | BR-09 | F-06 | 1 | AC-06-2, AC-06-3 | TEST-06-02, TEST-06-03 | |
