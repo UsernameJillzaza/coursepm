@@ -1,0 +1,11 @@
+// CoursePM data model — docs/system-sds.md §2. Each feature adds its tables
+// through its own migration (F-01 users/sessions, F-03 teams, …).
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
