@@ -87,6 +87,10 @@ creates: 2 supervisors, 6 students, and 3 teams (Team Alpha supervised by Superv
 Team Gamma supervised by Supervisor 2). Demo passwords come from `SEED_PASSWORD` in `.env` and are
 never written in the repository.
 
+The seed is delivered in two steps: F-01 creates the `User`/`Session` migration and initial Student A1
+and Supervisor 1 accounts so authentication is testable on its own; F-03 adds the team tables and
+extends the seed to the full set above. The final seed remains one repeatable command.
+
 ## 3. UI structure and conventions
 
 | Route | Screen | Roles |
