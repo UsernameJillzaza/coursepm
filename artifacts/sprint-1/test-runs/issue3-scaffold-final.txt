@@ -1,0 +1,78 @@
+2026-11-15 13:58:25 a005adf branch=feature/3-scaffold
+commands: npm --prefix server test -- --reporter=verbose ; npm --prefix client test -- --reporter=verbose ; (cd server && npx tsc --noEmit) ; npm --prefix client run build
+========== server ==========
+
+> coursepm-server@0.1.0 test
+> vitest run --reporter=verbose
+
+
+ RUN  v4.1.12 D:/Claude Projects/coursepm-build/server
+
+Loaded Prisma config from prisma.config.ts.
+
+Prisma schema loaded from prisma\schema.prisma.
+Datasource "db": PostgreSQL database "coursepm_test", schema "public" at "localhost:5432"
+
+No migration found in prisma/migrations
+
+
+No pending migrations to apply.
+ ✓ tests/sprint-1/test-database.test.ts > TEST-R01-02 assertSeparateTestDatabase > accepts a test database that differs from the development one and returns its name 1ms
+ ✓ tests/sprint-1/test-database.test.ts > TEST-R01-02 assertSeparateTestDatabase > refuses a missing or empty DATABASE_URL_TEST 1ms
+ ✓ tests/sprint-1/test-database.test.ts > TEST-R01-02 assertSeparateTestDatabase > refuses the identical URL as the test database 0ms
+ ✓ tests/sprint-1/test-database.test.ts > TEST-R01-02 assertSeparateTestDatabase > refuses the same database with different query parameters as the test database 0ms
+ ✓ tests/sprint-1/test-database.test.ts > TEST-R01-02 assertSeparateTestDatabase > refuses the same database through 127.0.0.1 as the test database 0ms
+ ✓ tests/sprint-1/test-database.test.ts > TEST-R01-02 assertSeparateTestDatabase > refuses the same database with the default port omitted as the test database 0ms
+ ✓ tests/sprint-1/test-database.test.ts > TEST-R01-02 assertSeparateTestDatabase > refuses to run when DATABASE_URL is missing or empty, because the two databases cannot be compared 0ms
+ ✓ tests/sprint-1/test-database.test.ts > TEST-R01-02 assertSeparateTestDatabase > refuses a test URL that is not a PostgreSQL URL 0ms
+ ✓ tests/sprint-1/test-database.test.ts > TEST-R01-02 global setup > fails before running any migration when the test URL is missing or points to the dev database 1ms
+ ✓ tests/sprint-1/test-database.test.ts > TEST-R01-02 global setup > ignores a DATABASE_URL_DEV inherited from the outside environment and checks the real DATABASE_URL 0ms
+ ✓ tests/sprint-1/test-database.test.ts > TEST-R01-02 global setup > migrates only the test database when the configuration is valid 0ms
+ ✓ tests/sprint-1/test-database.test.ts > TEST-R01-02 the test connection really selects the test database > SELECT current_database() returns the DATABASE_URL_TEST database, not the development one 91ms
+ ✓ tests/sprint-1/health.api.test.ts > GET /api/health > TEST-R01-01 (AC-R01-1): returns 200 { status: "ok", service: "CoursePM API" } without a session 23ms
+ ✓ tests/sprint-1/health.api.test.ts > GET /api/health > TEST-R01-03 / TEST-02-07 (AC-R01-3, AC-02-8): an unknown /api route → 404 NOT_FOUND "Not found." with no internal details 4ms
+
+ Test Files  2 passed (2)
+      Tests  14 passed (14)
+   Start at  13:58:26
+   Duration  3.11s (transform 79ms, setup 0ms, import 305ms, tests 127ms, environment 0ms)
+
+EXIT server=0
+========== client ==========
+
+> coursepm-client@0.1.0 test
+> vitest run --reporter=verbose
+
+
+ RUN  v4.1.12 D:/Claude Projects/coursepm-build/client
+
+ ✓ tests/sprint-1/app-health.test.tsx > TEST-R02-01 starter app API status > shows "API status: checking…" while the health request is pending 24ms
+ ✓ tests/sprint-1/app-health.test.tsx > TEST-R02-01 starter app API status > shows "API status: connected" on 200 with the expected health body 10ms
+ ✓ tests/sprint-1/app-health.test.tsx > TEST-R02-01 starter app API status > shows "API status: unreachable" when the request fails 16ms
+ ✓ tests/sprint-1/app-health.test.tsx > TEST-R02-01 starter app API status > shows "API status: unreachable" for an unhealthy 200 response 16ms
+ ✓ tests/sprint-1/app-health.test.tsx > TEST-R02-01 starter app API status > shows "API status: unreachable" for an error status 15ms
+
+ Test Files  1 passed (1)
+      Tests  5 passed (5)
+   Start at  13:58:34
+   Duration  1.76s (transform 42ms, setup 256ms, import 52ms, tests 82ms, environment 1.21s)
+
+EXIT client=0
+========== typecheck ==========
+EXIT typecheck=0
+========== build ==========
+
+> coursepm-client@0.1.0 build
+> tsc -b && vite build
+
+vite v8.3.8 building client environment for production...
+transforming...
+✓ 24 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.39 kB │ gzip:  0.26 kB
+dist/assets/index-BbRluUcX.css  230.30 kB │ gzip: 30.70 kB
+dist/assets/index-Bm7WDoMr.js   257.01 kB │ gzip: 81.79 kB
+
+✓ built in 225ms
+EXIT build=0
