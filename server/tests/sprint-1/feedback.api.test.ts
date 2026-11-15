@@ -129,7 +129,7 @@ describe('F-06 feedback API', () => {
     expect(accepted.status).toBe(201)
   })
 
-  it('requires a session; missing and malformed submission IDs return 404 in the standard shape', async () => {
+  it('TEST-02-01 feedback part (AC-02-1): requires a session; missing and malformed submission IDs return 404 in the standard shape', async () => {
     const noSession = await request(app).post(endpoint(revision1.id)).send({ body: 'Review' })
     expect(noSession.status).toBe(401)
     expect(Object.keys(noSession.body)).toEqual(['error'])

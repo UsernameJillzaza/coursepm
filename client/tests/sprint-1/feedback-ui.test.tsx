@@ -1,4 +1,4 @@
-import { render, screen, within } from '@testing-library/react'
+import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import App from '../../src/App'
@@ -82,8 +82,13 @@ describe('F-06 feedback UI', () => {
     renderAt('/milestones/10')
     await userEvent.type(await screen.findByRole('textbox', { name: 'Feedback for revision 1' }), savedFeedback.body)
     await userEvent.click(screen.getByRole('button', { name: 'Save feedback' }))
-    expect(await screen.findByText(savedFeedback.body)).toBeInTheDocument()
-    expect(screen.queryByRole('button', { name: 'Save feedback' })).not.toBeInTheDocument()
+    // The list reloads after the save (spinner, then the new data), so wait for
+    // the final state and re-query each time: holding on to an element found
+    // during the reload made this test flaky (it could be replaced a moment later).
+    await waitFor(() => {
+      expect(screen.getByText(savedFeedback.body)).toBeInTheDocument()
+      expect(screen.queryByRole('button', { name: 'Save feedback' })).not.toBeInTheDocument()
+    })
     expect(listCalls).toBe(2)
   })
 

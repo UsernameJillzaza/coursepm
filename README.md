@@ -5,7 +5,8 @@ CPE334 group project (theme 6), team TH-042_P6. Student teams submit milestone w
 ## Documents
 - [SRS](docs/srs.md) · [Feature inventory](docs/features.md) · [Traceability](docs/traceability.md)
 - [System-Level SDS](docs/system-sds.md) · [Three-sprint plan](docs/sprints/plan.md)
-- Sprint 1: [feature contracts, STS, Definition of Done, Issue plan](docs/sprints/sprint-1/)
+- Sprint 1: [feature contracts, STS, Definition of Done, Issue plan](docs/sprints/sprint-1/) · [release notes (v0.1.0)](docs/sprints/sprint-1/release-notes.md)
+- Sprint 1 evidence: [release-candidate test run](artifacts/sprint-1/test-runs/sprint1-release-run.txt) · [screenshots](artifacts/sprint-1/screenshots/) · [TDD logs](artifacts/sprint-1/tdd/)
 
 ## Requirements
 Node.js 24, PostgreSQL 18 running locally, Microsoft Edge (used by the Playwright tests).
@@ -23,20 +24,24 @@ Node.js 24, PostgreSQL 18 running locally, Microsoft Edge (used by the Playwrigh
    CREATE DATABASE coursepm_test;
    ```
 3. Copy `server/.env.example` to `server/.env` and fill in your PostgreSQL user and password. `DATABASE_URL_TEST` **must name a different database** from `DATABASE_URL`: the tests refuse to start otherwise, so they can never migrate or write your development data. `.env` is git-ignored; never commit it.
-4. Run the app in two terminals, then open http://localhost:5173 (the page shows `API status: connected` when the API is up):
+4. Apply the migrations to your development database:
+   ```bash
+   npm --prefix server run db:deploy
+   ```
+5. Load the synthetic demo data (8 accounts, 3 teams). Every demo account uses the `SEED_PASSWORD` from your `server/.env`, and the seed is safe to run again:
+   ```bash
+   npm --prefix server run db:seed
+   ```
+6. Run the tests. `npm test` runs the server tests (against `DATABASE_URL_TEST`, which they migrate themselves) and the client tests; the Playwright journeys need the seeded development database from step 5 and start both dev servers on their own. The [Tests](#tests) section lists every command.
+   ```bash
+   npm test
+   npm run test:e2e
+   ```
+7. Run the app in two terminals, then open http://localhost:5173 (the page shows `API status: connected` when the API is up) and log in with a demo account below:
    ```bash
    npm --prefix server run dev
    npm --prefix client run dev
    ```
-
-Apply the migrations to your development database:
-```bash
-npm --prefix server run db:deploy
-```
-Then load the synthetic demo data (8 accounts, 3 teams). Every demo account uses the `SEED_PASSWORD` from your `server/.env`, and the seed is safe to run again:
-```bash
-npm --prefix server run db:seed
-```
 
 ## Demo accounts (synthetic)
 | E-mail | Role | Team |
@@ -53,4 +58,5 @@ npm --prefix server run db:seed
 | `npm run test:server` | Vitest + Supertest against `DATABASE_URL_TEST` (checked to be a separate database, then migrated) |
 | `npm run test:client` | Vitest + React Testing Library component tests |
 | `npm --prefix client run build` | Type-check and production build of the client |
-| `npm run test:e2e` | Playwright journeys in Edge against the seeded development database (starts both dev servers if they aren't running) |
+| `cd server && npx tsc --noEmit` | Type-check of the server |
+| `npm run test:e2e` | Playwright journeys in Edge against the seeded development database (starts both dev servers if they aren't running). Run `db:seed` first; each run adds a "Design review <timestamp>" milestone to Team Alpha and rewrites the screenshots in `artifacts/sprint-1/screenshots/` |
