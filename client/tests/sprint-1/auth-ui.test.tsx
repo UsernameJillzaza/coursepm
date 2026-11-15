@@ -96,6 +96,21 @@ describe('F-01 authentication UI', () => {
     expect(calls).toContain('POST /api/auth/logout')
   })
 
+
+  it('TEST-UI-03 (AC-02-7): a 401 from any API call mid-session sends the user to the login page', async () => {
+    fakeApi({
+      'GET /api/auth/me': () => ({ status: 200, body: { user: student } }),
+      'GET /api/health': () => ({ status: 200, body: { status: 'ok' } }),
+      // The session expired after the page loaded: the next data call answers 401.
+      'GET /api/teams': unauthenticated,
+    })
+    renderAt('/teams')
+    expect(await screen.findByRole('heading', { name: /log in/i })).toBeInTheDocument()
+    // No private data stays on screen: the signed-in name and Log out are gone.
+    expect(screen.queryByText('Alpha Student 1')).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /log out/i })).not.toBeInTheDocument()
+  })
+
 })
 
 describe('TEST-UI-05 (AC-01-10): login form errors', () => {

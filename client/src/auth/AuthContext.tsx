@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react'
-import { api } from '../api'
+import { api, SESSION_LOST_EVENT } from '../api'
 
 export type Role = 'STUDENT' | 'SUPERVISOR'
 export type User = { id: number; name: string; email: string; role: Role }
@@ -19,6 +19,13 @@ const AuthContext = createContext<AuthState | null>(null)
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
+
+  // AC-02-7: any 401 from the API means the session is gone.
+  useEffect(() => {
+    const onLost = () => setUser(null)
+    window.addEventListener(SESSION_LOST_EVENT, onLost)
+    return () => window.removeEventListener(SESSION_LOST_EVENT, onLost)
+  }, [])
 
   useEffect(() => {
     api<{ user: User }>('/auth/me')
