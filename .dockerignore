@@ -1,0 +1,24 @@
+# Keep the build context small and keep secrets out of the image.
+# Secrets: real env files never enter the image (values come from the runtime).
+**/.env
+**/.env.*
+
+# Installed and generated files: rebuilt inside the image.
+**/node_modules
+**/dist
+**/build
+server/src/generated
+
+# Not needed to build or run the app.
+.git
+.github
+.claude
+artifacts
+e2e
+test-results
+playwright-report
+coverage
+**/*.tsbuildinfo
+**/*.log
+server/uploads
+gha-creds-*.json
