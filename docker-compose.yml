@@ -1,0 +1,56 @@
+# CoursePM local run with its database (Lab 5, Issue #25, check C-03).
+#
+#   cp .env.example .env      # then replace every placeholder value
+#   docker compose up --build
+#   open http://localhost:3000
+#
+# Services: db (PostgreSQL) -> migrate (migrations + seed, runs once, exits)
+# -> app (API + built client). Every value comes from .env; nothing secret is
+# written here. `docker compose down` keeps the data; `down -v` deletes it.
+name: coursepm
+
+services:
+  db:
+    image: postgres:18-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:?Set POSTGRES_USER in .env (see .env.example)}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env (see .env.example)}
+      POSTGRES_DB: ${POSTGRES_DB:?Set POSTGRES_DB in .env (see .env.example)}
+    volumes:
+      # postgres 18 images keep data under /var/lib/postgresql/<major>/docker
+      - pgdata:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$${POSTGRES_USER}\" -d \"$${POSTGRES_DB}\""]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # Same image as the app; on GCP this step is a Cloud Run job.
+  migrate:
+    build: .
+    image: coursepm:local
+    restart: "no"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}?schema=public
+      SEED_PASSWORD: ${SEED_PASSWORD:?Set SEED_PASSWORD in .env (see .env.example)}
+    command: ["sh", "-c", "npx prisma migrate deploy && npx prisma db seed"]
+
+  app:
+    build: .
+    image: coursepm:local
+    restart: unless-stopped
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}?schema=public
+      SESSION_TTL_HOURS: ${SESSION_TTL_HOURS:-8}
+    ports:
+      - "${APP_PORT:-3000}:3000"
+
+volumes:
+  pgdata:
