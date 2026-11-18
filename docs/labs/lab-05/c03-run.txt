@@ -1,0 +1,44 @@
+commit: b20cd67
+date:   2026-11-18T18:07:02Z
+docker: Docker version 29.9.3, build 5457199
+compose: 5.7.0
+
+== docker build with no .env present
+PASS  docker build exit status: 0
+
+== secrets in the image
+PASS  docker history lines matching password|secret|database_url: 0
+PASS  .env files in /app and /app/server: 0
+PASS  image env vars matching seed|database|postgres: 0
+PASS  container user id (non-root node): 1000
+
+== docker compose up --build -d
+PASS  docker compose up exit status: 0
+SERVICE   STATUS
+app       Up 6 seconds (healthy)
+db        Up 19 seconds (healthy)
+migrate   Exited (0) 7 seconds ago
+PASS  migrate exited 0
+PASS  app healthy
+
+== API on the published port (http://localhost:8080)
+GET /api/health -> 200 {"status":"ok","service":"CoursePM API"}
+PASS  GET /api/health status: 200
+GET /api/ready  -> 200 {"status":"ready","db":"connected"}
+PASS  GET /api/ready status: 200
+PASS  readiness reports the database connected
+PASS  GET / (client) status: 200
+
+== sign in as the seeded Student alpha1@coursepm.test (password: SEED_PASSWORD from .env)
+PASS  POST /api/auth/login status: 200
+GET /api/auth/me -> 200 {"user":{"id":3,"name":"Alpha Student 1","email":"alpha1@coursepm.test","role":"STUDENT"}}
+PASS  GET /api/auth/me status: 200
+PASS  signed in as a Student
+
+== graceful shutdown
+CoursePM API listening on http://localhost:3000
+SIGTERM received: closing the HTTP server
+PASS  docker compose stop app: 308 ms
+PASS  app logged the SIGTERM shutdown
+
+RESULT: PASS (every C-03 check passed)

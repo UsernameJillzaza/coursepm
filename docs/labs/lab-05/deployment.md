@@ -15,28 +15,33 @@ React client and `/api` from one origin. The Vite `/api` proxy is used only in
 local development. Sessions live in PostgreSQL, and submissions store links,
 not uploaded files. No required application data is stored only in the container.
 
-The production image must place the compiled server at `server/dist` and the
-built client at `client/dist`, or set `CLIENT_DIST_DIR` to the actual client
-directory. Its web process starts the server only. A separate Cloud Run job
+The production image (root `Dockerfile`, #25) places the compiled server at
+`/app/server/dist` and the built client at `/app/client/dist`, which is the
+default `CLIENT_DIST_DIR` resolves to, so the variable is not set in the image.
+Its web process starts the server only. A separate Cloud Run job
 applies migrations with `prisma migrate deploy` and runs the idempotent seed
 before the service revision is updated. A failed migration stops the release.
 
 ## Environment variables
 
-`server/.env.example` is the committed template. `server/.env` is local and
-ignored by Git. No real credential belongs in the repository, image, logs or
+There are two committed templates. The root `.env.example` is for
+`docker compose up` (#25): it holds the PostgreSQL container settings,
+`SEED_PASSWORD`, `SESSION_TTL_HOURS` and `APP_PORT`, and Compose builds
+`DATABASE_URL` from it. `server/.env.example` is for running the server and
+tests directly with Node. Both copies (`.env`, `server/.env`) are local and
+ignored by Git and by `.dockerignore`. No real credential belongs in the repository, image, logs or
 submission PDF. The client reads no environment variable at runtime and calls
 relative `/api` URLs.
 
 | Variable | Purpose | Secret? | Source |
 | --- | --- | --- | --- |
-| `DATABASE_URL` | PostgreSQL connection for API, migrations and seed | Yes | Local `server/.env`; Secret Manager in GCP |
+| `DATABASE_URL` | PostgreSQL connection for API, migrations and seed | Yes | Local `server/.env`; built by Compose from the root `.env`; Secret Manager in GCP |
 | `DATABASE_URL_TEST` | Separate PostgreSQL database for integration tests | Yes | Local `server/.env`; temporary CI test database; never the live database |
 | `PORT` | HTTP port listened to by Express | No | Local `server/.env`; Cloud Run runtime |
 | `NODE_ENV` | Enables production cookies and static client serving | No | Local `server/.env`; production service configuration |
 | `CLIENT_DIST_DIR` | Optional path to built React files; defaults to `client/dist` beside `server/` | No | Image layout, or service configuration if the layout differs |
 | `SESSION_TTL_HOURS` | Session lifetime; defaults to 8 hours | No | Local `server/.env`; production service configuration |
-| `SEED_PASSWORD` | Password for synthetic Student and Supervisor demo accounts | Yes | Local `server/.env`; Secret Manager for the migration/seed job in GCP |
+| `SEED_PASSWORD` | Password for synthetic Student and Supervisor demo accounts | Yes | Local `server/.env` or root `.env`; Secret Manager for the migration/seed job in GCP |
 
 The seed creates six Student and two Supervisor demo accounts. It uses
 `SEED_PASSWORD` supplied at run time, upserts the records, and resets the demo
@@ -67,6 +72,61 @@ and server, set `NODE_ENV=production`, and start the compiled server with
 `npm --prefix server start`. The server serves `/`, SPA routes, `/api/health`,
 and `/api/ready` on `PORT`. `/api/ready` returns 503 if PostgreSQL cannot be
 reached; `/api/health` remains a database-independent liveness check.
+
+## Docker: fresh clone (C-03)
+
+The root `Dockerfile` is a multi-stage build on `node:24-alpine`: it builds the
+client, builds the server (`prisma generate` and `tsc`), then copies into the
+final stage the compiled server and client plus what the migrate/seed step needs
+(`node_modules`, `src/` for the `tsx` seed and the generated Prisma client,
+`prisma/` and `prisma.config.ts`). The final stage runs `node dist/server.js` as
+the non-root `node` user on port 3000. No build-time secret or `.env` file goes
+into the image. `docker-compose.yml` runs three services in
+order: `db` (PostgreSQL 18, health-checked), `migrate` (the same image running
+`prisma migrate deploy` and the idempotent seed, then exiting), and `app`, which
+starts only after `migrate` exits successfully and reports healthy once
+`/api/ready` answers 200. Data persists in the `pgdata` volume until
+`docker compose down -v`. Open `http://localhost:<APP_PORT>`, not a LAN IP: the
+image runs with `NODE_ENV=production`, so the session cookie is `Secure`, which
+browsers accept over plain HTTP only on `localhost`.
+
+```sh
+git clone https://github.com/UsernameJillzaza/coursepm.git && cd coursepm
+cp .env.example .env        # replace the placeholders
+docker compose up --build -d
+docker compose ps -a        # migrate: Exited (0); db: healthy; app: healthy
+curl -s "http://localhost:$(docker compose port app 3000 | sed 's/.*://')/api/ready"
+docker compose down -v      # stop and delete the local database
+```
+
+The host port is `APP_PORT` from `.env` (default 3000); `docker compose port app 3000`
+prints the one Compose actually published, so the `curl` works for any value.
+`scripts/verify-c03.sh` runs every C-03 check in one go (no-`.env` build, image
+secret checks, Compose status, health and readiness, sign-in, shutdown time). Each
+required check prints `PASS` or `FAIL`, and the script exits 1 if any fails (2 if
+`.env` is missing), so a failure cannot be mistaken for a pass. `.env` is moved
+aside only for the no-`.env` build and is put back on any exit, including Ctrl+C.
+It prints only statuses and API bodies, never the `.env`, passwords, connection
+strings or cookies. Run it with a redirect, not `| tee`, so `$?` is the script's
+own exit status:
+
+```sh
+sh scripts/verify-c03.sh > c03-run.txt 2>&1; echo "exit $?"
+```
+
+The server handles `SIGTERM` (sent by `docker compose stop`/`down` and by Cloud
+Run on scale-in or a new revision): it stops accepting connections, lets open
+requests finish, disconnects Prisma and exits, with an 8-second limit inside the
+runtime's 10-second grace period. Without it, `node` as PID 1 ignored the signal
+and was killed after 10 seconds.
+
+**C-03 evidence.** The output of `scripts/verify-c03.sh` from a fresh clone in
+Cloud Shell, with only the `.env.example` values and `APP_PORT=8080`, is in
+[c03-run.txt](c03-run.txt); its first line is the tested commit. That run
+started from an empty Docker image and build cache. An earlier run at `ed62ccc`
+on a newly provisioned VM reported `docker build` exit 1 with its log discarded,
+so its cause is unknown; the script now prints the log tail on failure, and the
+cold-cache rerun above passed.
 
 ## GCP and release record (complete in #27-#29)
 
