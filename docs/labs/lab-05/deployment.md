@@ -94,10 +94,17 @@ browsers accept over plain HTTP only on `localhost`.
 git clone https://github.com/UsernameJillzaza/coursepm.git && cd coursepm
 cp .env.example .env        # replace the placeholders
 docker compose up --build -d
-docker compose ps -a        # migrate: Exited (0); db: healthy; app: Up
-curl -s localhost:3000/api/ready
+docker compose ps -a        # migrate: Exited (0); db: healthy; app: healthy
+curl -s "http://localhost:$(docker compose port app 3000 | sed 's/.*://')/api/ready"
 docker compose down -v      # stop and delete the local database
 ```
+
+The host port is `APP_PORT` from `.env` (default 3000); `docker compose port app 3000`
+prints the one Compose actually published, so the `curl` works for any value.
+`scripts/verify-c03.sh` runs every C-03 check in one go (no-`.env` build, image
+secret checks, Compose status, health and readiness, sign-in, shutdown time) and
+prints only statuses and API bodies, never the `.env`, passwords, connection
+strings or cookies.
 
 The server handles `SIGTERM` (sent by `docker compose stop`/`down` and by Cloud
 Run on scale-in or a new revision): it stops accepting connections, lets open
@@ -105,22 +112,9 @@ requests finish, disconnects Prisma and exits, with an 8-second limit inside the
 runtime's 10-second grace period. Without it, `node` as PID 1 ignored the signal
 and was killed after 10 seconds.
 
-Verified in Cloud Shell on 2026-11-18 from a fresh clone with only the template
-values: at `6d7a685`, Compose exited 0, `migrate` exited 0, `/api/health` and
-`/api/ready` returned 200 and a seeded Student signed in through the UI; at
-`f7cbfff`, after the shutdown fix, `docker compose stop app` took 0.2 seconds
-(10.2 seconds before). At `732a0cb`, with the `app` healthcheck added:
-
-```sh
-rm -f .env && docker build -q -t coursepm:noenv .                  # exit 0: builds with no .env
-docker history --no-trunc coursepm:noenv | grep -ciE 'password|secret|database_url'   # 0
-docker run --rm coursepm:noenv sh -c 'ls -a /app /app/server | grep -c "^\.env"'      # 0
-docker run --rm coursepm:noenv sh -c 'env | grep -ciE "seed|database|postgres"; id'    # 0; uid=1000(node)
-docker compose up --build -d && docker compose ps -a   # app healthy, db healthy, migrate Exited (0)
-```
-
-So the build needs no `.env`, no layer or image variable carries a secret, and the
-container runs as the non-root `node` user.
+**C-03 evidence.** The output of `scripts/verify-c03.sh` from a fresh clone in
+Cloud Shell, with only the `.env.example` values and `APP_PORT=8080`, is in
+[c03-run.txt](c03-run.txt); its first line is the tested commit.
 
 ## GCP and release record (complete in #27-#29)
 
