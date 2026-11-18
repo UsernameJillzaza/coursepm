@@ -1,0 +1,92 @@
+name: CI & Docker Build
+
+on:
+  workflow_call:
+  pull_request:
+    branches: [main, '*-staging']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test-and-docker:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    # This PostgreSQL instance exists only for this GitHub-hosted runner job.
+    # Its disposable password is derived from the run identity, not a real credential.
+    services:
+      postgres:
+        image: postgres:18-alpine
+        env:
+          POSTGRES_USER: coursepm_ci
+          POSTGRES_DB: coursepm_ci
+          POSTGRES_PASSWORD: ci-${{ github.run_id }}-${{ github.run_attempt }}
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U coursepm_ci -d coursepm_ci"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      # AC-R01-2: server tests migrate and write only to the separate test DB.
+      DATABASE_URL: postgresql://coursepm_ci:ci-${{ github.run_id }}-${{ github.run_attempt }}@localhost:5432/coursepm_ci?schema=public
+      DATABASE_URL_TEST: postgresql://coursepm_ci:ci-${{ github.run_id }}-${{ github.run_attempt }}@localhost:5432/coursepm_ci_test?schema=public
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js 24
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '24'
+
+      - name: Create the separate test database
+        run: >-
+          docker exec "${{ job.services.postgres.id }}"
+          psql -U coursepm_ci -d coursepm_ci -v ON_ERROR_STOP=1
+          -c 'CREATE DATABASE coursepm_ci_test'
+
+      - name: Install server dependencies
+        run: npm --prefix server ci
+
+      - name: Generate a CI-only demo seed password
+        run: |
+          SEED_PASSWORD=$(openssl rand -hex 24)
+          echo "::add-mask::$SEED_PASSWORD"
+          echo "SEED_PASSWORD=$SEED_PASSWORD" >> "$GITHUB_ENV"
+
+      - name: Apply migrations
+        run: npm --prefix server run db:deploy
+
+      - name: Seed demo records
+        run: npm --prefix server run db:seed
+
+      - name: Test server against the separate test database
+        run: npm run test:server
+
+      - name: Install client dependencies
+        run: npm --prefix client ci
+
+      - name: Test client
+        run: npm run test:client
+
+      - name: Type-check server
+        working-directory: server
+        run: npx tsc --noEmit
+
+      - name: Build client
+        run: npm --prefix client run build
+
+      - name: Build production Docker image
+        run: docker build --tag coursepm:ci .
