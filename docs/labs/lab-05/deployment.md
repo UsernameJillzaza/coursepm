@@ -114,7 +114,11 @@ and was killed after 10 seconds.
 
 **C-03 evidence.** The output of `scripts/verify-c03.sh` from a fresh clone in
 Cloud Shell, with only the `.env.example` values and `APP_PORT=8080`, is in
-[c03-run.txt](c03-run.txt); its first line is the tested commit.
+[c03-run.txt](c03-run.txt); its first line is the tested commit. That run
+started from an empty Docker image and build cache. An earlier run at `ed62ccc`
+on a newly provisioned VM reported `docker build` exit 1 with its log discarded,
+so its cause is unknown; the script now prints the log tail on failure, and the
+cold-cache rerun above passed.
 
 ## GCP and release record (complete in #27-#29)
 
