@@ -203,8 +203,10 @@ Real `.env` files are git-ignored; only `.env.example` is committed. No secret i
 bundle.
 
 **Planned GCP deployment (built in Lab 5).** A multi-stage `Dockerfile` builds the client and the
-server into one Node image. At startup the container runs `prisma migrate deploy`, then serves `/api`
-and the static client. **Cloud Run** runs the container; **Cloud SQL for PostgreSQL** holds the data
+server into one Node image. A separate Cloud Run job runs `prisma migrate deploy` and the idempotent
+demo seed before the service is updated; application containers only serve `/api` and the static client.
+If migration fails, the release stops before updating the service. **Cloud Run** runs the container;
+**Cloud SQL for PostgreSQL** holds the data
 (durable across restarts and redeploys); **Secret Manager** supplies `DATABASE_URL`; **Artifact
 Registry** stores the images; GitHub Actions runs build + tests on each PR and deploys `main`. Stateless
 containers work because sessions live in the database, not in memory.
