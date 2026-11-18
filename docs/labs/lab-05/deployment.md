@@ -128,6 +128,32 @@ on a newly provisioned VM reported `docker build` exit 1 with its log discarded,
 so its cause is unknown; the script now prints the log tail on failure, and the
 cold-cache rerun above passed.
 
+## Pull request CI (C-01)
+
+`.github/workflows/ci-docker.yml` runs the `test-and-docker` job for Pull
+Requests into `main` and any `*-staging` branch. It also supports a manual run
+and can be called by the later deployment workflow. The job uses a temporary
+PostgreSQL 18 service on the GitHub-hosted runner. It creates a separate
+`coursepm_ci_test` database before running tests; `DATABASE_URL` points to
+`coursepm_ci` for migration and seed, while `DATABASE_URL_TEST` points to the
+test database. The server test setup verifies that the URLs select different
+databases before it migrates or writes test data. CI generates the demo seed
+password at run time; it does not read either local `.env` file or use Cloud SQL.
+
+The required check installs dependencies, migrates and seeds, runs server and
+client tests, type-checks the server, builds the client, and builds the Docker
+image without publishing it. Its test counts and Docker result must be checked
+on both the feature Pull Request into `lab5-staging` and the release Pull
+Request into `main` before claiming C-01 is complete. Dependabot checks for
+GitHub Actions and npm updates in the root, `server/`, and `client/` manifests.
+
+Playwright E2E is not part of `test-and-docker`: the current configuration uses
+Microsoft Edge, while this job runs on Ubuntu. The E2E journeys also create
+demo records in the seeded development database and rewrite Sprint 1 screenshot
+artifacts. They remain a separate local check (`npm run test:e2e`) when that
+side effect is needed. CI still runs the server integration tests against its
+isolated test database, the client tests, and the production Docker build.
+
 ## GCP and release record (complete in #27-#29)
 
 | Item | Value |
