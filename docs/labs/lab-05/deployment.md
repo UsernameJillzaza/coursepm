@@ -102,8 +102,11 @@ docker compose down -v      # stop and delete the local database
 The host port is `APP_PORT` from `.env` (default 3000); `docker compose port app 3000`
 prints the one Compose actually published, so the `curl` works for any value.
 `scripts/verify-c03.sh` runs every C-03 check in one go (no-`.env` build, image
-secret checks, Compose status, health and readiness, sign-in, shutdown time) and
-prints only statuses and API bodies, never the `.env`, passwords, connection
+secret checks, Compose status, health and readiness, sign-in, shutdown time). Each
+required check prints `PASS` or `FAIL`, and the script exits 1 if any fails (2 if
+`.env` is missing), so a failure cannot be mistaken for a pass. `.env` is moved
+aside only for the no-`.env` build and is put back on any exit, including Ctrl+C.
+It prints only statuses and API bodies, never the `.env`, passwords, connection
 strings or cookies.
 
 The server handles `SIGTERM` (sent by `docker compose stop`/`down` and by Cloud
