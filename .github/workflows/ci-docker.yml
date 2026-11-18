@@ -61,7 +61,10 @@ jobs:
         run: npm --prefix server ci
 
       - name: Generate a CI-only demo seed password
-        run: echo "SEED_PASSWORD=$(openssl rand -hex 24)" >> "$GITHUB_ENV"
+        run: |
+          SEED_PASSWORD=$(openssl rand -hex 24)
+          echo "::add-mask::$SEED_PASSWORD"
+          echo "SEED_PASSWORD=$SEED_PASSWORD" >> "$GITHUB_ENV"
 
       - name: Apply migrations
         run: npm --prefix server run db:deploy

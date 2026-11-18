@@ -139,6 +139,7 @@ PostgreSQL 18 service on the GitHub-hosted runner. It creates a separate
 test database. The server test setup verifies that the URLs select different
 databases before it migrates or writes test data. CI generates the demo seed
 password at run time; it does not read either local `.env` file or use Cloud SQL.
+It masks the generated seed password before exporting it to later steps.
 
 The required check installs dependencies, migrates and seeds, runs server and
 client tests, type-checks the server, builds the client, and builds the Docker
@@ -146,6 +147,16 @@ image without publishing it. Its test counts and Docker result must be checked
 on both the feature Pull Request into `lab5-staging` and the release Pull
 Request into `main` before claiming C-01 is complete. Dependabot checks for
 GitHub Actions and npm updates in the root, `server/`, and `client/` manifests.
+
+Issue #26 feature PR [#34](https://github.com/UsernameJillzaza/coursepm/pull/34)
+into `lab5-staging` triggered the
+[`test-and-docker` run 44377184003](https://github.com/UsernameJillzaza/coursepm/actions/runs/44377184003)
+on head commit `5fd0f04c086731fba0c6e6839bc584f51724903c`. The check passed:
+server tests 119/119 (14 files), client tests 39/39 (6 files), migration and
+seed succeeded (8 demo accounts and 3 teams), and the Docker image built.
+This run predates the seed-password masking fix; verify that a later run masks
+the value as `***` in subsequent steps. The release PR into `main` still needs
+its own passing `test-and-docker` run to finish C-01.
 
 Playwright E2E is not part of `test-and-docker`: the current configuration uses
 Microsoft Edge, while this job runs on Ubuntu. The E2E journeys also create
