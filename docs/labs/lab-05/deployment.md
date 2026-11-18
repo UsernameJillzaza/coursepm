@@ -107,7 +107,12 @@ required check prints `PASS` or `FAIL`, and the script exits 1 if any fails (2 i
 `.env` is missing), so a failure cannot be mistaken for a pass. `.env` is moved
 aside only for the no-`.env` build and is put back on any exit, including Ctrl+C.
 It prints only statuses and API bodies, never the `.env`, passwords, connection
-strings or cookies.
+strings or cookies. Run it with a redirect, not `| tee`, so `$?` is the script's
+own exit status:
+
+```sh
+sh scripts/verify-c03.sh > c03-run.txt 2>&1; echo "exit $?"
+```
 
 The server handles `SIGTERM` (sent by `docker compose stop`/`down` and by Cloud
 Run on scale-in or a new revision): it stops accepting connections, lets open

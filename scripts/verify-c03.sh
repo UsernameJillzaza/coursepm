@@ -7,7 +7,9 @@
 # passwords, connection strings or session cookies, so its output can go into
 # the repository as evidence.
 #
-#   sh scripts/verify-c03.sh | tee c03-run.txt     (needs GNU date for ms timing)
+#   sh scripts/verify-c03.sh > c03-run.txt 2>&1; echo "exit $?"   (needs GNU date for ms timing)
+#   Redirect rather than pipe: in `sh ... | tee`, $? is tee's exit status (0), so a
+#   failed check would look like a pass unless the shell has `set -o pipefail`.
 #   docker compose down -v     # afterwards: stop and delete the local database
 set -u
 
