@@ -17,10 +17,15 @@ echo "compose: $(docker compose version --short)"
 
 echo
 echo "== docker build with no .env present"
+BUILD_LOG=$(mktemp)
 mv .env .env.c03-aside
-docker build -q -t coursepm:c03-check . >/dev/null 2>&1
-echo "exit $?"
+docker build --progress=plain -t coursepm:c03-check . >"$BUILD_LOG" 2>&1
+STATUS=$?
 mv .env.c03-aside .env
+echo "exit $STATUS"
+# On failure show why (the build log has no secrets: there is no .env in the context).
+[ "$STATUS" -eq 0 ] || tail -n 20 "$BUILD_LOG"
+rm -f "$BUILD_LOG"
 
 echo
 echo "== secrets in the image (each count should be 0)"
@@ -33,8 +38,12 @@ docker rmi -f coursepm:c03-check >/dev/null 2>&1
 
 echo
 echo "== docker compose up --build -d"
-docker compose up --build -d >/dev/null 2>&1
-echo "exit $?"
+COMPOSE_LOG=$(mktemp)
+docker compose up --build -d >"$COMPOSE_LOG" 2>&1
+STATUS=$?
+echo "exit $STATUS"
+[ "$STATUS" -eq 0 ] || tail -n 20 "$COMPOSE_LOG"
+rm -f "$COMPOSE_LOG"
 i=0
 while [ "$i" -lt 30 ] && ! docker compose ps app --format '{{.Status}}' | grep -q '(healthy)'; do
   sleep 2
