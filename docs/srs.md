@@ -84,7 +84,7 @@ the university registration system; real student data (only synthetic demo data 
 
 | ID | Requirement and measurable target | Verification method | Sprint |
 | --- | --- | --- | --- |
-| NFR-01 | **Authentication.** Every API route except `POST /api/auth/login`, `GET /api/health` and the idempotent `POST /api/auth/logout` (204 even without a session) returns 401 without a valid session, with no private data in the body. | API tests on every protected route group | 1 |
+| NFR-01 | **Authentication.** Every API route except `POST /api/auth/login`, the public `GET /api/health` and `GET /api/ready` probes, and the idempotent `POST /api/auth/logout` (204 even without a session) returns 401 without a valid session, with no private data in the body. | API tests on every protected route group and the public probes | 1; readiness added in Lab 5 |
 | NFR-02 | **Authorization is server-side.** Out-of-scope records return 404 (their existence is not revealed); wrong-role operations return 403. Hiding a button is never the only control. | API tests: other team's submission, student creates milestone, student records feedback | 1 |
 | NFR-03 | **Password storage.** Passwords are stored only as salted scrypt hashes; no API response contains a password or a hash. | Unit test on the hash format + API test on the response shapes | 1 |
 | NFR-04 | **Session lifecycle.** Sessions are random 32-byte tokens in an `HttpOnly`, `SameSite=Lax` cookie, stored only as a SHA-256 hash, and expire after 8 hours; logout deletes the server-side session. Inactive accounts cannot log in, and an existing session of an account that becomes inactive is rejected on its next request. | API tests: logout then reuse cookie → 401; expired session → 401 | 1 |
