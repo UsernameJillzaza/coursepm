@@ -51,6 +51,14 @@ services:
       SESSION_TTL_HOURS: ${SESSION_TTL_HOURS:-8}
     ports:
       - "${APP_PORT:-3000}:3000"
+    # Readiness: 200 only when the API can reach PostgreSQL (#24 /api/ready).
+    # busybox wget is in node:alpine, so no extra package is needed.
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://localhost:3000/api/ready"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
 
 volumes:
   pgdata:

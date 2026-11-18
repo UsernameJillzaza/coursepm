@@ -76,13 +76,19 @@ reached; `/api/health` remains a database-independent liveness check.
 ## Docker: fresh clone (C-03)
 
 The root `Dockerfile` is a multi-stage build on `node:24-alpine`: it builds the
-client, builds the server (`prisma generate` and `tsc`), then copies only the
-runtime files into the final stage, which runs `node dist/server.js` as the
-non-root `node` user on port 3000. `docker-compose.yml` runs three services in
+client, builds the server (`prisma generate` and `tsc`), then copies into the
+final stage the compiled server and client plus what the migrate/seed step needs
+(`node_modules`, `src/` for the `tsx` seed and the generated Prisma client,
+`prisma/` and `prisma.config.ts`). The final stage runs `node dist/server.js` as
+the non-root `node` user on port 3000. No build-time secret or `.env` file goes
+into the image. `docker-compose.yml` runs three services in
 order: `db` (PostgreSQL 18, health-checked), `migrate` (the same image running
 `prisma migrate deploy` and the idempotent seed, then exiting), and `app`, which
-starts only after `migrate` exits successfully. Data persists in the `pgdata`
-volume until `docker compose down -v`.
+starts only after `migrate` exits successfully and reports healthy once
+`/api/ready` answers 200. Data persists in the `pgdata` volume until
+`docker compose down -v`. Open `http://localhost:<APP_PORT>`, not a LAN IP: the
+image runs with `NODE_ENV=production`, so the session cookie is `Secure`, which
+browsers accept over plain HTTP only on `localhost`.
 
 ```sh
 git clone https://github.com/UsernameJillzaza/coursepm.git && cd coursepm

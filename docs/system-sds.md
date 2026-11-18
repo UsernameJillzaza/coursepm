@@ -194,7 +194,7 @@ request.
 
 ## 6. Configuration and delivery design
 
-| Variable | Purpose | Example (illustrative; the real template is `server/.env.example`) |
+| Variable | Purpose | Example (illustrative; the real templates are `server/.env.example` for Node and the root `.env.example` for Docker Compose) |
 | --- | --- | --- |
 | `DATABASE_URL` | PostgreSQL connection | `postgresql://USER:PASSWORD@localhost:5432/coursepm?schema=public` |
 | `DATABASE_URL_TEST` | Separate database for automated tests | `postgresql://USER:PASSWORD@localhost:5432/coursepm_test?schema=public` |
@@ -202,12 +202,17 @@ request.
 | `NODE_ENV` | `development` / `test` / `production` | `development` |
 | `SESSION_TTL_HOURS` | Session lifetime | `8` |
 | `SEED_PASSWORD` | Password given to the seeded demo accounts | *(choose locally; never committed)* |
+| `POSTGRES_USER` / `POSTGRES_PASSWORD` / `POSTGRES_DB` | Docker Compose only: the PostgreSQL container's account and database; Compose builds `DATABASE_URL` from them | `coursepm` / *(placeholder)* / `coursepm` |
+| `APP_PORT` | Docker Compose only: host port for the app | `3000` |
 
-Real `.env` files are git-ignored; only `.env.example` is committed. No secret is ever sent to the client
+Real `.env` files are git-ignored and excluded from the Docker build context; only the two `.env.example` templates are committed. No secret is ever sent to the client
 bundle.
 
-**Planned GCP deployment (built in Lab 5).** A multi-stage `Dockerfile` builds the client and the
-server into one Node image. A separate Cloud Run job runs `prisma migrate deploy` and the idempotent
+**Container and GCP deployment (Lab 5).** A multi-stage `Dockerfile` builds the client and the
+server into one Node image. Locally, `docker-compose.yml` runs the same flow: `db` → `migrate`
+(`prisma migrate deploy` + seed, exits 0) → `app`. The server handles `SIGTERM` by closing the HTTP
+server, letting open requests finish and disconnecting Prisma, with an 8 s limit inside the 10 s
+grace period of Docker and Cloud Run. A separate Cloud Run job runs `prisma migrate deploy` and the idempotent
 demo seed before the service is updated; application containers only serve `/api` and the static client.
 If migration fails, the release stops before updating the service. **Cloud Run** runs the container;
 **Cloud SQL for PostgreSQL** holds the data
