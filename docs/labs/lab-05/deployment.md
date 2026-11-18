@@ -109,7 +109,18 @@ Verified in Cloud Shell on 2026-11-18 from a fresh clone with only the template
 values: at `6d7a685`, Compose exited 0, `migrate` exited 0, `/api/health` and
 `/api/ready` returned 200 and a seeded Student signed in through the UI; at
 `f7cbfff`, after the shutdown fix, `docker compose stop app` took 0.2 seconds
-(10.2 seconds before).
+(10.2 seconds before). At `732a0cb`, with the `app` healthcheck added:
+
+```sh
+rm -f .env && docker build -q -t coursepm:noenv .                  # exit 0: builds with no .env
+docker history --no-trunc coursepm:noenv | grep -ciE 'password|secret|database_url'   # 0
+docker run --rm coursepm:noenv sh -c 'ls -a /app /app/server | grep -c "^\.env"'      # 0
+docker run --rm coursepm:noenv sh -c 'env | grep -ciE "seed|database|postgres"; id'    # 0; uid=1000(node)
+docker compose up --build -d && docker compose ps -a   # app healthy, db healthy, migrate Exited (0)
+```
+
+So the build needs no `.env`, no layer or image variable carries a secret, and the
+container runs as the non-root `node` user.
 
 ## GCP and release record (complete in #27-#29)
 
