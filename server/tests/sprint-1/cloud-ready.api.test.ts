@@ -10,13 +10,13 @@ afterAll(async () => {
 })
 
 describe('Lab 5 readiness', () => {
-  it('reports a live database without requiring a session', async () => {
+  it('TEST-L5-01 (R-04): reports a live database without requiring a session', async () => {
     const res = await request(createApp()).get('/api/ready')
     expect(res.status).toBe(200)
     expect(res.body).toEqual({ status: 'ready', db: 'connected' })
   })
 
-  it('returns a safe 503 when the database is unreachable while health stays live', async () => {
+  it('TEST-L5-02 (R-04, NFR-07): returns a safe 503 when the database is unreachable', async () => {
     const query = vi.spyOn(prisma, '$queryRaw').mockRejectedValueOnce(new Error('database connection failed'))
     try {
       const app = createApp()
@@ -24,16 +24,26 @@ describe('Lab 5 readiness', () => {
       expect(ready.status).toBe(503)
       expect(ready.body).toEqual({ error: { code: 'NOT_READY', message: 'Database unavailable.' } })
       expect(ready.text).not.toContain('database connection failed')
-      const health = await request(app).get('/api/health').set('Cookie', `cpm_session=${'a'.repeat(64)}`)
-      expect(health.status).toBe(200)
     } finally {
       query.mockRestore()
+    }
+  })
+
+  it('TEST-L5-03 (NFR-01): keeps health live without session or database lookup', async () => {
+    const sessionLookup = vi.spyOn(prisma.session, 'findUnique').mockRejectedValue(new Error('database unavailable'))
+    try {
+      const health = await request(createApp()).get('/api/health').set('Cookie', `cpm_session=${'a'.repeat(64)}`)
+      expect(health.status).toBe(200)
+      expect(health.body).toEqual({ status: 'ok', service: 'CoursePM API' })
+      expect(sessionLookup).not.toHaveBeenCalled()
+    } finally {
+      sessionLookup.mockRestore()
     }
   })
 })
 
 describe('Lab 5 production client', () => {
-  it('serves the built client and SPA routes from the same origin as the API', async () => {
+  it('TEST-L5-04 (R-02, R-03): serves the built client and SPA routes from the API origin', async () => {
     const clientDist = fs.mkdtempSync(path.join(os.tmpdir(), 'coursepm-client-'))
     fs.writeFileSync(path.join(clientDist, 'index.html'), '<!doctype html><title>CoursePM production test</title>')
     fs.mkdirSync(path.join(clientDist, 'assets'))

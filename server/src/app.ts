@@ -11,10 +11,13 @@ import { submissionsRouter } from './submissions/routes'
 import { feedbackRouter } from './feedback/routes'
 
 // Last-resort error handler (Express 5 forwards rejected async handlers here).
-// Exported so the existing error tests can exercise it without a test route.
+// NFR-07: details go to the server log only; the client gets the standard
+// envelope. Exported so TEST-02-06 can exercise it from a probe app, with no
+// test-only route in the application (AC-02-6).
 export function errorHandler(err: unknown, _req: Request, res: Response, _next: NextFunction) {
   if (err instanceof AppError) return sendError(res, err.status, err.code, err.message, err.fields)
   const errorType = err && typeof err === 'object' && 'type' in err ? err.type : undefined
+  // AC-02-8: request-body problems are the client's error, not a 500.
   if (errorType === 'entity.parse.failed') {
     return sendError(res, 400, 'VALIDATION_ERROR', 'Malformed JSON body.')
   }

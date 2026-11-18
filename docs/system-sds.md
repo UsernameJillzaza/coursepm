@@ -25,10 +25,12 @@ flowchart LR
   end
 ```
 
-**Where rules are enforced.** Every request passes `authenticate`, which reads the session and sets the
-current user if there is one but never rejects. **Protected routes** then pass `requireAuth` (401
-without a valid session). The only routes without `requireAuth` are the NFR-01 exceptions:
-`POST /api/auth/login`, `GET /api/health`, and `POST /api/auth/logout`, which is idempotent (it deletes
+**Where rules are enforced.** The public `GET /api/health` and `GET /api/ready` probes run before
+`authenticate`, so liveness does not depend on session lookup. Other API requests pass
+`authenticate`, which reads the session and sets the current user if there is one but never rejects.
+**Protected routes** then pass `requireAuth` (401 without a valid session). The routes without
+`requireAuth` are the NFR-01 exceptions: `POST /api/auth/login`, `GET /api/health`,
+`GET /api/ready`, and `POST /api/auth/logout`, which is idempotent (it deletes
 the session if there is one and answers 204 either way). For a route that targets a record (a team, milestone or submission),
 the **scope loader runs first**: it fetches the record *together with* the caller's membership or
 assignment and answers 404 when the record is missing **or** outside the caller's scope. Only then is
@@ -129,15 +131,17 @@ field, and keeps the typed values on error. Every list has a loading spinner, an
 | 409 | `CONFLICT` | A concurrent submission kept winning the same revision number through every retry (§1, NFR-05); the client may simply try again. |
 | 413 | `PAYLOAD_TOO_LARGE` | The JSON body is over the 100 kB limit. |
 | 500 | `INTERNAL_ERROR` | Unexpected; generic message, details only in the server log. |
+| 503 | `NOT_READY` | Database unreachable; returned by the public readiness probe only, without connection details. |
 
 Validation happens on the server for every input; client checks are only hints. Unknown body fields
 are ignored. IDs in paths are positive integers; anything else returns 404.
 
-**Sprint 1 endpoints** (full contracts in [sprints/sprint-1/](sprints/sprint-1/)):
+**API endpoints** (Sprint 1 contracts in [sprints/sprint-1/](sprints/sprint-1/); readiness added in Lab 5):
 
 | Method & path | Feature |
 | --- | --- |
 | `GET /api/health` | — |
+| `GET /api/ready` | Lab 5 readiness: 200 `{ "status": "ready", "db": "connected" }` when PostgreSQL responds; otherwise 503 `NOT_READY` |
 | `POST /api/auth/login` · `POST /api/auth/logout` · `GET /api/auth/me` | F-01 |
 | `GET /api/teams` · `GET /api/teams/:teamId` | F-03 |
 | `GET /api/teams/:teamId/milestones` · `POST /api/teams/:teamId/milestones` · `GET /api/milestones/:milestoneId` | F-04 |
