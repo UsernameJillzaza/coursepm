@@ -245,19 +245,34 @@ links the running service and screenshots to the `main` merge commit.
 Cloud SQL `coursepm-pg` reached `RUNNABLE`. Cloud Build pushed
 `asia-southeast1-docker.pkg.dev/cpe334-2026-th042-coursepm/coursepm/coursepm:de9213ebf000c224c44bab66b9990f99119c81ab`
 with digest `sha256:c8cd3998c0cd197529a98f063fec7a2229f4029073c7f304f9d18720968ccdc2`.
-The [migrate/seed execution](https://console.cloud.google.com/run/jobs/executions/details/asia-southeast1/coursepm-migrate-g6d4z?project=1074485090297)
+The [migrate/seed execution](https://console.cloud.google.com/run/jobs/executions/details/asia-southeast1/coursepm-migrate-g6d4z?project=cpe334-2026-th042-coursepm)
 completed successfully (1/1 task) before Cloud Run service deployment.
-The owner read its logs with `gcloud run jobs logs read coursepm-migrate
---region=asia-southeast1 --project="$PROJECT_ID" --limit=100`. The output
-reported `6 migrations found`, `All migrations have been successfully
-applied.`, and `Seeded 8 demo accounts and 3 teams.` The inspected output
-contained no password or `DATABASE_URL`.
-Revision `coursepm-00001-6hh` serves 100% of traffic. A read-only
-`gcloud run revisions describe` check returned the same image URI for
-`spec.containers[0].image` and `status.imageDigest`:
-`asia-southeast1-docker.pkg.dev/cpe334-2026-th042-coursepm/coursepm/coursepm@sha256:c8cd3998c0cd197529a98f063fec7a2229f4029073c7f304f9d18720968ccdc2`.
-The revision startup log reported `CoursePM API listening on
-http://localhost:3000`; this excerpt contains no credentials.
+The owner read the execution log with `gcloud run jobs logs read
+coursepm-migrate --region=asia-southeast1 --project="$PROJECT_ID" --limit=100`
+and queried the revision startup log in Cloud Shell. The inspected log output
+contained no password or `DATABASE_URL`; relevant excerpts are below:
+
+```text
+2026-11-19 17:16:51 6 migrations found in prisma/migrations
+2026-11-19 17:16:52 All migrations have been successfully applied.
+2026-11-19 17:16:57 Seeded 8 demo accounts and 3 teams.
+CoursePM API listening on http://localhost:3000
+```
+
+Revision `coursepm-00001-6hh` serves 100% of traffic. The owner ran
+`gcloud run revisions describe coursepm-00001-6hh --region=asia-southeast1
+--project="$PROJECT_ID"
+--format='value(spec.containers[0].image,status.imageDigest)'`.
+Its actual output has two identical digest-qualified URIs:
+
+```text
+asia-southeast1-docker.pkg.dev/cpe334-2026-th042-coursepm/coursepm/coursepm@sha256:c8cd3998c0cd197529a98f063fec7a2229f4029073c7f304f9d18720968ccdc2  asia-southeast1-docker.pkg.dev/cpe334-2026-th042-coursepm/coursepm/coursepm@sha256:c8cd3998c0cd197529a98f063fec7a2229f4029073c7f304f9d18720968ccdc2
+```
+
+Cloud Run reports the resolved digest for both fields, rather than the
+commit-tagged image reference. The Cloud Build output recorded above ties the
+`de9213e…` tag to this digest; the revision output ties that digest to the
+serving revision.
 
 An external GET to the [public UI](https://coursepm-7cxt6io2na-as.a.run.app/)
 returned 200 with title `CoursePM`. Public
