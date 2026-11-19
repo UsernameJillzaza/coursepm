@@ -40,7 +40,7 @@ The **Result** column is filled from the release-candidate run on `daefdff` (Par
 | FR-13, BR-11 | F-08 | 2 | (Sprint 2 contract) | | |
 | FR-14 | F-09 | 2 | (Sprint 2 contract) | | |
 | FR-15, NFR-08 | F-10 | 2 | (Sprint 2 contract) | | |
-| NFR-09 | R-01, #24, #25, #27, #29 | 2 (Lab 5) | Lab 5 C-03 (fresh clone + `.env.example` → `docker compose up --build` → sign in); readiness probe; graceful shutdown; C-06 release from `main` by pipeline with the running commit visible | TEST-L5-01 … TEST-L5-11, MAN-L5-C03 Cloud Shell run | Container part Pass (server 119/119; MAN-L5-C03 Pass on `6d7a685`, stop check on `f7cbfff`); Cloud SQL part Pass (#27 live at `de9213e`, `/api/ready` `db: connected`); C-06 pending the first pipeline run (#29) |
+| NFR-09 | R-01, #24, #25, #27, #29 | 2 (Lab 5) | Lab 5 C-03 (fresh clone + `.env.example` → `docker compose up --build` → sign in); readiness probe; graceful shutdown; C-06 release from `main` by pipeline with the running commit visible | TEST-L5-01 … TEST-L5-11, MAN-L5-C03 Cloud Shell run | Container part Pass (server 119/119; MAN-L5-C03 Pass on `6d7a685`, stop check on `f7cbfff`); Cloud SQL part Pass (#27 live at `de9213e`, `/api/ready` `db: connected`); C-06 Pass (first automated release `a36ed20`, run 44611810394, revision `coursepm-00002-xvc`, release commit in the served bundle) |
 | FR-16, BR-12 | F-11 | 3 | (Sprint 3 contract) | | |
 | FR-17, FR-18 | F-12 | 3 | (Sprint 3 contract) | | |
 
