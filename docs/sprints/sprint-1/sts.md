@@ -127,7 +127,8 @@ additional TDD evidence.
 These cases extend the Sprint 1 application for cloud deployment; they do not
 change the Sprint 1 release results above. TEST-L5-01 to 04 are in
 `server/tests/sprint-1/cloud-ready.api.test.ts`; TEST-L5-05 to 07 (Issue #25) are in
-`server/tests/sprint-1/shutdown.unit.test.ts`.
+`server/tests/sprint-1/shutdown.unit.test.ts`. TEST-L5-08 to 11 (Issue #29) cover the release footer and
+the deploy scripts.
 
 | ID | Requirement | Check | Expected result |
 | --- | --- | --- | --- |
@@ -138,4 +139,8 @@ change the Sprint 1 release results above. TEST-L5-01 to 04 are in
 | TEST-L5-05 | NFR-09, R-04 | Send SIGTERM to the shutdown handler with a fake server | Server closes first, then the DB pool disconnects, then exit code 0 |
 | TEST-L5-06 | NFR-09, R-04 | Send SIGTERM then SIGINT | Only one shutdown runs; exit is called once |
 | TEST-L5-07 | NFR-09, R-04 | Make the DB disconnect fail; separately, never finish closing | Exit code 1 on failure; forced exit 1 after the 8 s limit, not before |
+| TEST-L5-08 | C-06, R-08 | Render the release footer with a full commit SHA | Shows `CoursePM release <short SHA>`, linked to that commit, full SHA in the title (`client/tests/sprint-1/release-footer.test.tsx`) |
+| TEST-L5-09 | C-06, R-08 | Give the footer a missing, short, overlong, non-hex or injected value | Shows `CoursePM development build` and no link; whitespace and upper case are normalised |
+| TEST-L5-10 | C-06, R-07 | Run `deploy/release.sh` against a fake `gcloud` (`deploy/tests/test_release_stub.sh`) | Digest resolved; migration awaited before the service update; rollback skips migration; a missing image or failed migration leaves the service unchanged; a bad tag or flag makes no `gcloud` call |
+| TEST-L5-11 | C-06, R-07 | Run `deploy/smoke_test.py` against a mocked site (`deploy/tests/test_smoke.py`, 6 cases) | Passes only with health ok, DB connected, client HTML + bundle, `/api/teams` 401, and the expected SHA in the bundle; a 40-character SHA is required; a cold start is retried |
 | MAN-L5-C03 | NFR-09, R-01, C-03 | Manual, in Cloud Shell: fresh clone; `cp .env.example .env`; `docker compose up --build -d`; `docker build` with no `.env`; `docker history` and image env checked for secrets; sign in as a seeded Student | Compose exits 0; `migrate` exits 0; `app` healthy; no secret in any layer or the image env; sign-in reaches My teams. Evidence in `docs/labs/lab-05/deployment.md` |
