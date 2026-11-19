@@ -414,5 +414,4 @@ They contain no credentials.
 
 **Release tag (pending).** The plan is an annotated tag `v0.2.0` on `main` at
 `a36ed20`, created after this record is approved; Part 0 will name the Lab 5
-release by it. Until it is created it does not exist on GitHub, and #29 stays
-open.
+release by it. Until it is created it does not exist on GitHub.
