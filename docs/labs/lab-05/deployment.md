@@ -39,6 +39,7 @@ relative `/api` URLs.
 | `DATABASE_URL_TEST` | Separate PostgreSQL database for integration tests | Yes | Local `server/.env`; temporary CI test database; never the live database |
 | `PORT` | HTTP port listened to by Express | No | Local `server/.env`; Cloud Run runtime |
 | `NODE_ENV` | Enables production cookies and static client serving | No | Local `server/.env`; production service configuration |
+| `DB_POOL_MAX` | Maximum PostgreSQL connections per server process; Cloud Run job/service use 3 | No | Optional locally; set by the #27 deploy script in Cloud Run |
 | `CLIENT_DIST_DIR` | Optional path to built React files; defaults to `client/dist` beside `server/` | No | Image layout, or service configuration if the layout differs |
 | `SESSION_TTL_HOURS` | Session lifetime; defaults to 8 hours | No | Local `server/.env`; production service configuration |
 | `SEED_PASSWORD` | Password for synthetic Student and Supervisor demo accounts | Yes | Local `server/.env` or root `.env`; Secret Manager for the migration/seed job in GCP |
@@ -180,7 +181,7 @@ isolated test database, the client tests, and the production Docker build.
 | Cloud SQL instance and database | `coursepm-pg` (PostgreSQL 16, Enterprise, `db-f1-micro`, 10 GB SSD, storage auto-increase off); database and user `coursepm` |
 | Runtime service account | `coursepm-runner@cpe334-2026-th042-coursepm.iam.gserviceaccount.com` |
 | Secret Manager | `coursepm-db-password`, `coursepm-database-url`, `coursepm-seed-password` |
-| Cloud Run migration job and service | `coursepm-migrate` and `coursepm`; service min 0, max 3, port 3000 |
+| Cloud Run migration job and service | `coursepm-migrate` and `coursepm`; service min 0, max 3, port 3000, DB pool max 3 per process |
 | Public URL and running commit | Record after deployment |
 
 ### First manual deployment (#27)

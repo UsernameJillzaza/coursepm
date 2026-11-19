@@ -138,7 +138,7 @@ else
   if gcloud secrets describe "$DATABASE_URL_SECRET" --project "$PROJECT_ID" >/dev/null 2>&1; then database_url_exists=1; fi
   if [[ "$db_user_exists$db_password_exists$database_url_exists" == 000 ]]; then
     db_password="$(openssl rand -hex 24)"
-    database_url="postgresql://${DB_USER}:${db_password}@localhost/${DB_NAME}?host=/cloudsql/${SQL_CONNECTION}&schema=public&connection_limit=3"
+    database_url="postgresql://${DB_USER}:${db_password}@localhost/${DB_NAME}?host=/cloudsql/${SQL_CONNECTION}"
     run_cmd gcloud sql users create "$DB_USER" --instance="$SQL_INSTANCE" \
       --password="$db_password" --project "$PROJECT_ID"
     create_secret_with_value "$DB_PASSWORD_SECRET" "$db_password"
@@ -182,7 +182,7 @@ run_cmd gcloud run jobs deploy "$MIGRATE_JOB" \
   --image "$IMAGE_URI" --region "$REGION" --service-account "$SA_EMAIL" \
   --set-cloudsql-instances "$SQL_CONNECTION" \
   --set-secrets "DATABASE_URL=${DATABASE_URL_SECRET}:latest,SEED_PASSWORD=${SEED_PASSWORD_SECRET}:latest" \
-  --set-env-vars "NODE_ENV=production,TZ=Asia/Bangkok" \
+  --set-env-vars "NODE_ENV=production,TZ=Asia/Bangkok,DB_POOL_MAX=3" \
   --command sh --args '-c,npm run db:deploy && npm run db:seed' \
   --max-retries 0 --task-timeout 600s --project "$PROJECT_ID"
 
@@ -194,7 +194,7 @@ run_cmd gcloud run deploy "$SERVICE_NAME" \
   --allow-unauthenticated --service-account "$SA_EMAIL" \
   --set-cloudsql-instances "$SQL_CONNECTION" \
   --set-secrets "DATABASE_URL=${DATABASE_URL_SECRET}:latest" \
-  --set-env-vars "NODE_ENV=production,TZ=Asia/Bangkok" \
+  --set-env-vars "NODE_ENV=production,TZ=Asia/Bangkok,DB_POOL_MAX=3" \
   --min-instances 0 --max-instances 3 --memory 512Mi --cpu 1 \
   --port 3000 --project "$PROJECT_ID"
 
