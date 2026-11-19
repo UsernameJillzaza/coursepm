@@ -195,7 +195,7 @@ PROJECT_ID=cpe334-2026-th042-coursepm REGION=asia-southeast1 DRY_RUN=1 bash depl
 ```
 
 The captured [C-27 dry-run plan](c27-dry-run.txt) was generated locally from
-script commit `2d7a26d8e3b76c9b1b1616047daa114bfc1ba5bf`, with no
+script commit `6be8187d326e1316584ac690381a4cc4c4a20465`, with no
 `gcloud` installation available. Its image tag is that commit; rerun the
 preview from the reviewed Cloud Shell checkout before the real deployment.
 
