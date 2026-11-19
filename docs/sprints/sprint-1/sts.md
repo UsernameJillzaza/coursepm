@@ -121,3 +121,21 @@ as does the initial feedback UI (`085bd92` → `beaedb9`). The API tests were co
 implementation in `87246fb`, so there is no earlier failing API-test commit or red log. The 409 UI
 case was added with `beaedb9` and has no separate red run. These cases are passing coverage, not
 additional TDD evidence.
+
+## Lab 5 supplemental automated cases (Issue #24)
+
+These cases extend the Sprint 1 application for cloud deployment; they do not
+change the Sprint 1 release results above. TEST-L5-01 to 04 are in
+`server/tests/sprint-1/cloud-ready.api.test.ts`; TEST-L5-05 to 07 (Issue #25) are in
+`server/tests/sprint-1/shutdown.unit.test.ts`.
+
+| ID | Requirement | Check | Expected result |
+| --- | --- | --- | --- |
+| TEST-L5-01 | R-04, NFR-01 | Request `GET /api/ready` without a session while PostgreSQL is reachable | 200 with `status: ready` and `db: connected` |
+| TEST-L5-02 | R-04, NFR-07 | Make the readiness DB query fail | 503 `NOT_READY` in the standard error shape, without DB details |
+| TEST-L5-03 | NFR-01, R-04 | Request `GET /api/health` with a session-shaped cookie while session lookup would fail | 200 liveness response without a DB or session lookup |
+| TEST-L5-04 | R-02, R-03 | Run Express in production mode with built client files; request `/`, an SPA path, a JS asset, and an unknown API path | UI and asset return 200 from the API origin; unknown API path remains JSON 404 |
+| TEST-L5-05 | NFR-09, R-04 | Send SIGTERM to the shutdown handler with a fake server | Server closes first, then the DB pool disconnects, then exit code 0 |
+| TEST-L5-06 | NFR-09, R-04 | Send SIGTERM then SIGINT | Only one shutdown runs; exit is called once |
+| TEST-L5-07 | NFR-09, R-04 | Make the DB disconnect fail; separately, never finish closing | Exit code 1 on failure; forced exit 1 after the 8 s limit, not before |
+| MAN-L5-C03 | NFR-09, R-01, C-03 | Manual, in Cloud Shell: fresh clone; `cp .env.example .env`; `docker compose up --build -d`; `docker build` with no `.env`; `docker history` and image env checked for secrets; sign in as a seeded Student | Compose exits 0; `migrate` exits 0; `app` healthy; no secret in any layer or the image env; sign-in reaches My teams. Evidence in `docs/labs/lab-05/deployment.md` |
