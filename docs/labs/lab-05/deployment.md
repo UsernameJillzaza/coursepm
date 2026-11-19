@@ -185,7 +185,9 @@ isolated test database, the client tests, and the production Docker build.
 | Runtime service account | `coursepm-runner@cpe334-2026-th042-coursepm.iam.gserviceaccount.com` |
 | Secret Manager | `coursepm-db-password`, `coursepm-database-url`, `coursepm-seed-password` |
 | Cloud Run migration job and service | `coursepm-migrate` and `coursepm`; service min 0, max 3, port 3000, DB pool max 3 per process |
-| Public URL and running commit | [CoursePM](https://coursepm-7cxt6io2na-as.a.run.app/) from `de9213ebf000c224c44bab66b9990f99119c81ab`; see first deployment record below |
+| Public URL | [CoursePM](https://coursepm-7cxt6io2na-as.a.run.app/) |
+| Running commit | Changes with every release: read it from the page footer or the latest Deploy to Cloud Run run summary (see *How to find the running commit*) |
+| Releases recorded here | #27 manual deployment: `de9213ebf000c224c44bab66b9990f99119c81ab`, revision `coursepm-00001-6hh`. First automated release (#29): `a36ed20e0b6ed7f5823943f84e7cffb9c73c0aa5`, revision `coursepm-00002-xvc` (record at the end) |
 
 ### First manual deployment (#27)
 
@@ -364,8 +366,52 @@ role that covers it:
 
 The deployer needs no Secret Manager, Cloud SQL or Cloud Build role. The
 runtime identity reads the secrets, and the image is built on the GitHub runner.
-Verify on the first run: if a call fails with a `serviceusage` 403, the deployer
-also needs `roles/serviceusage.serviceUsageConsumer` on the project.
+The first run (below) needed no further role: the four resource-scoped
+bindings were enough, and no `serviceusage` or execution 403 occurred.
 
 The smoke test is read-only and uses no account, so the pipeline never needs a
 demo password. Sign-in on the live URL is checked by hand in #30.
+
+### First automated release record (#29, C-06)
+
+The change went Issue #29 → reviewed [PR #48](https://github.com/UsernameJillzaza/coursepm/pull/48)
+into `lab5-staging` → reviewed release [PR #52](https://github.com/UsernameJillzaza/coursepm/pull/52)
+into `main` → CI → deploy. The release PR was opened by Jakkarin and reviewed by
+Achirawit, as recorded in #29. Before the release, [PR #51](https://github.com/UsernameJillzaza/coursepm/pull/51)
+synced `main` into `lab5-staging`.
+
+Merging #52 pushed `main` to `a36ed20e0b6ed7f5823943f84e7cffb9c73c0aa5`. That push
+started [Deploy to Cloud Run run 44611810394](https://github.com/UsernameJillzaza/coursepm/actions/runs/44611810394)
+with no manual step; it succeeded in 4 min 6 s.
+
+| Step | Result |
+| --- | --- |
+| `test` (`test-and-docker`) | Passed: server 119/119, client 41/41, `TEST-L5-10` 5/5, `TEST-L5-11` 6/6, image built with the SHA in its bundle |
+| Sign-in | WIF in `demo`, no key, as `coursepm-deployer` |
+| Image | `…/coursepm/coursepm:a36ed20…` → OCI index `sha256:fa2676578f26ff9c7e37a8358da72595e52efe050078bd336491b67387e29966` |
+| Migrate/seed | Execution `coursepm-migrate-dr4ms` completed (1/1 task) before the service update; "Executed by coursepm-deployer" |
+| Service | Revision `coursepm-00002-xvc` served 100% of traffic at the time of this run; "Deployed by coursepm-deployer … using gcloud". `coursepm-00001-6hh` (#27) was kept at 0% for rollback |
+| Smoke test | All read-only checks passed, including `release commit a36ed20 is in the served bundle` |
+
+**Commit → image → running revision.** The tag points to an OCI image **index**
+(`sha256:fa2676…9966`). Cloud Run records the index's `linux/amd64`
+**manifest** (`sha256:3e2cc63ba1b40774583233ff2ee3b5ef38e1fe5092c143e264b54b3fc1ea4f6f`)
+in both `spec.containers[0].image` and `status.imageDigest` of `coursepm-00002-xvc`.
+`docker buildx imagetools inspect` on the tag lists that manifest under the
+index, so the registry itself ties the commit to the serving revision.
+
+**The change is visible.** At the time of this run the public page footer read `CoursePM release a36ed20`,
+linked to the full merge commit, with the full SHA as its tooltip. An external
+rerun of `EXPECTED_COMMIT=a36ed20… python3 deploy/smoke_test.py https://coursepm-7cxt6io2na-as.a.run.app`
+passed all five checks on 2026-11-20. The same commit check had failed against the #27 image
+(built without `APP_COMMIT`), so it proves which build is serving. Screenshots
+are on [Issue #29](https://github.com/UsernameJillzaza/coursepm/issues/29#issuecomment-7022087944):
+the [run](https://github.com/user-attachments/assets/971e575c-0448-4af9-825e-d717e121c8c5),
+the [footer with the public URL](https://github.com/user-attachments/assets/327846f9-b447-459b-8161-d99542535a7f),
+the [serving revision](https://github.com/user-attachments/assets/84b1d2e3-a4bd-4a5b-a302-5c3aa638ef05)
+and the [migration execution](https://github.com/user-attachments/assets/3d27387b-e1ae-4fe9-ad32-03df28e13589).
+They contain no credentials.
+
+**Release tag (pending).** The plan is an annotated tag `v0.2.0` on `main` at
+`a36ed20`, created after this record is approved; Part 0 will name the Lab 5
+release by it. Until it is created it does not exist on GitHub.
