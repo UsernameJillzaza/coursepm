@@ -246,11 +246,15 @@ returned 200 with title `CoursePM`. Public
 [`/api/health`](https://coursepm-7cxt6io2na-as.a.run.app/api/health)
 returned 200 with `{"status":"ok","service":"CoursePM API"}`; public
 [`/api/ready`](https://coursepm-7cxt6io2na-as.a.run.app/api/ready)
-returned 200 with `{"status":"ready","db":"connected"}`. The owner reports
-that a seeded user signed in through the UI; add the credential-free screenshot
-and its direct evidence link after it is available. Keep passwords out of
-screenshots and this document. Subsequent releases use the automated pipeline
-in #29.
+returned 200 with `{"status":"ready","db":"connected"}`. The owner signed in
+as seeded student `alpha1@coursepm.test` and reached My Teams / Team Alpha.
+Issue #27 holds direct screenshots of the
+[signed-in UI](https://github.com/user-attachments/assets/cd5fb3c8-3037-4d1f-9d01-4fc57b1b9f94),
+[`/api/ready`](https://github.com/user-attachments/assets/296e6d06-c361-4984-a77b-d2c260bed4ff),
+[serving revision](https://github.com/user-attachments/assets/b4c2a50b-5287-449e-97d4-5f722b9bad13),
+and [migration job](https://github.com/user-attachments/assets/8fdd1d56-6d05-4c5a-a1ba-6348cebbe15b).
+Keep passwords out of screenshots and this document. Subsequent releases use
+the automated pipeline in #29.
 
 The release path is a feature branch to `lab5-staging` by reviewed Pull
 Request, then a reviewed release Pull Request to `main`. CI builds and tests
