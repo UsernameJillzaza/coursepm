@@ -176,13 +176,13 @@ isolated test database, the client tests, and the production Docker build.
 | Item | Value |
 | --- | --- |
 | GCP project ID | `cpe334-2026-th042-coursepm` (verified in Issue #23 Cloud Shell evidence; confirm active project before running) |
-| Region | `asia-southeast1` proposed for owner review; pass `REGION` explicitly |
+| Region | `asia-southeast1` (Singapore; approved in the #27 Cloud Shell dry-run review) |
 | Artifact Registry repository | `coursepm` (Docker) |
 | Cloud SQL instance and database | `coursepm-pg` (PostgreSQL 16, Enterprise, `db-f1-micro`, 10 GB SSD, storage auto-increase off); database and user `coursepm` |
 | Runtime service account | `coursepm-runner@cpe334-2026-th042-coursepm.iam.gserviceaccount.com` |
 | Secret Manager | `coursepm-db-password`, `coursepm-database-url`, `coursepm-seed-password` |
 | Cloud Run migration job and service | `coursepm-migrate` and `coursepm`; service min 0, max 3, port 3000, DB pool max 3 per process |
-| Public URL and running commit | Record after deployment |
+| Public URL and running commit | [CoursePM](https://coursepm-7cxt6io2na-as.a.run.app/) from `de9213ebf000c224c44bab66b9990f99119c81ab`; see first deployment record below |
 
 ### First manual deployment (#27)
 
@@ -229,12 +229,28 @@ service. It refuses partial DB credential state rather than silently changing
 the database password on retry. The runtime identity gets Cloud SQL Client
 on the project and Secret Accessor only on the URL and seed secrets.
 
-After the owner-run deployment, record the deployed commit, image digest,
-serving revision, public URL, `/api/health` and `/api/ready` results, and a
-seeded-user UI sign-in in this document. The owner can retrieve the seed
-password privately from Secret Manager for the sign-in check. Keep evidence
-screenshots free of credentials. The image is built from `main`; subsequent
-releases use the automated pipeline in #29.
+### First deployment record (#27)
+
+The GCP owner ran the script from clean `main` at
+`de9213ebf000c224c44bab66b9990f99119c81ab` after the reviewed
+[Cloud Shell dry run](https://github.com/UsernameJillzaza/coursepm/issues/27).
+Cloud SQL `coursepm-pg` reached `RUNNABLE`. Cloud Build pushed
+`asia-southeast1-docker.pkg.dev/cpe334-2026-th042-coursepm/coursepm/coursepm:de9213ebf000c224c44bab66b9990f99119c81ab`
+with digest `sha256:c8cd3998c0cd197529a98f063fec7a2229f4029073c7f304f9d18720968ccdc2`.
+The [migrate/seed execution](https://console.cloud.google.com/run/jobs/executions/details/asia-southeast1/coursepm-migrate-g6d4z?project=1074485090297)
+completed successfully (1/1 task) before Cloud Run service deployment.
+Revision `coursepm-00001-6hh` serves 100% of traffic.
+
+An external GET to the [public UI](https://coursepm-7cxt6io2na-as.a.run.app/)
+returned 200 with title `CoursePM`. Public
+[`/api/health`](https://coursepm-7cxt6io2na-as.a.run.app/api/health)
+returned 200 with `{"status":"ok","service":"CoursePM API"}`; public
+[`/api/ready`](https://coursepm-7cxt6io2na-as.a.run.app/api/ready)
+returned 200 with `{"status":"ready","db":"connected"}`. The owner reports
+that a seeded user signed in through the UI; add the credential-free screenshot
+and its direct evidence link after it is available. Keep passwords out of
+screenshots and this document. Subsequent releases use the automated pipeline
+in #29.
 
 The release path is a feature branch to `lab5-staging` by reviewed Pull
 Request, then a reviewed release Pull Request to `main`. CI builds and tests
