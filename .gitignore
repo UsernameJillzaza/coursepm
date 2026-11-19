@@ -40,3 +40,7 @@ playwright-report/
 
 # server/client output written by artifacts/sprint-1/manual/man-checks.js
 artifacts/sprint-1/manual/*.out.txt
+
+# Python bytecode from the deploy script tests (#29)
+__pycache__/
+*.pyc
