@@ -1,14 +1,17 @@
 # Lab 5 deployment - CoursePM
 
-This plan now includes the proposed first deployment resources for issue #27.
-Record the release run and live URL after the first deployment and automated
-release (#29). Do not put passwords or connection strings here.
+This document records the first manual deployment from `main` for issue #27.
+The automated release procedure and its run evidence follow in #29. Do not
+put passwords or connection strings here.
 
 ## Stack and differences from the starter
 
 CoursePM uses React 19, Vite and TypeScript for the client; Express 5 and
-Prisma 7 for the API; and PostgreSQL for persistent data (version 18 locally;
-record the Cloud SQL version chosen in #27). The Lab 5 starter
+Prisma 7 for the API; and PostgreSQL for persistent data (version 18 in Compose
+and CI, version 16 in Cloud SQL). Cloud SQL uses PostgreSQL 16 with the chosen
+small Enterprise `db-f1-micro` tier. The current migrations use enums, tables,
+indexes and foreign keys without PostgreSQL 17/18-only features; future
+migrations must remain compatible with 16. The Lab 5 starter
 is a TokTickIT example, so its API routes, smoke checks, Docker build and seed
 commands must be adapted to CoursePM. In production, Express serves the built
 React client and `/api` from one origin. The Vite `/api` proxy is used only in
@@ -232,8 +235,13 @@ on the project and Secret Accessor only on the URL and seed secrets.
 ### First deployment record (#27)
 
 The GCP owner ran the script from clean `main` at
-`de9213ebf000c224c44bab66b9990f99119c81ab` after the reviewed
-[Cloud Shell dry run](https://github.com/UsernameJillzaza/coursepm/issues/27).
+`de9213ebf000c224c44bab66b9990f99119c81ab` after the
+[reviewed Cloud Shell dry run](https://github.com/UsernameJillzaza/coursepm/issues/27#issuecomment-7015666954).
+The [#45 release PR check](https://github.com/UsernameJillzaza/coursepm/actions/runs/44565751863)
+passed on staging head `5753cf8cd8330fa90527102123198659d4f78ebd`:
+server 119/119, client 39/39, and Docker build OK. The
+[owner's deployment record](https://github.com/UsernameJillzaza/coursepm/issues/27#issuecomment-7016610471)
+links the running service and screenshots to the `main` merge commit.
 Cloud SQL `coursepm-pg` reached `RUNNABLE`. Cloud Build pushed
 `asia-southeast1-docker.pkg.dev/cpe334-2026-th042-coursepm/coursepm/coursepm:de9213ebf000c224c44bab66b9990f99119c81ab`
 with digest `sha256:c8cd3998c0cd197529a98f063fec7a2229f4029073c7f304f9d18720968ccdc2`.
@@ -258,8 +266,8 @@ the automated pipeline in #29.
 
 The release path is a feature branch to `lab5-staging` by reviewed Pull
 Request, then a reviewed release Pull Request to `main`. CI builds and tests
-both Pull Requests. The deployment workflow on `main` will tag the image with
-the full commit SHA, run the migration/seed job, update Cloud Run to that image
-and run a read-only smoke check. Record the workflow run, image digest and
-serving Cloud Run revision for each release so the running commit can be
-identified. The exact commands and links will be added with #27 and #29.
+both Pull Requests. The #27 manual procedure and evidence are above. In #29,
+the deployment workflow on `main` will tag the image with the full commit SHA,
+run the migration/seed job, update Cloud Run to that image, and run a read-only
+smoke check. Record the workflow run, image digest and serving Cloud Run
+revision for each automated release so the running commit can be identified.
