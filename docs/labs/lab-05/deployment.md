@@ -1,8 +1,8 @@
 # Lab 5 deployment - CoursePM
 
-This is the first deployment plan for issue #24. Record the final project ID,
-region, resource names, release run and live URL after the first deployment (#27)
-and automated release (#29). Do not put passwords or connection strings here.
+This plan now includes the proposed first deployment resources for issue #27.
+Record the release run and live URL after the first deployment and automated
+release (#29). Do not put passwords or connection strings here.
 
 ## Stack and differences from the starter
 
@@ -39,6 +39,7 @@ relative `/api` URLs.
 | `DATABASE_URL_TEST` | Separate PostgreSQL database for integration tests | Yes | Local `server/.env`; temporary CI test database; never the live database |
 | `PORT` | HTTP port listened to by Express | No | Local `server/.env`; Cloud Run runtime |
 | `NODE_ENV` | Enables production cookies and static client serving | No | Local `server/.env`; production service configuration |
+| `DB_POOL_MAX` | Maximum PostgreSQL connections per server process; Cloud Run job/service use 3 | No | Optional locally; set by the #27 deploy script in Cloud Run |
 | `CLIENT_DIST_DIR` | Optional path to built React files; defaults to `client/dist` beside `server/` | No | Image layout, or service configuration if the layout differs |
 | `SESSION_TTL_HOURS` | Session lifetime; defaults to 8 hours | No | Local `server/.env`; production service configuration |
 | `SEED_PASSWORD` | Password for synthetic Student and Supervisor demo accounts | Yes | Local `server/.env` or root `.env`; Secret Manager for the migration/seed job in GCP |
@@ -154,9 +155,14 @@ into `lab5-staging` triggered the
 on head commit `5fd0f04c086731fba0c6e6839bc584f51724903c`. The check passed:
 server tests 119/119 (14 files), client tests 39/39 (6 files), migration and
 seed succeeded (8 demo accounts and 3 teams), and the Docker image built.
-This run predates the seed-password masking fix; verify that a later run masks
-the value as `***` in subsequent steps. The release PR into `main` still needs
-its own passing `test-and-docker` run to finish C-01.
+This run predates the seed-password masking fix. The later
+[#34 run 44380614259](https://github.com/UsernameJillzaza/coursepm/actions/runs/44380614259)
+passed at `1633ff5be2dba632053e566e7f1d733fb93ab962` with the same counts and
+Docker result; subsequent step logs show `SEED_PASSWORD: ***`. The
+[#35 release PR run 44385838689](https://github.com/UsernameJillzaza/coursepm/actions/runs/44385838689)
+also passed on `94145357ddf2084955862383aec0cdb01a88885a`: server 119/119,
+client 39/39, and `coursepm:ci` built. This completes both C-01 PR checks
+for that release head.
 
 Playwright E2E is not part of `test-and-docker`: the current configuration uses
 Microsoft Edge, while this job runs on Ubuntu. The E2E journeys also create
@@ -169,12 +175,66 @@ isolated test database, the client tests, and the production Docker build.
 
 | Item | Value |
 | --- | --- |
-| GCP project ID | Record the team's new CoursePM project ID before #27 |
-| Region | Decide and record before #27 |
-| Artifact Registry repository | Decide and record before #27 |
-| Cloud SQL instance and database | Decide and record before #27 |
-| Cloud Run migration job and service | Decide and record before #27 |
+| GCP project ID | `cpe334-2026-th042-coursepm` (verified in Issue #23 Cloud Shell evidence; confirm active project before running) |
+| Region | `asia-southeast1` proposed for owner review; pass `REGION` explicitly |
+| Artifact Registry repository | `coursepm` (Docker) |
+| Cloud SQL instance and database | `coursepm-pg` (PostgreSQL 16, Enterprise, `db-f1-micro`, 10 GB SSD, storage auto-increase off); database and user `coursepm` |
+| Runtime service account | `coursepm-runner@cpe334-2026-th042-coursepm.iam.gserviceaccount.com` |
+| Secret Manager | `coursepm-db-password`, `coursepm-database-url`, `coursepm-seed-password` |
+| Cloud Run migration job and service | `coursepm-migrate` and `coursepm`; service min 0, max 3, port 3000, DB pool max 3 per process |
 | Public URL and running commit | Record after deployment |
+
+### First manual deployment (#27)
+
+`deploy/deploy.sh` is adapted from the Student Guide starter. From the repo
+root, set `PROJECT_ID` to the verified value above and `REGION` to the
+reviewed region. In Cloud Shell, preview with:
+
+```bash
+PROJECT_ID=cpe334-2026-th042-coursepm REGION=asia-southeast1 DRY_RUN=1 bash deploy/deploy.sh
+```
+
+The captured [C-27 dry-run plan](c27-dry-run.txt) was generated locally from
+script commit `dfed809e26032ff3365a76a4332169296f2c77b8`, with no
+`gcloud` installation available. Its image tag is that commit; rerun the
+preview from the reviewed Cloud Shell checkout before the real deployment.
+
+The dry run does not invoke `gcloud`, generate credentials, or provision
+resources. It prints the intended commands with redacted password placeholders.
+The GCP owner and reviewer must read that output together, checking the
+project, region, SQL tier and storage setting, IAM bindings, secret names,
+migration command, image tag, public access, and scaling. Cloud Build's
+default build identity can vary by project; verify its Artifact Registry push
+access before the real run and review any IAM correction separately. Do not
+paste a real password or `DATABASE_URL` into a PR, terminal log, screenshot,
+or PDF.
+
+After review, merge the script through `lab5-staging` and a reviewed release
+PR into `main`. From a clean Cloud Shell checkout of that `main` commit,
+the owner reads each resource-changing command in the approved script and
+runs:
+
+```bash
+PROJECT_ID=cpe334-2026-th042-coursepm REGION=asia-southeast1 bash deploy/deploy.sh
+```
+
+The script enables APIs, creates the image repository, Cloud SQL database,
+dedicated runtime identity, and three secrets, then builds a commit-tagged
+image. `.gcloudignore` keeps local `.env` files and other ignored content out
+of the source archive sent by `gcloud builds submit`; `.dockerignore`
+separately controls the Docker build context. Before any resource change, the
+script checks the upload list and stops if it contains a `.env` file. It
+executes the migrate/seed Cloud Run job before deploying the public
+service. It refuses partial DB credential state rather than silently changing
+the database password on retry. The runtime identity gets Cloud SQL Client
+on the project and Secret Accessor only on the URL and seed secrets.
+
+After the owner-run deployment, record the deployed commit, image digest,
+serving revision, public URL, `/api/health` and `/api/ready` results, and a
+seeded-user UI sign-in in this document. The owner can retrieve the seed
+password privately from Secret Manager for the sign-in check. Keep evidence
+screenshots free of credentials. The image is built from `main`; subsequent
+releases use the automated pipeline in #29.
 
 The release path is a feature branch to `lab5-staging` by reviewed Pull
 Request, then a reviewed release Pull Request to `main`. CI builds and tests
