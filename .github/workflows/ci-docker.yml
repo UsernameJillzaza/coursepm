@@ -46,6 +46,14 @@ jobs:
         with:
           persist-credentials: false
 
+      # #29: the release and smoke scripts are tested offline (fake gcloud,
+      # mocked HTTP), so a broken script fails here, never during a deploy.
+      - name: Check deployment scripts without accessing GCP
+        run: |
+          bash -n deploy/deploy.sh deploy/release.sh
+          bash deploy/tests/test_release_stub.sh
+          python3 -m unittest discover -s deploy/tests -p 'test_smoke.py'
+
       - name: Set up Node.js 24
         uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
@@ -88,5 +96,11 @@ jobs:
       - name: Build client
         run: npm --prefix client run build
 
+      # #29: build with the commit SHA the way deploy.yml does, then prove it
+      # reached the client bundle the release footer and smoke test read.
       - name: Build production Docker image
-        run: docker build --tag coursepm:ci .
+        env:
+          APP_COMMIT: ${{ github.sha }}
+        run: |
+          docker build --build-arg "APP_COMMIT=$APP_COMMIT" --tag coursepm:ci .
+          docker run --rm --entrypoint sh coursepm:ci -c "grep -l '$APP_COMMIT' /app/client/dist/assets/*.js"
