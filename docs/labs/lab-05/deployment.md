@@ -220,7 +220,11 @@ PROJECT_ID=cpe334-2026-th042-coursepm REGION=asia-southeast1 bash deploy/deploy.
 
 The script enables APIs, creates the image repository, Cloud SQL database,
 dedicated runtime identity, and three secrets, then builds a commit-tagged
-image. It executes the migrate/seed Cloud Run job before deploying the public
+image. `.gcloudignore` keeps local `.env` files and other ignored content out
+of the source archive sent by `gcloud builds submit`; `.dockerignore`
+separately controls the Docker build context. Before any resource change, the
+script checks the upload list and stops if it contains a `.env` file. It
+executes the migrate/seed Cloud Run job before deploying the public
 service. It refuses partial DB credential state rather than silently changing
 the database password on retry. The runtime identity gets Cloud SQL Client
 on the project and Secret Accessor only on the URL and seed secrets.

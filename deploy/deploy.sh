@@ -61,6 +61,11 @@ if [[ "$DRY_RUN" != 1 ]]; then
     echo "Billing is not enabled for PROJECT_ID; stop and review" >&2
     exit 1
   fi
+  upload_files="$(gcloud meta list-files-for-upload)"
+  if grep -Eq '(^|/)\.env($|\.)' <<<"$upload_files"; then
+    echo "A .env file would enter the Cloud Build upload; stop and review .gcloudignore" >&2
+    exit 1
+  fi
 fi
 
 # Only non-secret arguments are logged. Never enable shell tracing here.
@@ -89,6 +94,9 @@ create_secret_with_value() {
 echo "CoursePM first deployment plan"
 printf 'Project: %s\nRegion: %s\nSource commit: %s\nImage: %s\nDry run: %s\n' \
   "$PROJECT_ID" "$REGION" "$SOURCE_SHA" "$IMAGE_URI" "$DRY_RUN"
+if [[ "$DRY_RUN" == 1 ]]; then
+  echo "[DRY_RUN] real-run preflight checks main, clean tree, active project, billing, and Cloud Build upload list"
+fi
 
 run_cmd gcloud services enable \
   run.googleapis.com sqladmin.googleapis.com artifactregistry.googleapis.com \

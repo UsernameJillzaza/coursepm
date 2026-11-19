@@ -1,0 +1,18 @@
+# Source archive uploaded by gcloud builds submit (#27).
+.gcloudignore
+.git
+.gitignore
+#!include:.gitignore
+
+# Keep credentials out of the upload even if local ignore rules change.
+.env
+.env.*
+**/.env
+**/.env.*
+
+# Not needed to build the root Dockerfile.
+.github/
+artifacts/
+deploy/
+docs/
+scripts/
