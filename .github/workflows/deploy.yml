@@ -1,0 +1,115 @@
+name: Deploy to Cloud Run
+
+# Issue #29 (C-06): every push to `main` (a merged, reviewed release PR) is
+# tested again, built into an image tagged with the full commit SHA, migrated,
+# deployed by digest and smoke-tested against the public URL.
+#
+# Manual run ("Run workflow" on `main`):
+#   - image_tag empty  -> same as a push: test, build and deploy current main.
+#   - image_tag = SHA  -> rollback: redeploy that existing image; tests, build,
+#                         migration and seed are skipped.
+#
+# Google Cloud sign-in is keyless (Workload Identity Federation, #28). The
+# provider only accepts tokens from this repository's `main` ref in the `demo`
+# environment, and `demo` only allows deployments from `main`.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      image_tag:
+        description: 'Rollback: full commit SHA of an existing image. Empty = test, build and deploy current main.'
+        type: string
+        required: false
+        default: ''
+
+permissions:
+  contents: read
+
+# One deployment at a time; a newer push waits instead of cancelling a deploy.
+concurrency:
+  group: deploy-demo
+  cancel-in-progress: false
+
+jobs:
+  test:
+    if: github.ref == 'refs/heads/main' && !inputs.image_tag
+    uses: ./.github/workflows/ci-docker.yml
+
+  deploy:
+    needs: test
+    if: >-
+      !cancelled() && github.ref == 'refs/heads/main' &&
+      (needs.test.result == 'success' ||
+       (github.event_name == 'workflow_dispatch' && inputs.image_tag != '' && needs.test.result == 'skipped'))
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: demo
+    permissions:
+      contents: read
+      id-token: write # keyless Google Cloud sign-in (WIF)
+    env:
+      PROJECT_ID: ${{ vars.GCP_PROJECT_ID }}
+      REGION: ${{ vars.GCP_REGION }}
+      SERVICE_NAME: coursepm
+      MIGRATE_JOB_NAME: coursepm-migrate
+      REPO_NAME: coursepm
+      IMAGE_TAG: ${{ inputs.image_tag || github.sha }}
+      ROLLBACK: ${{ inputs.image_tag != '' }}
+    steps:
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Validate deployment settings
+        env:
+          WIF_PROVIDER: ${{ vars.WIF_PROVIDER }}
+          WIF_SERVICE_ACCOUNT: ${{ vars.WIF_SERVICE_ACCOUNT }}
+        run: |
+          test -n "$PROJECT_ID" && test -n "$REGION" || { echo 'GCP_PROJECT_ID and GCP_REGION must be set on the demo environment.'; exit 1; }
+          test -n "$WIF_PROVIDER" && test -n "$WIF_SERVICE_ACCOUNT" || { echo 'WIF_PROVIDER and WIF_SERVICE_ACCOUNT must be set on the demo environment.'; exit 1; }
+          [[ "$IMAGE_TAG" =~ ^[0-9a-f]{40}$ ]] || { echo 'Image tag must be a full 40-character commit SHA.'; exit 1; }
+
+      - name: Authenticate to Google Cloud without a key
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
+        with:
+          workload_identity_provider: ${{ vars.WIF_PROVIDER }}
+          service_account: ${{ vars.WIF_SERVICE_ACCOUNT }}
+
+      - name: Set up gcloud
+        uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db # v3.0.1
+
+      - name: Build and push the commit-tagged image
+        if: env.ROLLBACK != 'true'
+        run: |
+          gcloud auth configure-docker "$REGION-docker.pkg.dev" --quiet
+          IMAGE="$REGION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/$SERVICE_NAME:$IMAGE_TAG"
+          # APP_COMMIT puts the release SHA in the client bundle (footer + smoke check).
+          docker build --build-arg "APP_COMMIT=$IMAGE_TAG" --tag "$IMAGE" .
+          docker push "$IMAGE"
+
+      - name: Migrate, then deploy by digest
+        run: bash deploy/release.sh
+
+      - name: Smoke test the public URL (read-only)
+        env:
+          # A rollback to an image built before #29 has no commit in its bundle.
+          EXPECTED_COMMIT: ${{ env.ROLLBACK != 'true' && env.IMAGE_TAG || '' }}
+        run: python3 deploy/smoke_test.py "$SERVICE_URL"
+
+      - name: Record the deployment
+        run: |
+          {
+            echo '### CoursePM deployment'
+            echo "- Commit (image tag): \`$IMAGE_TAG\`"
+            echo "- Image digest: \`$DEPLOYED_IMAGE\`"
+            echo "- Serving revision: \`$SERVING_REVISION\`"
+            echo "- Rollback: $ROLLBACK"
+            echo "- URL: $SERVICE_URL"
+            if [[ "$ROLLBACK" == true ]]; then
+              echo '- Smoke test: passed (health, readiness/DB, client HTML, auth guard). Release commit check skipped for a rollback.'
+            else
+              echo '- Smoke test: passed (health, readiness/DB, client HTML, auth guard, release commit in the served bundle).'
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
