@@ -1,14 +1,17 @@
 # Lab 5 deployment - CoursePM
 
-This plan now includes the proposed first deployment resources for issue #27.
-Record the release run and live URL after the first deployment and automated
-release (#29). Do not put passwords or connection strings here.
+This document records the first manual deployment from `main` for issue #27.
+The automated release procedure and its run evidence follow in #29. Do not
+put passwords or connection strings here.
 
 ## Stack and differences from the starter
 
 CoursePM uses React 19, Vite and TypeScript for the client; Express 5 and
-Prisma 7 for the API; and PostgreSQL for persistent data (version 18 locally;
-record the Cloud SQL version chosen in #27). The Lab 5 starter
+Prisma 7 for the API; and PostgreSQL for persistent data (version 18 in Compose
+and CI, version 16 in Cloud SQL). Cloud SQL uses PostgreSQL 16 with the chosen
+small Enterprise `db-f1-micro` tier. The current migrations use enums, tables,
+indexes and foreign keys without PostgreSQL 17/18-only features; future
+migrations must remain compatible with 16. The Lab 5 starter
 is a TokTickIT example, so its API routes, smoke checks, Docker build and seed
 commands must be adapted to CoursePM. In production, Express serves the built
 React client and `/api` from one origin. The Vite `/api` proxy is used only in
@@ -176,13 +179,13 @@ isolated test database, the client tests, and the production Docker build.
 | Item | Value |
 | --- | --- |
 | GCP project ID | `cpe334-2026-th042-coursepm` (verified in Issue #23 Cloud Shell evidence; confirm active project before running) |
-| Region | `asia-southeast1` proposed for owner review; pass `REGION` explicitly |
+| Region | `asia-southeast1` (Singapore; approved in the #27 Cloud Shell dry-run review) |
 | Artifact Registry repository | `coursepm` (Docker) |
 | Cloud SQL instance and database | `coursepm-pg` (PostgreSQL 16, Enterprise, `db-f1-micro`, 10 GB SSD, storage auto-increase off); database and user `coursepm` |
 | Runtime service account | `coursepm-runner@cpe334-2026-th042-coursepm.iam.gserviceaccount.com` |
 | Secret Manager | `coursepm-db-password`, `coursepm-database-url`, `coursepm-seed-password` |
 | Cloud Run migration job and service | `coursepm-migrate` and `coursepm`; service min 0, max 3, port 3000, DB pool max 3 per process |
-| Public URL and running commit | Record after deployment |
+| Public URL and running commit | [CoursePM](https://coursepm-7cxt6io2na-as.a.run.app/) from `de9213ebf000c224c44bab66b9990f99119c81ab`; see first deployment record below |
 
 ### First manual deployment (#27)
 
@@ -229,17 +232,67 @@ service. It refuses partial DB credential state rather than silently changing
 the database password on retry. The runtime identity gets Cloud SQL Client
 on the project and Secret Accessor only on the URL and seed secrets.
 
-After the owner-run deployment, record the deployed commit, image digest,
-serving revision, public URL, `/api/health` and `/api/ready` results, and a
-seeded-user UI sign-in in this document. The owner can retrieve the seed
-password privately from Secret Manager for the sign-in check. Keep evidence
-screenshots free of credentials. The image is built from `main`; subsequent
-releases use the automated pipeline in #29.
+### First deployment record (#27)
+
+The GCP owner ran the script from clean `main` at
+`de9213ebf000c224c44bab66b9990f99119c81ab` after the
+[reviewed Cloud Shell dry run](https://github.com/UsernameJillzaza/coursepm/issues/27#issuecomment-7015666954).
+The [#45 release PR check](https://github.com/UsernameJillzaza/coursepm/actions/runs/44565751863)
+passed on staging head `5753cf8cd8330fa90527102123198659d4f78ebd`:
+server 119/119, client 39/39, and Docker build OK. The
+[owner's deployment record](https://github.com/UsernameJillzaza/coursepm/issues/27#issuecomment-7016610471)
+links the running service and screenshots to the `main` merge commit.
+Cloud SQL `coursepm-pg` reached `RUNNABLE`. Cloud Build pushed
+`asia-southeast1-docker.pkg.dev/cpe334-2026-th042-coursepm/coursepm/coursepm:de9213ebf000c224c44bab66b9990f99119c81ab`
+with digest `sha256:c8cd3998c0cd197529a98f063fec7a2229f4029073c7f304f9d18720968ccdc2`.
+The [migrate/seed execution](https://console.cloud.google.com/run/jobs/executions/details/asia-southeast1/coursepm-migrate-g6d4z?project=cpe334-2026-th042-coursepm)
+completed successfully (1/1 task) before Cloud Run service deployment.
+The owner read the execution log with `gcloud run jobs logs read
+coursepm-migrate --region=asia-southeast1 --project="$PROJECT_ID" --limit=100`
+and queried the revision startup log in Cloud Shell. The inspected log output
+contained no password or `DATABASE_URL`; relevant excerpts are below:
+
+```text
+2026-11-19 17:16:51 6 migrations found in prisma/migrations
+2026-11-19 17:16:52 All migrations have been successfully applied.
+2026-11-19 17:16:57 Seeded 8 demo accounts and 3 teams.
+CoursePM API listening on http://localhost:3000
+```
+
+Revision `coursepm-00001-6hh` serves 100% of traffic. The owner ran
+`gcloud run revisions describe coursepm-00001-6hh --region=asia-southeast1
+--project="$PROJECT_ID"
+--format='value(spec.containers[0].image,status.imageDigest)'`.
+Its actual output has two identical digest-qualified URIs:
+
+```text
+asia-southeast1-docker.pkg.dev/cpe334-2026-th042-coursepm/coursepm/coursepm@sha256:c8cd3998c0cd197529a98f063fec7a2229f4029073c7f304f9d18720968ccdc2  asia-southeast1-docker.pkg.dev/cpe334-2026-th042-coursepm/coursepm/coursepm@sha256:c8cd3998c0cd197529a98f063fec7a2229f4029073c7f304f9d18720968ccdc2
+```
+
+Cloud Run reports the resolved digest for both fields, rather than the
+commit-tagged image reference. The Cloud Build output recorded above ties the
+`de9213e…` tag to this digest; the revision output ties that digest to the
+serving revision.
+
+An external GET to the [public UI](https://coursepm-7cxt6io2na-as.a.run.app/)
+returned 200 with title `CoursePM`. Public
+[`/api/health`](https://coursepm-7cxt6io2na-as.a.run.app/api/health)
+returned 200 with `{"status":"ok","service":"CoursePM API"}`; public
+[`/api/ready`](https://coursepm-7cxt6io2na-as.a.run.app/api/ready)
+returned 200 with `{"status":"ready","db":"connected"}`. The owner signed in
+as seeded student `alpha1@coursepm.test` and reached My Teams / Team Alpha.
+Issue #27 holds direct screenshots of the
+[signed-in UI](https://github.com/user-attachments/assets/cd5fb3c8-3037-4d1f-9d01-4fc57b1b9f94),
+[`/api/ready`](https://github.com/user-attachments/assets/296e6d06-c361-4984-a77b-d2c260bed4ff),
+[serving revision](https://github.com/user-attachments/assets/b4c2a50b-5287-449e-97d4-5f722b9bad13),
+and [migration job](https://github.com/user-attachments/assets/8fdd1d56-6d05-4c5a-a1ba-6348cebbe15b).
+Keep passwords out of screenshots and this document. Subsequent releases use
+the automated pipeline in #29.
 
 The release path is a feature branch to `lab5-staging` by reviewed Pull
 Request, then a reviewed release Pull Request to `main`. CI builds and tests
-both Pull Requests. The deployment workflow on `main` will tag the image with
-the full commit SHA, run the migration/seed job, update Cloud Run to that image
-and run a read-only smoke check. Record the workflow run, image digest and
-serving Cloud Run revision for each release so the running commit can be
-identified. The exact commands and links will be added with #27 and #29.
+both Pull Requests. The #27 manual procedure and evidence are above. In #29,
+the deployment workflow on `main` will tag the image with the full commit SHA,
+run the migration/seed job, update Cloud Run to that image, and run a read-only
+smoke check. Record the workflow run, image digest and serving Cloud Run
+revision for each automated release so the running commit can be identified.
