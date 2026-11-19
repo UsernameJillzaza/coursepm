@@ -1,0 +1,27 @@
+CoursePM first deployment plan
+Project: cpe334-2026-th042-coursepm
+Region: asia-southeast1
+Source commit: 2d7a26d8e3b76c9b1b1616047daa114bfc1ba5bf
+Image: asia-southeast1-docker.pkg.dev/cpe334-2026-th042-coursepm/coursepm/coursepm:2d7a26d8e3b76c9b1b1616047daa114bfc1ba5bf
+Dry run: 1
+[DRY_RUN] gcloud services enable run.googleapis.com sqladmin.googleapis.com artifactregistry.googleapis.com cloudbuild.googleapis.com secretmanager.googleapis.com iam.googleapis.com --project cpe334-2026-th042-coursepm
+[DRY_RUN] gcloud artifacts repositories create coursepm --repository-format=docker --location asia-southeast1 --description=CoursePM\ container\ images --project cpe334-2026-th042-coursepm
+[DRY_RUN] gcloud sql instances create coursepm-pg --database-version=POSTGRES_16 --edition=enterprise --tier=db-f1-micro --region=asia-southeast1 --storage-size=10GB --storage-type=SSD --no-storage-auto-increase --assign-ip --project cpe334-2026-th042-coursepm
+[DRY_RUN] gcloud sql databases create coursepm --instance=coursepm-pg --project cpe334-2026-th042-coursepm
+[DRY_RUN] gcloud iam service-accounts create coursepm-runner --display-name=CoursePM\ Cloud\ Run\ runtime --project cpe334-2026-th042-coursepm
+[DRY_RUN] gcloud projects add-iam-policy-binding cpe334-2026-th042-coursepm --member=serviceAccount:coursepm-runner@cpe334-2026-th042-coursepm.iam.gserviceaccount.com --role=roles/cloudsql.client --condition=None --quiet
+[DRY_RUN] if DB user and both secrets are absent, create them together
+[DRY_RUN] gcloud sql users create coursepm --instance=coursepm-pg --password=\<REDACTED\> --project cpe334-2026-th042-coursepm
+[DRY_RUN] gcloud secrets create coursepm-db-password --replication-policy=automatic --project cpe334-2026-th042-coursepm
+[DRY_RUN] add a redacted value to secret coursepm-db-password
+[DRY_RUN] gcloud secrets create coursepm-database-url --replication-policy=automatic --project cpe334-2026-th042-coursepm
+[DRY_RUN] add a redacted value to secret coursepm-database-url
+[DRY_RUN] gcloud secrets create coursepm-seed-password --replication-policy=automatic --project cpe334-2026-th042-coursepm
+[DRY_RUN] add a redacted value to secret coursepm-seed-password
+[DRY_RUN] gcloud secrets add-iam-policy-binding coursepm-database-url --member=serviceAccount:coursepm-runner@cpe334-2026-th042-coursepm.iam.gserviceaccount.com --role=roles/secretmanager.secretAccessor --project cpe334-2026-th042-coursepm --quiet
+[DRY_RUN] gcloud secrets add-iam-policy-binding coursepm-seed-password --member=serviceAccount:coursepm-runner@cpe334-2026-th042-coursepm.iam.gserviceaccount.com --role=roles/secretmanager.secretAccessor --project cpe334-2026-th042-coursepm --quiet
+[DRY_RUN] gcloud builds submit --tag asia-southeast1-docker.pkg.dev/cpe334-2026-th042-coursepm/coursepm/coursepm:2d7a26d8e3b76c9b1b1616047daa114bfc1ba5bf --project cpe334-2026-th042-coursepm
+[DRY_RUN] gcloud run jobs deploy coursepm-migrate --image asia-southeast1-docker.pkg.dev/cpe334-2026-th042-coursepm/coursepm/coursepm:2d7a26d8e3b76c9b1b1616047daa114bfc1ba5bf --region asia-southeast1 --service-account coursepm-runner@cpe334-2026-th042-coursepm.iam.gserviceaccount.com --set-cloudsql-instances cpe334-2026-th042-coursepm:asia-southeast1:coursepm-pg --set-secrets DATABASE_URL=coursepm-database-url:latest\,SEED_PASSWORD=coursepm-seed-password:latest --set-env-vars NODE_ENV=production\,TZ=Asia/Bangkok --command sh --args -c\,npm\ run\ db:deploy\ \&\&\ npm\ run\ db:seed --max-retries 0 --task-timeout 600s --project cpe334-2026-th042-coursepm
+[DRY_RUN] gcloud run jobs execute coursepm-migrate --region asia-southeast1 --wait --project cpe334-2026-th042-coursepm
+[DRY_RUN] gcloud run deploy coursepm --image asia-southeast1-docker.pkg.dev/cpe334-2026-th042-coursepm/coursepm/coursepm:2d7a26d8e3b76c9b1b1616047daa114bfc1ba5bf --region asia-southeast1 --platform managed --allow-unauthenticated --service-account coursepm-runner@cpe334-2026-th042-coursepm.iam.gserviceaccount.com --set-cloudsql-instances cpe334-2026-th042-coursepm:asia-southeast1:coursepm-pg --set-secrets DATABASE_URL=coursepm-database-url:latest --set-env-vars NODE_ENV=production\,TZ=Asia/Bangkok --min-instances 0 --max-instances 3 --memory 512Mi --cpu 1 --port 3000 --project cpe334-2026-th042-coursepm
+[DRY_RUN] after deployment, read the service URL and check /api/health, /api/ready, and seeded-user sign-in
