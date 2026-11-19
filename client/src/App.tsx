@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from 'react-router-dom'
 import { AuthProvider } from './auth/AuthContext'
 import LoginPage from './auth/LoginPage'
 import RequireAuth from './auth/RequireAuth'
+import ReleaseFooter from './components/ReleaseFooter'
 import TopBar from './components/TopBar'
 import TeamDetailPage from './teams/TeamDetailPage'
 import TeamsPage from './teams/TeamsPage'
@@ -49,6 +50,7 @@ export default function App() {
         />
         <Route path="*" element={<Navigate to="/teams" replace />} />
       </Routes>
+      <ReleaseFooter />
     </AuthProvider>
   )
 }
