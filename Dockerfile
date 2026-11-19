@@ -16,6 +16,10 @@ WORKDIR /app/client
 COPY client/package.json client/package-lock.json ./
 RUN npm ci
 COPY client/ ./
+# #29: the deploy workflow passes the full commit SHA it tags the image with;
+# Vite bakes it into the bundle for the release footer. Empty = dev build.
+ARG APP_COMMIT=
+ENV VITE_APP_COMMIT=$APP_COMMIT
 RUN npm run build
 
 # ---- Stage 2: build the server (TypeScript + Prisma client) -----------------

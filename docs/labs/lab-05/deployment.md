@@ -136,7 +136,7 @@ cold-cache rerun above passed.
 
 `.github/workflows/ci-docker.yml` runs the `test-and-docker` job for Pull
 Requests into `main` and any `*-staging` branch. It also supports a manual run
-and can be called by the later deployment workflow. The job uses a temporary
+and is reused by `deploy.yml` (#29) before every release. The job uses a temporary
 PostgreSQL 18 service on the GitHub-hosted runner. It creates a separate
 `coursepm_ci_test` database before running tests; `DATABASE_URL` points to
 `coursepm_ci` for migration and seed, while `DATABASE_URL_TEST` points to the
@@ -174,7 +174,7 @@ artifacts. They remain a separate local check (`npm run test:e2e`) when that
 side effect is needed. CI still runs the server integration tests against its
 isolated test database, the client tests, and the production Docker build.
 
-## GCP and release record (complete in #27-#29)
+## GCP and release record (#27–#29)
 
 | Item | Value |
 | --- | --- |
@@ -291,8 +291,81 @@ the automated pipeline in #29.
 
 The release path is a feature branch to `lab5-staging` by reviewed Pull
 Request, then a reviewed release Pull Request to `main`. CI builds and tests
-both Pull Requests. The #27 manual procedure and evidence are above. In #29,
-the deployment workflow on `main` will tag the image with the full commit SHA,
-run the migration/seed job, update Cloud Run to that image, and run a read-only
-smoke check. Record the workflow run, image digest and serving Cloud Run
-revision for each automated release so the running commit can be identified.
+both Pull Requests. The #27 manual procedure and evidence are above; from #29
+on, every release is automated.
+
+## Automated release pipeline (#29, C-06)
+
+`.github/workflows/deploy.yml` runs on every push to `main`, which means only
+when a reviewed release PR merges (`protect-main` blocks direct pushes):
+
+1. **Test.** It reuses `test-and-docker` (`ci-docker.yml`); a failure stops the release.
+2. **Sign in without a key.** It uses Workload Identity Federation (#28) in the
+   `demo` environment. The provider accepts only this repository's `main` ref in
+   `demo`, and `demo` allows deployments only from `main`.
+3. **Build.** `docker build --build-arg APP_COMMIT=<full SHA>` tags the image
+   `…/coursepm/coursepm:<full SHA>` and pushes it to Artifact Registry.
+   `APP_COMMIT` puts the SHA into the client bundle.
+4. **Release.** `deploy/release.sh` resolves that tag to its `@sha256` digest,
+   points the `coursepm-migrate` job at the digest and runs it to completion,
+   then updates the `coursepm` service to the digest and sends 100% of traffic
+   to the new revision. A failed migration stops the release before the service
+   changes. Secrets, env vars, the Cloud SQL link and the runtime service account
+   stay as `deploy/deploy.sh` set them.
+5. **Smoke test.** `deploy/smoke_test.py` runs read-only against the public URL:
+   `/api/health`, `/api/ready` (`db: connected`), the client HTML and its bundle,
+   `/api/teams` → 401, and the release SHA inside the served bundle.
+6. **Record.** The job summary lists the commit, image digest, serving revision and URL.
+
+**How to find the running commit.** Every page shows `CoursePM release <short
+SHA>` in the footer, linked to the commit; the full SHA is in the link's
+tooltip. The deploy run's summary pairs that SHA with the image digest and the
+serving revision, and
+`gcloud run services describe coursepm --region asia-southeast1 --format='value(status.latestReadyRevisionName)'`
+names the revision that is serving now. Images built before #29 (the #27 manual
+deploy) show `CoursePM development build`, because they were built without
+`APP_COMMIT`.
+
+**Rollback.** Run the workflow manually on `main` with `image_tag` set to the
+full SHA of an earlier image. Tests, build, migration and seed are skipped, and
+that image is redeployed by digest. Roll back only to an image whose code works
+with the current schema; the migrations so far only add tables and columns.
+
+**Offline checks in every PR.** `test-and-docker` runs
+`bash deploy/tests/test_release_stub.sh` (fake `gcloud`: digest resolution,
+migrate before deploy, rollback skips migration, failures stop before the
+service changes, bad input rejected) and the `test_smoke.py` unit tests, so a
+broken script fails in review, not during a release.
+
+**`demo` environment variables** (GitHub → Settings → Environments → `demo`).
+They hold no secret; the deploy job's "Validate deployment settings" step
+stops the release if any is missing.
+
+| Variable | Value comes from |
+| --- | --- |
+| `GCP_PROJECT_ID` | The GCP project ID recorded above (#23) |
+| `GCP_REGION` | The region recorded above (#27) |
+| `WIF_PROVIDER` | Full resource name of the WIF provider created in #28 (`projects/<number>/locations/global/workloadIdentityPools/<pool>/providers/<provider>`) |
+| `WIF_SERVICE_ACCOUNT` | E-mail of the deployer service account created in #28 |
+
+The WIF principal for this repository must hold `roles/iam.workloadIdentityUser`
+on the deployer service account (#28); that binding lets the workflow
+impersonate it without a key.
+
+**Deployer permissions** (`coursepm-deployer`, granted by the GCP owner as a
+separate reviewed IAM step). Each command the workflow runs, and the narrowest
+role that covers it:
+
+| Command in the pipeline | Role | Scope |
+| --- | --- | --- |
+| `docker push` to `…/coursepm/coursepm`; `gcloud artifacts docker images describe` | `roles/artifactregistry.writer` | Artifact Registry repository `coursepm` only |
+| `gcloud run jobs update` / `execute --wait`; `gcloud run services update` / `update-traffic` / `describe` | `roles/run.developer` | project (or the `coursepm` service and `coursepm-migrate` job) |
+| Deploying the job and service as their runtime identity | `roles/iam.serviceAccountUser` | service account `coursepm-runner` only |
+
+The deployer needs no Secret Manager, Cloud SQL or Cloud Build role. The
+runtime identity reads the secrets, and the image is built on the GitHub runner.
+Verify on the first run: if a call fails with a `serviceusage` 403, the deployer
+also needs `roles/serviceusage.serviceUsageConsumer` on the project.
+
+The smoke test is read-only and uses no account, so the pipeline never needs a
+demo password. Sign-in on the live URL is checked by hand in #30.
