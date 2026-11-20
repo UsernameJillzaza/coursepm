@@ -420,8 +420,10 @@ release by it.
 
 Recorded on 2026-11-20 on https://coursepm-7cxt6io2na-as.a.run.app with the
 seeded demo accounts. The demo password came from Secret Manager through the
-GCP owner and was typed by hand; it appears in no screenshot or log. Each
-screenshot shows the public URL in the address bar and is kept for the Lab 5 PDF.
+GCP owner and was typed by hand; it appears in no screenshot or log. The
+screenshots are in [`evidence/`](evidence/). Each browser screenshot shows the public
+URL in the address bar; the tab strip, bookmarks and the Cloud Shell user prompt
+are cropped out.
 
 ### C-04: sign-in, main action and a rule rejection
 
@@ -431,6 +433,12 @@ screenshot shows the public URL in the address bar and is kept for the Lab 5 PDF
 | 2 | Supervisor creates milestone `Lab 5 live check` on Team Alpha, revision limit 1, deadline 20 Nov 2026 23:59 (Bangkok) | Created (FR-04; BR-04 assigned supervisor; BR-05 future deadline); shows `0 / 1 revisions`, Open |
 | 3 | `alpha1@coursepm.test` submits `Live check submission` | Accepted as revision 1 at 14:11 (FR-06); `Revisions used: 1 / 1`; the UI hides the form |
 | 4 | `alpha1` sends a second submission straight to `POST /api/milestones/1/submissions` from the browser console, bypassing the hidden form | **`409 REVISION_LIMIT_REACHED`**, "Your team has used all revisions for this milestone." (BR-07); nothing stored, the milestone still shows one revision |
+
+Screenshots:
+[1 supervisor signed in](evidence/c04-01-supervisor-signed-in.jpg) ·
+[2 milestone created](evidence/c04-02-milestone-created.jpg) ·
+[3 revision 1 accepted](evidence/c04-03-first-submission-accepted.jpg) ·
+[4 second submission rejected, 409](evidence/c04-04-br07-rejection-409.jpg).
 
 Step 4 goes past the UI on purpose. The server itself rejects the request,
 which is what NFR-02 requires ("hiding a button is never the only control").
@@ -445,6 +453,13 @@ because sessions are stored in PostgreSQL, not in the container.
 | --- | --- | --- | --- |
 | Restart, no code change | `gcloud run services update coursepm --update-env-vars C05_RESTART=2026-11-20` (Cloud Shell) | `coursepm-00002-xvc` → `coursepm-00003-d67` | Still there, `1 / 1 revisions`, 14:11 |
 | Redeploy through the pipeline | Deploy to Cloud Run, manual run on `main` ([run 44694660515](https://github.com/UsernameJillzaza/coursepm/actions/runs/44694660515)): tests, build, migrate `coursepm-migrate-f26ch`, deploy, smoke incl. release commit | `coursepm-00003-d67` → `coursepm-00004-68n` | Still there |
+
+Screenshots:
+[restart output](evidence/c05-01-restart-00002-to-00003.jpg) ·
+[record after the restart](evidence/c05-02-data-after-restart.jpg) ·
+[redeploy run](evidence/c05-03-pipeline-redeploy-run.jpg) ·
+[record after the redeploy](evidence/c05-04-data-after-redeploy.jpg).
+The record screenshots also show `Alpha Student 1 · Student` still signed in.
 
 The `C05_RESTART` variable has no effect on the app; the pipeline's `release.sh`
 updates only the image, so it stays on later revisions.
@@ -461,6 +476,10 @@ The commit, and therefore the code, is the same; the smoke test confirmed
 | --- | --- | --- | --- | --- |
 | Roll back to the #27 image | [44695369594](https://github.com/UsernameJillzaza/coursepm/actions/runs/44695369594) with `image_tag=de9213e…` | `sha256:c8cd3998…ccdc2` (the #27 digest) | `coursepm-00005-jbt` | Tests, build and migration skipped; smoke passed. The page has **no release footer**, because that code predates #29. The record is still there |
 | Roll forward to `a36ed20` | [44695598189](https://github.com/UsernameJillzaza/coursepm/actions/runs/44695598189) with `image_tag=a36ed20…` | `sha256:77ab98b3…9a99a` | `coursepm-00006-rxx` | Smoke passed; an external rerun with `EXPECTED_COMMIT=a36ed20…` passed the release-commit check; the footer reads `CoursePM release a36ed20` again; the record is still there |
+
+Screenshots:
+[record after the rollback, no footer](evidence/c05-05-rollback-no-footer-data-kept.jpg) ·
+[record after the roll forward, footer `a36ed20`](evidence/c05-06-rollforward-a36ed20-data-kept.jpg).
 
 The rollback reuses an image and skips migration, so it is safe only while the
 older code works with the current schema. Here it does, because #24–#29 added
