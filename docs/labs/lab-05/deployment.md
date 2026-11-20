@@ -46,6 +46,10 @@ relative `/api` URLs.
 | `CLIENT_DIST_DIR` | Optional path to built React files; defaults to `client/dist` beside `server/` | No | Image layout, or service configuration if the layout differs |
 | `SESSION_TTL_HOURS` | Session lifetime; defaults to 8 hours | No | Local `server/.env`; production service configuration |
 | `SEED_PASSWORD` | Password for synthetic Student and Supervisor demo accounts | Yes | Local `server/.env` or root `.env`; Secret Manager for the migration/seed job in GCP |
+| `TZ` | Process time zone for server-side dates; `Asia/Bangkok` in Cloud Run | No | Set by `deploy/deploy.sh` on the job and the service |
+| `APP_COMMIT` → `VITE_APP_COMMIT` | Build-time only: the release SHA baked into the client bundle for the footer (#29); never read at runtime | No | `docker build --build-arg APP_COMMIT=<full SHA>` in `deploy.yml` and CI; empty locally ("development build") |
+| `POSTGRES_USER` / `POSTGRES_PASSWORD` / `POSTGRES_DB` | Compose only: the local PostgreSQL container; Compose builds `DATABASE_URL` from them | Password: yes | Root `.env` (placeholders in `.env.example`) |
+| `APP_PORT` | Compose only: host port for the app | No | Root `.env`, default 3000 |
 
 The seed creates six Student and two Supervisor demo accounts. It uses
 `SEED_PASSWORD` supplied at run time, upserts the records, and resets the demo
@@ -477,11 +481,35 @@ The commit, and therefore the code, is the same; the smoke test confirmed
 | Roll back to the #27 image | [44695369594](https://github.com/UsernameJillzaza/coursepm/actions/runs/44695369594) with `image_tag=de9213e…` | `sha256:c8cd3998…ccdc2` (the #27 digest) | `coursepm-00005-jbt` | Tests, build and migration skipped; smoke passed. The page has **no release footer**, because that code predates #29. The record is still there |
 | Roll forward to `a36ed20` | [44695598189](https://github.com/UsernameJillzaza/coursepm/actions/runs/44695598189) with `image_tag=a36ed20…` | `sha256:77ab98b3…9a99a` | `coursepm-00006-rxx` | Smoke passed; an external rerun with `EXPECTED_COMMIT=a36ed20…` passed the release-commit check; the footer reads `CoursePM release a36ed20` again; the record is still there |
 
-Screenshots:
-[record after the rollback, no footer](evidence/c05-05-rollback-no-footer-data-kept.jpg) ·
-[record after the roll forward, footer `a36ed20`](evidence/c05-06-rollforward-a36ed20-data-kept.jpg).
+Screenshot: [record after the rollback, no footer](evidence/c05-05-rollback-no-footer-data-kept.jpg).
+After the roll forward, the page is pixel-identical to the
+[record after the restart](evidence/c05-02-data-after-restart.jpg): same release, same data,
+and the UI shows no revision name. Its capture was byte-identical, so it is not
+kept as separate evidence. The roll forward is evidenced instead by
+[run 44695598189](https://github.com/UsernameJillzaza/coursepm/actions/runs/44695598189)
+(revision `coursepm-00006-rxx`) and the external release-commit smoke check.
 
 The rollback reuses an image and skips migration, so it is safe only while the
 older code works with the current schema. Here it does, because #24–#29 added
 no migration. On 2026-11-20 after these steps, `coursepm-00006-rxx` (`a36ed20`)
 was serving.
+
+## Evidence index (Lab 5)
+
+One row per rubric part and per required check. Commits are full SHAs in the
+linked pages; short forms are used here. The Lab 5 PDF repeats this index.
+
+| Rubric part | Check | Artifact / direct link | IDs / version | Verification result |
+| --- | --- | --- | --- | --- |
+| 1. CI and quality gate (30) | C-01 | `.github/workflows/ci-docker.yml`; [PR #34](https://github.com/UsernameJillzaza/coursepm/pull/34) and [run 44380614259](https://github.com/UsernameJillzaza/coursepm/actions/runs/44380614259); release [PR #35](https://github.com/UsernameJillzaza/coursepm/pull/35), [run 44385838689](https://github.com/UsernameJillzaza/coursepm/actions/runs/44385838689) | #26; `1633ff5`, `9414535` | `test-and-docker` passed on a PR into staging and the release PR into `main`: server 119/119, client 39/39, Docker image built; seed password masked |
+| 1. CI and quality gate | C-02 | Rulesets `protect-main` / `protect-staging`; [PR #44](https://github.com/UsernameJillzaza/coursepm/pull/44) from `test/prove-gate`; direct push to `main` | #28; `033eb42` | One deliberately failing test: check failed (1 failed, 118 passed), merge blocked, PR closed unmerged; a direct push to `main` was rejected with `GH013` |
+| 2. Docker and configuration (20) | C-03 | `Dockerfile`, `.dockerignore`, `docker-compose.yml`, `.env.example`; `scripts/verify-c03.sh` and its output [c03-run.txt](c03-run.txt); the environment variable table above | #25; `b20cd67` | Fresh clone with template values: build with no `.env`, no secret in history, files or env, non-root, Compose healthy, sign-in, stop in 308 ms; every check PASS |
+| 3. GCP deployment and persistence (35) | C-04 | https://coursepm-7cxt6io2na-as.a.run.app; screenshots in [`evidence/`](evidence/) (C-04 section above) | #30; release `a36ed20` | Supervisor creates a 1-revision milestone, student revision 1 accepted, second submission rejected `409 REVISION_LIMIT_REACHED` (BR-07) |
+| 3. GCP deployment and persistence | GCP service | Cloud Run `coursepm`, Cloud SQL `coursepm-pg` (PostgreSQL 16), migrate job `coursepm-migrate`; first deployment (#27) | #27; `de9213e`, revision `coursepm-00001-6hh` | `/api/health` and `/api/ready` (`db: connected`) 200; logs and revision describe output recorded above |
+| 3. GCP deployment and persistence | C-05 | Restart output and record screenshots; [redeploy run 44694660515](https://github.com/UsernameJillzaza/coursepm/actions/runs/44694660515); rollback [44695369594](https://github.com/UsernameJillzaza/coursepm/actions/runs/44695369594) and roll forward [44695598189](https://github.com/UsernameJillzaza/coursepm/actions/runs/44695598189) | #30; revisions `00003-d67` … `00006-rxx` | The record and the session survived the restart, the pipeline redeploy, the rollback and the roll forward |
+| 4. Repeatable release pipeline (15) | C-06 | Issue #29 → [PR #48](https://github.com/UsernameJillzaza/coursepm/pull/48) → release [PR #52](https://github.com/UsernameJillzaza/coursepm/pull/52) → [run 44611810394](https://github.com/UsernameJillzaza/coursepm/actions/runs/44611810394); `.github/workflows/deploy.yml`; release procedure above; tag `v0.2.0` | #29; `a36ed20`, revision `coursepm-00002-xvc` | Pipeline deployed the reviewed release by digest; the footer and the smoke test show `a36ed20` in the served bundle |
+
+**The commit running at submission.** The final Lab 5 release (this document
+reaching `main`) is deployed by the same pipeline. Its commit, image digest and
+serving revision are recorded in the PDF's Part 0, and can be checked at any
+time as described in *How to find the running commit*.
