@@ -370,7 +370,7 @@ The first run (below) needed no further role: the four resource-scoped
 bindings were enough, and no `serviceusage` or execution 403 occurred.
 
 The smoke test is read-only and uses no account, so the pipeline never needs a
-demo password. Sign-in on the live URL is checked by hand in #30.
+demo password. Sign-in on the live URL was checked by hand in #30 (see the C-04 record at the end).
 
 ### First automated release record (#29, C-06)
 
@@ -412,6 +412,76 @@ the [serving revision](https://github.com/user-attachments/assets/84b1d2e3-a4bd-
 and the [migration execution](https://github.com/user-attachments/assets/3d27387b-e1ae-4fe9-ad32-03df28e13589).
 They contain no credentials.
 
-**Release tag (pending).** The plan is an annotated tag `v0.2.0` on `main` at
-`a36ed20`, created after this record is approved; Part 0 will name the Lab 5
-release by it. Until it is created it does not exist on GitHub.
+**Release tag.** The annotated tag `v0.2.0` was pushed on 2026-11-20 after this
+record was approved. It points at `main` `a36ed20`, and Part 0 names the Lab 5
+release by it.
+
+## Live-URL journey, persistence and rollback (#30, C-04, C-05)
+
+Recorded on 2026-11-20 on https://coursepm-7cxt6io2na-as.a.run.app with the
+seeded demo accounts. The demo password came from Secret Manager through the
+GCP owner and was typed by hand; it appears in no screenshot or log. The
+screenshots are in [`evidence/`](evidence/). Each browser screenshot shows the public
+URL in the address bar; the tab strip, bookmarks and the Cloud Shell user prompt
+are cropped out.
+
+### C-04: sign-in, main action and a rule rejection
+
+| Step | Who | Result |
+| --- | --- | --- |
+| 1 | `supervisor1@coursepm.test` signs in | My teams shows Team Alpha; footer `CoursePM release a36ed20` |
+| 2 | Supervisor creates milestone `Lab 5 live check` on Team Alpha, revision limit 1, deadline 20 Nov 2026 23:59 (Bangkok) | Created (FR-04; BR-04 assigned supervisor; BR-05 future deadline); shows `0 / 1 revisions`, Open |
+| 3 | `alpha1@coursepm.test` submits `Live check submission` | Accepted as revision 1 at 14:11 (FR-06); `Revisions used: 1 / 1`; the UI hides the form |
+| 4 | `alpha1` sends a second submission straight to `POST /api/milestones/1/submissions` from the browser console, bypassing the hidden form | **`409 REVISION_LIMIT_REACHED`**, "Your team has used all revisions for this milestone." (BR-07); nothing stored, the milestone still shows one revision |
+
+Screenshots:
+[1 supervisor signed in](evidence/c04-01-supervisor-signed-in.jpg) ·
+[2 milestone created](evidence/c04-02-milestone-created.jpg) ·
+[3 revision 1 accepted](evidence/c04-03-first-submission-accepted.jpg) ·
+[4 second submission rejected, 409](evidence/c04-04-br07-rejection-409.jpg).
+
+Step 4 goes past the UI on purpose. The server itself rejects the request,
+which is what NFR-02 requires ("hiding a button is never the only control").
+
+### C-05: the data survives a restart and a redeploy
+
+The record from C-04 (milestone `Lab 5 live check` with revision 1 at 14:11) was
+checked after each change. The `alpha1` session also stayed valid throughout,
+because sessions are stored in PostgreSQL, not in the container.
+
+| Change | How | Serving revision before → after | Record after |
+| --- | --- | --- | --- |
+| Restart, no code change | `gcloud run services update coursepm --update-env-vars C05_RESTART=2026-11-20` (Cloud Shell) | `coursepm-00002-xvc` → `coursepm-00003-d67` | Still there, `1 / 1 revisions`, 14:11 |
+| Redeploy through the pipeline | Deploy to Cloud Run, manual run on `main` ([run 44694660515](https://github.com/UsernameJillzaza/coursepm/actions/runs/44694660515)): tests, build, migrate `coursepm-migrate-f26ch`, deploy, smoke incl. release commit | `coursepm-00003-d67` → `coursepm-00004-68n` | Still there |
+
+Screenshots:
+[restart output](evidence/c05-01-restart-00002-to-00003.jpg) ·
+[record after the restart](evidence/c05-02-data-after-restart.jpg) ·
+[redeploy run](evidence/c05-03-pipeline-redeploy-run.jpg) ·
+[record after the redeploy](evidence/c05-04-data-after-redeploy.jpg).
+The record screenshots also show `Alpha Student 1 · Student` still signed in.
+
+The `C05_RESTART` variable has no effect on the app; the pipeline's `release.sh`
+updates only the image, so it stays on later revisions.
+
+The redeploy rebuilt `a36ed20`, and the new image got a different digest
+(`sha256:77ab98b3…9a99a`, the #29 run's image had `sha256:fa2676…9966`), because Docker builds are
+not byte-for-byte reproducible. The `a36ed20` tag now points to the newer image.
+The commit, and therefore the code, is the same; the smoke test confirmed
+`a36ed20` in the served bundle after both builds.
+
+### Rollback and roll forward
+
+| Step | Run | Image | Revision | Observed |
+| --- | --- | --- | --- | --- |
+| Roll back to the #27 image | [44695369594](https://github.com/UsernameJillzaza/coursepm/actions/runs/44695369594) with `image_tag=de9213e…` | `sha256:c8cd3998…ccdc2` (the #27 digest) | `coursepm-00005-jbt` | Tests, build and migration skipped; smoke passed. The page has **no release footer**, because that code predates #29. The record is still there |
+| Roll forward to `a36ed20` | [44695598189](https://github.com/UsernameJillzaza/coursepm/actions/runs/44695598189) with `image_tag=a36ed20…` | `sha256:77ab98b3…9a99a` | `coursepm-00006-rxx` | Smoke passed; an external rerun with `EXPECTED_COMMIT=a36ed20…` passed the release-commit check; the footer reads `CoursePM release a36ed20` again; the record is still there |
+
+Screenshots:
+[record after the rollback, no footer](evidence/c05-05-rollback-no-footer-data-kept.jpg) ·
+[record after the roll forward, footer `a36ed20`](evidence/c05-06-rollforward-a36ed20-data-kept.jpg).
+
+The rollback reuses an image and skips migration, so it is safe only while the
+older code works with the current schema. Here it does, because #24–#29 added
+no migration. On 2026-11-20 after these steps, `coursepm-00006-rxx` (`a36ed20`)
+was serving.
