@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import App from '../../src/App'
 import { fakeApi, fail, ok } from '../helpers/fakeApi'
@@ -29,6 +30,24 @@ describe('TEST-L6-60-01 (F-03 UI rule, AC-04-3): New milestone page for a team t
     expect(screen.queryByRole('button', { name: 'Create milestone' })).not.toBeInTheDocument()
     expect(calls).toContain('GET /api/teams/2')
     expect(calls.some((c) => c.startsWith('POST'))).toBe(false)
+  })
+})
+
+describe('TEST-L6-60-03 (AC-02-10): New milestone page when the team request fails for another reason', () => {
+  it('shows the error alert with Retry and no form, and Retry loads the team again', async () => {
+    let attempts = 0
+    fakeApi({
+      'GET /api/auth/me': ok({ user: supervisor }),
+      'GET /api/teams/1': () => (++attempts === 1
+        ? { status: 500, body: { error: { code: 'INTERNAL_ERROR', message: 'Unexpected server error.' } } }
+        : { status: 200, body: { team } }),
+    })
+    renderAt('/teams/1/milestones/new')
+    expect(await screen.findByRole('alert')).toHaveTextContent('Unexpected server error.')
+    expect(screen.queryByLabelText('Title')).not.toBeInTheDocument()
+    await userEvent.click(screen.getByRole('button', { name: 'Retry' }))
+    expect(await screen.findByLabelText('Title')).toBeInTheDocument()
+    expect(attempts).toBe(2)
   })
 })
 
