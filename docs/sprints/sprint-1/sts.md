@@ -152,6 +152,9 @@ the deploy scripts.
 Each accepted defect from the partner team's UAT (Team GG EZ, run `UAT-20261121-GGEZ` on `8c17581`)
 gets a regression test that fails on the defective release before the fix. The tests live in
 `server/tests/lab-06/`; red and green logs are in `artifacts/lab-06/tdd/`.
+TEST-L6-57-02 sends the out-of-range values to all seven ID routes; the non-canonical spellings are
+sent to `GET /api/teams/:id` only (TEST-L6-57-03), because all seven routes read the ID through the
+same `parseId`, which TEST-L6-57-01 covers for every spelling.
 
 | ID | Requirement | Check | Expected result |
 | --- | --- | --- | --- |
