@@ -20,276 +20,276 @@ Date: 2026-11-22 (ICT)
 TestingLibraryElementError: Unable to find role="heading" and name "Team not found"
 
 Ignored nodes: comments, script, style
-[36m<body>[39m
-  [36m<div>[39m
-    [36m<nav[39m
-      [33mclass[39m=[32m"navbar navbar-expand bg-body-tertiary border-bottom mb-4"[39m
-    [36m>[39m
-      [36m<div[39m
-        [33mclass[39m=[32m"container"[39m
-      [36m>[39m
-        [36m<a[39m
-          [33mclass[39m=[32m"navbar-brand fw-semibold"[39m
-          [33mdata-discover[39m=[32m"true"[39m
-          [33mhref[39m=[32m"/teams"[39m
-        [36m>[39m
-          [0mCoursePM[0m
-        [36m</a>[39m
-        [36m<div[39m
-          [33mclass[39m=[32m"d-flex align-items-center gap-3"[39m
-        [36m>[39m
-          [36m<span>[39m
-            [0mDr. Supervisor One[0m
-          [36m</span>[39m
-          [36m<span[39m
-            [33mclass[39m=[32m"badge text-bg-secondary"[39m
-          [36m>[39m
-            [0mSupervisor[0m
-          [36m</span>[39m
-          [36m<button[39m
-            [33mclass[39m=[32m"btn btn-outline-secondary btn-sm"[39m
-            [33mtype[39m=[32m"button"[39m
-          [36m>[39m
-            [0mLog out[0m
-          [36m</button>[39m
-        [36m</div>[39m
-      [36m</div>[39m
-    [36m</nav>[39m
-    [36m<main[39m
-      [33mclass[39m=[32m"container"[39m
-      [33mstyle[39m=[32m"max-width: 720px;"[39m
-    [36m>[39m
-      [36m<a[39m
-        [33mclass[39m=[32m"d-inline-block mb-3"[39m
-        [33mdata-discover[39m=[32m"true"[39m
-        [33mhref[39m=[32m"/teams/2"[39m
-      [36m>[39m
-        [0mBack to team[0m
-      [36m</a>[39m
-      [36m<h1[39m
-        [33mclass[39m=[32m"h4 mb-3"[39m
-      [36m>[39m
-        [0mNew milestone[0m
-      [36m</h1>[39m
-      [36m<form[39m
-        [33mnovalidate[39m=[32m""[39m
-      [36m>[39m
-        [36m<div[39m
-          [33mclass[39m=[32m"mb-3"[39m
-        [36m>[39m
-          [36m<label[39m
-            [33mclass[39m=[32m"form-label"[39m
-            [33mfor[39m=[32m"milestone-title"[39m
-          [36m>[39m
-            [0mTitle[0m
-          [36m</label>[39m
-          [36m<input[39m
-            [33mclass[39m=[32m"form-control "[39m
-            [33mid[39m=[32m"milestone-title"[39m
-            [33mvalue[39m=[32m""[39m
-          [36m/>[39m
-        [36m</div>[39m
-        [36m<div[39m
-          [33mclass[39m=[32m"mb-3"[39m
-        [36m>[39m
-          [36m<label[39m
-            [33mclass[39m=[32m"form-label"[39m
-            [33mfor[39m=[32m"milestone-description"[39m
-          [36m>[39m
-            [0mDescription[0m
-          [36m</label>[39m
-          [36m<textarea[39m
-            [33mclass[39m=[32m"form-control "[39m
-            [33mid[39m=[32m"milestone-description"[39m
-            [33mrows[39m=[32m"4"[39m
-          [36m/>[39m
-        [36m</div>[39m
-        [36m<div[39m
-          [33mclass[39m=[32m"mb-3"[39m
-        [36m>[39m
-          [36m<label[39m
-            [33mclass[39m=[32m"form-label"[39m
-            [33mfor[39m=[32m"milestone-deadline"[39m
-          [36m>[39m
-            [0mDeadline (Bangkok time)[0m
-          [36m</label>[39m
-          [36m<input[39m
-            [33mclass[39m=[32m"form-control "[39m
-            [33mid[39m=[32m"milestone-deadline"[39m
-            [33mtype[39m=[32m"datetime-local"[39m
-            [33mvalue[39m=[32m""[39m
-          [36m/>[39m
-        [36m</div>[39m
-        [36m<div[39m
-          [33mclass[39m=[32m"mb-3"[39m
-        [36m>[39m
-          [36m<label[39m
-            [33mclass[39m=[32m"form-label"[39m
-            [33mfor[39m=[32m"milestone-max-revisions"[39m
-          [36m>[39m
-            [0mRevision limit[0m
-          [36m</label>[39m
-          [36m<input[39m
-            [33mclass[39m=[32m"form-control "[39m
-            [33mid[39m=[32m"milestone-max-revisions"[39m
-            [33mmax[39m=[32m"5"[39m
-            [33mmin[39m=[32m"1"[39m
-            [33mstep[39m=[32m"1"[39m
-            [33mtype[39m=[32m"number"[39m
-            [33mvalue[39m=[32m"3"[39m
-          [36m/>[39m
-        [36m</div>[39m
-        [36m<button[39m
-          [33mclass[39m=[32m"btn btn-primary"[39m
-          [33mtype[39m=[32m"submit"[39m
-        [36m>[39m
-          [0mCreate milestone[0m
-        [36m</button>[39m
-      [36m</form>[39m
-    [36m</main>[39m
-    [36m<footer[39m
-      [33mclass[39m=[32m"container border-top mt-5 py-3 small text-body-secondary"[39m
-    [36m>[39m
-      [0mCoursePM development build[0m
-    [36m</footer>[39m
-  [36m</div>[39m
-[36m</body>[39m
+<body>
+  <div>
+    <nav
+      class="navbar navbar-expand bg-body-tertiary border-bottom mb-4"
+    >
+      <div
+        class="container"
+      >
+        <a
+          class="navbar-brand fw-semibold"
+          data-discover="true"
+          href="/teams"
+        >
+          CoursePM
+        </a>
+        <div
+          class="d-flex align-items-center gap-3"
+        >
+          <span>
+            Dr. Supervisor One
+          </span>
+          <span
+            class="badge text-bg-secondary"
+          >
+            Supervisor
+          </span>
+          <button
+            class="btn btn-outline-secondary btn-sm"
+            type="button"
+          >
+            Log out
+          </button>
+        </div>
+      </div>
+    </nav>
+    <main
+      class="container"
+      style="max-width: 720px;"
+    >
+      <a
+        class="d-inline-block mb-3"
+        data-discover="true"
+        href="/teams/2"
+      >
+        Back to team
+      </a>
+      <h1
+        class="h4 mb-3"
+      >
+        New milestone
+      </h1>
+      <form
+        novalidate=""
+      >
+        <div
+          class="mb-3"
+        >
+          <label
+            class="form-label"
+            for="milestone-title"
+          >
+            Title
+          </label>
+          <input
+            class="form-control "
+            id="milestone-title"
+            value=""
+          />
+        </div>
+        <div
+          class="mb-3"
+        >
+          <label
+            class="form-label"
+            for="milestone-description"
+          >
+            Description
+          </label>
+          <textarea
+            class="form-control "
+            id="milestone-description"
+            rows="4"
+          />
+        </div>
+        <div
+          class="mb-3"
+        >
+          <label
+            class="form-label"
+            for="milestone-deadline"
+          >
+            Deadline (Bangkok time)
+          </label>
+          <input
+            class="form-control "
+            id="milestone-deadline"
+            type="datetime-local"
+            value=""
+          />
+        </div>
+        <div
+          class="mb-3"
+        >
+          <label
+            class="form-label"
+            for="milestone-max-revisions"
+          >
+            Revision limit
+          </label>
+          <input
+            class="form-control "
+            id="milestone-max-revisions"
+            max="5"
+            min="1"
+            step="1"
+            type="number"
+            value="3"
+          />
+        </div>
+        <button
+          class="btn btn-primary"
+          type="submit"
+        >
+          Create milestone
+        </button>
+      </form>
+    </main>
+    <footer
+      class="container border-top mt-5 py-3 small text-body-secondary"
+    >
+      CoursePM development build
+    </footer>
+  </div>
+</body>
 
 Ignored nodes: comments, script, style
-[36m<body>[39m
-  [36m<div>[39m
-    [36m<nav[39m
-      [33mclass[39m=[32m"navbar navbar-expand bg-body-tertiary border-bottom mb-4"[39m
-    [36m>[39m
-      [36m<div[39m
-        [33mclass[39m=[32m"container"[39m
-      [36m>[39m
-        [36m<a[39m
-          [33mclass[39m=[32m"navbar-brand fw-semibold"[39m
-          [33mdata-discover[39m=[32m"true"[39m
-          [33mhref[39m=[32m"/teams"[39m
-        [36m>[39m
-          [0mCoursePM[0m
-        [36m</a>[39m
-        [36m<div[39m
-          [33mclass[39m=[32m"d-flex align-items-center gap-3"[39m
-        [36m>[39m
-          [36m<span>[39m
-            [0mDr. Supervisor One[0m
-          [36m</span>[39m
-          [36m<span[39m
-            [33mclass[39m=[32m"badge text-bg-secondary"[39m
-          [36m>[39m
-            [0mSupervisor[0m
-          [36m</span>[39m
-          [36m<button[39m
-            [33mclass[39m=[32m"btn btn-outline-secondary btn-sm"[39m
-            [33mtype[39m=[32m"button"[39m
-          [36m>[39m
-            [0mLog out[0m
-          [36m</button>[39m
-        [36m</div>[39m
-      [36m</div>[39m
-    [36m</nav>[39m
-    [36m<main[39m
-      [33mclass[39m=[32m"container"[39m
-      [33mstyle[39m=[32m"max-width: 720px;"[39m
-    [36m>[39m
-      [36m<a[39m
-        [33mclass[39m=[32m"d-inline-block mb-3"[39m
-        [33mdata-discover[39m=[32m"true"[39m
-        [33mhref[39m=[32m"/teams/2"[39m
-      [36m>[39m
-        [0mBack to team[0m
-      [36m</a>[39m
-      [36m<h1[39m
-        [33mclass[39m=[32m"h4 mb-3"[39m
-      [36m>[39m
-        [0mNew milestone[0m
-      [36m</h1>[39m
-      [36m<form[39m
-        [33mnovalidate[39m=[32m""[39m
-      [36m>[39m
-        [36m<div[39m
-          [33mclass[39m=[32m"mb-3"[39m
-        [36m>[39m
-          [36m<label[39m
-            [33mclass[39m=[32m"form-label"[39m
-            [33mfor[39m=[32m"milestone-title"[39m
-          [36m>[39m
-            [0mTitle[0m
-          [36m</label>[39m
-          [36m<input[39m
-            [33mclass[39m=[32m"form-control "[39m
-            [33mid[39m=[32m"milestone-title"[39m
-            [33mvalue[39m=[32m""[39m
-          [36m/>[39m
-        [36m</div>[39m
-        [36m<div[39m
-          [33mclass[39m=[32m"mb-3"[39m
-        [36m>[39m
-          [36m<label[39m
-            [33mclass[39m=[32m"form-label"[39m
-            [33mfor[39m=[32m"milestone-description"[39m
-          [36m>[39m
-            [0mDescription[0m
-          [36m</label>[39m
-          [36m<textarea[39m
-            [33mclass[39m=[32m"form-control "[39m
-            [33mid[39m=[32m"milestone-description"[39m
-            [33mrows[39m=[32m"4"[39m
-          [36m/>[39m
-        [36m</div>[39m
-        [36m<div[39m
-          [33mclass[39m=[32m"mb-3"[39m
-        [36m>[39m
-          [36m<label[39m
-            [33mclass[39m=[32m"form-label"[39m
-            [33mfor[39m=[32m"milestone-deadline"[39m
-          [36m>[39m
-            [0mDeadline (Bangkok time)[0m
-          [36m</label>[39m
-          [36m<input[39m
-            [33mclass[39m=[32m"form-control "[39m
-            [33mid[39m=[32m"milestone-deadline"[39m
-            [33mtype[39m=[32m"datetime-local"[39m
-            [33mvalue[39m=[32m""[39m
-          [36m/>[39m
-        [36m</div>[39m
-        [36m<div[39m
-          [33mclass[39m=[32m"mb-3"[39m
-        [36m>[39m
-          [36m<label[39m
-            [33mclass[39m=[32m"form-label"[39m
-            [33mfor[39m=[32m"milestone-max-revisions"[39m
-          [36m>[39m
-            [0mRevision limit[0m
-          [36m</label>[39m
-          [36m<input[39m
-            [33mclass[39m=[32m"form-control "[39m
-            [33mid[39m=[32m"milestone-max-revisions"[39m
-            [33mmax[39m=[32m"5"[39m
-            [33mmin[39m=[32m"1"[39m
-            [33mstep[39m=[32m"1"[39m
-            [33mtype[39m=[32m"number"[39m
-            [33mvalue[39m=[32m"3"[39m
-          [36m/>[39m
-        [36m</div>[39m
-        [36m<button[39m
-          [33mclass[39m=[32m"btn btn-primary"[39m
-          [33mtype[39m=[32m"submit"[39m
-        [36m>[39m
-          [0mCreate milestone[0m
-        [36m</button>[39m
-      [36m</form>[39m
-    [36m</main>[39m
-    [36m<footer[39m
-      [33mclass[39m=[32m"container border-top mt-5 py-3 small text-body-secondary"[39m
-    [36m>[39m
-      [0mCoursePM development build[0m
-    [36m</footer>[39m
-  [36m</div>[39m
-[36m</body>[39m
+<body>
+  <div>
+    <nav
+      class="navbar navbar-expand bg-body-tertiary border-bottom mb-4"
+    >
+      <div
+        class="container"
+      >
+        <a
+          class="navbar-brand fw-semibold"
+          data-discover="true"
+          href="/teams"
+        >
+          CoursePM
+        </a>
+        <div
+          class="d-flex align-items-center gap-3"
+        >
+          <span>
+            Dr. Supervisor One
+          </span>
+          <span
+            class="badge text-bg-secondary"
+          >
+            Supervisor
+          </span>
+          <button
+            class="btn btn-outline-secondary btn-sm"
+            type="button"
+          >
+            Log out
+          </button>
+        </div>
+      </div>
+    </nav>
+    <main
+      class="container"
+      style="max-width: 720px;"
+    >
+      <a
+        class="d-inline-block mb-3"
+        data-discover="true"
+        href="/teams/2"
+      >
+        Back to team
+      </a>
+      <h1
+        class="h4 mb-3"
+      >
+        New milestone
+      </h1>
+      <form
+        novalidate=""
+      >
+        <div
+          class="mb-3"
+        >
+          <label
+            class="form-label"
+            for="milestone-title"
+          >
+            Title
+          </label>
+          <input
+            class="form-control "
+            id="milestone-title"
+            value=""
+          />
+        </div>
+        <div
+          class="mb-3"
+        >
+          <label
+            class="form-label"
+            for="milestone-description"
+          >
+            Description
+          </label>
+          <textarea
+            class="form-control "
+            id="milestone-description"
+            rows="4"
+          />
+        </div>
+        <div
+          class="mb-3"
+        >
+          <label
+            class="form-label"
+            for="milestone-deadline"
+          >
+            Deadline (Bangkok time)
+          </label>
+          <input
+            class="form-control "
+            id="milestone-deadline"
+            type="datetime-local"
+            value=""
+          />
+        </div>
+        <div
+          class="mb-3"
+        >
+          <label
+            class="form-label"
+            for="milestone-max-revisions"
+          >
+            Revision limit
+          </label>
+          <input
+            class="form-control "
+            id="milestone-max-revisions"
+            max="5"
+            min="1"
+            step="1"
+            type="number"
+            value="3"
+          />
+        </div>
+        <button
+          class="btn btn-primary"
+          type="submit"
+        >
+          Create milestone
+        </button>
+      </form>
+    </main>
+    <footer
+      class="container border-top mt-5 py-3 small text-body-secondary"
+    >
+      CoursePM development build
+    </footer>
+  </div>
+</body>
  ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
  ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
  ❯ tests/lab-06/new-milestone-scope.test.tsx:27:25
@@ -306,140 +306,140 @@ Ignored nodes: comments, script, style
 TestingLibraryElementError: Unable to find an element with the text: Team Alpha. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
 
 Ignored nodes: comments, script, style
-[36m<body>[39m
-  [36m<div>[39m
-    [36m<nav[39m
-      [33mclass[39m=[32m"navbar navbar-expand bg-body-tertiary border-bottom mb-4"[39m
-    [36m>[39m
-      [36m<div[39m
-        [33mclass[39m=[32m"container"[39m
-      [36m>[39m
-        [36m<a[39m
-          [33mclass[39m=[32m"navbar-brand fw-semibold"[39m
-          [33mdata-discover[39m=[32m"true"[39m
-          [33mhref[39m=[32m"/teams"[39m
-        [36m>[39m
-          [0mCoursePM[0m
-        [36m</a>[39m
-        [36m<div[39m
-          [33mclass[39m=[32m"d-flex align-items-center gap-3"[39m
-        [36m>[39m
-          [36m<span>[39m
-            [0mDr. Supervisor One[0m
-          [36m</span>[39m
-          [36m<span[39m
-            [33mclass[39m=[32m"badge text-bg-secondary"[39m
-          [36m>[39m
-            [0mSupervisor[0m
-          [36m</span>[39m
-          [36m<button[39m
-            [33mclass[39m=[32m"btn btn-outline-secondary btn-sm"[39m
-            [33mtype[39m=[32m"button"[39m
-          [36m>[39m
-            [0mLog out[0m
-          [36m</button>[39m
-        [36m</div>[39m
-      [36m</div>[39m
-    [36m</nav>[39m
-    [36m<main[39m
-      [33mclass[39m=[32m"container"[39m
-      [33mstyle[39m=[32m"max-width: 720px;"[39m
-    [36m>[39m
-      [36m<a[39m
-        [33mclass[39m=[32m"d-inline-block mb-3"[39m
-        [33mdata-discover[39m=[32m"true"[39m
-        [33mhref[39m=[32m"/teams/1"[39m
-      [36m>[39m
-        [0mBack to team[0m
-      [36m</a>[39m
-      [36m<h1[39m
-        [33mclass[39m=[32m"h4 mb-3"[39m
-      [36m>[39m
-        [0mNew milestone[0m
-      [36m</h1>[39m
-      [36m<form[39m
-        [33mnovalidate[39m=[32m""[39m
-      [36m>[39m
-        [36m<div[39m
-          [33mclass[39m=[32m"mb-3"[39m
-        [36m>[39m
-          [36m<label[39m
-            [33mclass[39m=[32m"form-label"[39m
-            [33mfor[39m=[32m"milestone-title"[39m
-          [36m>[39m
-            [0mTitle[0m
-          [36m</label>[39m
-          [36m<input[39m
-            [33mclass[39m=[32m"form-control "[39m
-            [33mid[39m=[32m"milestone-title"[39m
-            [33mvalue[39m=[32m""[39m
-          [36m/>[39m
-        [36m</div>[39m
-        [36m<div[39m
-          [33mclass[39m=[32m"mb-3"[39m
-        [36m>[39m
-          [36m<label[39m
-            [33mclass[39m=[32m"form-label"[39m
-            [33mfor[39m=[32m"milestone-description"[39m
-          [36m>[39m
-            [0mDescription[0m
-          [36m</label>[39m
-          [36m<textarea[39m
-            [33mclass[39m=[32m"form-control "[39m
-            [33mid[39m=[32m"milestone-description"[39m
-            [33mrows[39m=[32m"4"[39m
-          [36m/>[39m
-        [36m</div>[39m
-        [36m<div[39m
-          [33mclass[39m=[32m"mb-3"[39m
-        [36m>[39m
-          [36m<label[39m
-            [33mclass[39m=[32m"form-label"[39m
-            [33mfor[39m=[32m"milestone-deadline"[39m
-          [36m>[39m
-            [0mDeadline (Bangkok time)[0m
-          [36m</label>[39m
-          [36m<input[39m
-            [33mclass[39m=[32m"form-control "[39m
-            [33mid[39m=[32m"milestone-deadline"[39m
-            [33mtype[39m=[32m"datetime-local"[39m
-            [33mvalue[39m=[32m""[39m
-          [36m/>[39m
-        [36m</div>[39m
-        [36m<div[39m
-          [33mclass[39m=[32m"mb-3"[39m
-        [36m>[39m
-          [36m<label[39m
-            [33mclass[39m=[32m"form-label"[39m
-            [33mfor[39m=[32m"milestone-max-revisions"[39m
-          [36m>[39m
-            [0mRevision limit[0m
-          [36m</label>[39m
-          [36m<input[39m
-            [33mclass[39m=[32m"form-control "[39m
-            [33mid[39m=[32m"milestone-max-revisions"[39m
-            [33mmax[39m=[32m"5"[39m
-            [33mmin[39m=[32m"1"[39m
-            [33mstep[39m=[32m"1"[39m
-            [33mtype[39m=[32m"number"[39m
-            [33mvalue[39m=[32m"3"[39m
-          [36m/>[39m
-        [36m</div>[39m
-        [36m<button[39m
-          [33mclass[39m=[32m"btn btn-primary"[39m
-          [33mtype[39m=[32m"submit"[39m
-        [36m>[39m
-          [0mCreate milestone[0m
-        [36m</button>[39m
-      [36m</form>[39m
-    [36m</main>[39m
-    [36m<footer[39m
-      [33mclass[39m=[32m"container border-top mt-5 py-3 small text-body-secondary"[39m
-    [36m>[39m
-      [0mCoursePM development build[0m
-    [36m</footer>[39m
-  [36m</div>[39m
-[36m</body>[39m
+<body>
+  <div>
+    <nav
+      class="navbar navbar-expand bg-body-tertiary border-bottom mb-4"
+    >
+      <div
+        class="container"
+      >
+        <a
+          class="navbar-brand fw-semibold"
+          data-discover="true"
+          href="/teams"
+        >
+          CoursePM
+        </a>
+        <div
+          class="d-flex align-items-center gap-3"
+        >
+          <span>
+            Dr. Supervisor One
+          </span>
+          <span
+            class="badge text-bg-secondary"
+          >
+            Supervisor
+          </span>
+          <button
+            class="btn btn-outline-secondary btn-sm"
+            type="button"
+          >
+            Log out
+          </button>
+        </div>
+      </div>
+    </nav>
+    <main
+      class="container"
+      style="max-width: 720px;"
+    >
+      <a
+        class="d-inline-block mb-3"
+        data-discover="true"
+        href="/teams/1"
+      >
+        Back to team
+      </a>
+      <h1
+        class="h4 mb-3"
+      >
+        New milestone
+      </h1>
+      <form
+        novalidate=""
+      >
+        <div
+          class="mb-3"
+        >
+          <label
+            class="form-label"
+            for="milestone-title"
+          >
+            Title
+          </label>
+          <input
+            class="form-control "
+            id="milestone-title"
+            value=""
+          />
+        </div>
+        <div
+          class="mb-3"
+        >
+          <label
+            class="form-label"
+            for="milestone-description"
+          >
+            Description
+          </label>
+          <textarea
+            class="form-control "
+            id="milestone-description"
+            rows="4"
+          />
+        </div>
+        <div
+          class="mb-3"
+        >
+          <label
+            class="form-label"
+            for="milestone-deadline"
+          >
+            Deadline (Bangkok time)
+          </label>
+          <input
+            class="form-control "
+            id="milestone-deadline"
+            type="datetime-local"
+            value=""
+          />
+        </div>
+        <div
+          class="mb-3"
+        >
+          <label
+            class="form-label"
+            for="milestone-max-revisions"
+          >
+            Revision limit
+          </label>
+          <input
+            class="form-control "
+            id="milestone-max-revisions"
+            max="5"
+            min="1"
+            step="1"
+            type="number"
+            value="3"
+          />
+        </div>
+        <button
+          class="btn btn-primary"
+          type="submit"
+        >
+          Create milestone
+        </button>
+      </form>
+    </main>
+    <footer
+      class="container border-top mt-5 py-3 small text-body-secondary"
+    >
+      CoursePM development build
+    </footer>
+  </div>
+</body>
  ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
  ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
  ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
