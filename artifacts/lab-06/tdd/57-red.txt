@@ -1,5 +1,5 @@
 Issue #57 (DEF-CP-01) RED run
-Commit under test: 8c17581 (lab6-staging) + the new test file, parseId unchanged
+Commit under test: 8d1afbe (adds only the test file on top of 8c17581; server/src identical to the release GG EZ tested)
 Command: cd server && npx vitest run tests/lab-06/id-bounds.test.ts
 Date: 2026-11-21 (ICT)
 
