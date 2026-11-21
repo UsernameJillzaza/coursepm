@@ -1,0 +1,462 @@
+Issue #60 (DEF-CP-04) RED run
+Commit under test: 8c17581 (lab6-staging) + the new test file, NewMilestonePage unchanged
+Command: npm --prefix client test -- tests/lab-06/new-milestone-scope.test.tsx
+Date: 2026-11-22 (ICT)
+
+
+> coursepm-client@0.1.0 test
+> vitest run tests/lab-06/new-milestone-scope.test.tsx
+
+
+ RUN  v4.1.12 D:/Claude Projects/coursepm-lab6/client
+
+ ❯ tests/lab-06/new-milestone-scope.test.tsx (2 tests | 2 failed) 1077ms
+     × shows Team not found and no form when the team request returns 404 1050ms
+     × shows the form, naming the team, once the team has loaded 25ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/lab-06/new-milestone-scope.test.tsx > TEST-L6-60-01 (F-03 UI rule, AC-04-3): New milestone page for a team the supervisor cannot see > shows Team not found and no form when the team request returns 404
+TestingLibraryElementError: Unable to find role="heading" and name "Team not found"
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<nav[39m
+      [33mclass[39m=[32m"navbar navbar-expand bg-body-tertiary border-bottom mb-4"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"container"[39m
+      [36m>[39m
+        [36m<a[39m
+          [33mclass[39m=[32m"navbar-brand fw-semibold"[39m
+          [33mdata-discover[39m=[32m"true"[39m
+          [33mhref[39m=[32m"/teams"[39m
+        [36m>[39m
+          [0mCoursePM[0m
+        [36m</a>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"d-flex align-items-center gap-3"[39m
+        [36m>[39m
+          [36m<span>[39m
+            [0mDr. Supervisor One[0m
+          [36m</span>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"badge text-bg-secondary"[39m
+          [36m>[39m
+            [0mSupervisor[0m
+          [36m</span>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"btn btn-outline-secondary btn-sm"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0mLog out[0m
+          [36m</button>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</nav>[39m
+    [36m<main[39m
+      [33mclass[39m=[32m"container"[39m
+      [33mstyle[39m=[32m"max-width: 720px;"[39m
+    [36m>[39m
+      [36m<a[39m
+        [33mclass[39m=[32m"d-inline-block mb-3"[39m
+        [33mdata-discover[39m=[32m"true"[39m
+        [33mhref[39m=[32m"/teams/2"[39m
+      [36m>[39m
+        [0mBack to team[0m
+      [36m</a>[39m
+      [36m<h1[39m
+        [33mclass[39m=[32m"h4 mb-3"[39m
+      [36m>[39m
+        [0mNew milestone[0m
+      [36m</h1>[39m
+      [36m<form[39m
+        [33mnovalidate[39m=[32m""[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"mb-3"[39m
+        [36m>[39m
+          [36m<label[39m
+            [33mclass[39m=[32m"form-label"[39m
+            [33mfor[39m=[32m"milestone-title"[39m
+          [36m>[39m
+            [0mTitle[0m
+          [36m</label>[39m
+          [36m<input[39m
+            [33mclass[39m=[32m"form-control "[39m
+            [33mid[39m=[32m"milestone-title"[39m
+            [33mvalue[39m=[32m""[39m
+          [36m/>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"mb-3"[39m
+        [36m>[39m
+          [36m<label[39m
+            [33mclass[39m=[32m"form-label"[39m
+            [33mfor[39m=[32m"milestone-description"[39m
+          [36m>[39m
+            [0mDescription[0m
+          [36m</label>[39m
+          [36m<textarea[39m
+            [33mclass[39m=[32m"form-control "[39m
+            [33mid[39m=[32m"milestone-description"[39m
+            [33mrows[39m=[32m"4"[39m
+          [36m/>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"mb-3"[39m
+        [36m>[39m
+          [36m<label[39m
+            [33mclass[39m=[32m"form-label"[39m
+            [33mfor[39m=[32m"milestone-deadline"[39m
+          [36m>[39m
+            [0mDeadline (Bangkok time)[0m
+          [36m</label>[39m
+          [36m<input[39m
+            [33mclass[39m=[32m"form-control "[39m
+            [33mid[39m=[32m"milestone-deadline"[39m
+            [33mtype[39m=[32m"datetime-local"[39m
+            [33mvalue[39m=[32m""[39m
+          [36m/>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"mb-3"[39m
+        [36m>[39m
+          [36m<label[39m
+            [33mclass[39m=[32m"form-label"[39m
+            [33mfor[39m=[32m"milestone-max-revisions"[39m
+          [36m>[39m
+            [0mRevision limit[0m
+          [36m</label>[39m
+          [36m<input[39m
+            [33mclass[39m=[32m"form-control "[39m
+            [33mid[39m=[32m"milestone-max-revisions"[39m
+            [33mmax[39m=[32m"5"[39m
+            [33mmin[39m=[32m"1"[39m
+            [33mstep[39m=[32m"1"[39m
+            [33mtype[39m=[32m"number"[39m
+            [33mvalue[39m=[32m"3"[39m
+          [36m/>[39m
+        [36m</div>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"btn btn-primary"[39m
+          [33mtype[39m=[32m"submit"[39m
+        [36m>[39m
+          [0mCreate milestone[0m
+        [36m</button>[39m
+      [36m</form>[39m
+    [36m</main>[39m
+    [36m<footer[39m
+      [33mclass[39m=[32m"container border-top mt-5 py-3 small text-body-secondary"[39m
+    [36m>[39m
+      [0mCoursePM development build[0m
+    [36m</footer>[39m
+  [36m</div>[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<nav[39m
+      [33mclass[39m=[32m"navbar navbar-expand bg-body-tertiary border-bottom mb-4"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"container"[39m
+      [36m>[39m
+        [36m<a[39m
+          [33mclass[39m=[32m"navbar-brand fw-semibold"[39m
+          [33mdata-discover[39m=[32m"true"[39m
+          [33mhref[39m=[32m"/teams"[39m
+        [36m>[39m
+          [0mCoursePM[0m
+        [36m</a>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"d-flex align-items-center gap-3"[39m
+        [36m>[39m
+          [36m<span>[39m
+            [0mDr. Supervisor One[0m
+          [36m</span>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"badge text-bg-secondary"[39m
+          [36m>[39m
+            [0mSupervisor[0m
+          [36m</span>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"btn btn-outline-secondary btn-sm"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0mLog out[0m
+          [36m</button>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</nav>[39m
+    [36m<main[39m
+      [33mclass[39m=[32m"container"[39m
+      [33mstyle[39m=[32m"max-width: 720px;"[39m
+    [36m>[39m
+      [36m<a[39m
+        [33mclass[39m=[32m"d-inline-block mb-3"[39m
+        [33mdata-discover[39m=[32m"true"[39m
+        [33mhref[39m=[32m"/teams/2"[39m
+      [36m>[39m
+        [0mBack to team[0m
+      [36m</a>[39m
+      [36m<h1[39m
+        [33mclass[39m=[32m"h4 mb-3"[39m
+      [36m>[39m
+        [0mNew milestone[0m
+      [36m</h1>[39m
+      [36m<form[39m
+        [33mnovalidate[39m=[32m""[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"mb-3"[39m
+        [36m>[39m
+          [36m<label[39m
+            [33mclass[39m=[32m"form-label"[39m
+            [33mfor[39m=[32m"milestone-title"[39m
+          [36m>[39m
+            [0mTitle[0m
+          [36m</label>[39m
+          [36m<input[39m
+            [33mclass[39m=[32m"form-control "[39m
+            [33mid[39m=[32m"milestone-title"[39m
+            [33mvalue[39m=[32m""[39m
+          [36m/>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"mb-3"[39m
+        [36m>[39m
+          [36m<label[39m
+            [33mclass[39m=[32m"form-label"[39m
+            [33mfor[39m=[32m"milestone-description"[39m
+          [36m>[39m
+            [0mDescription[0m
+          [36m</label>[39m
+          [36m<textarea[39m
+            [33mclass[39m=[32m"form-control "[39m
+            [33mid[39m=[32m"milestone-description"[39m
+            [33mrows[39m=[32m"4"[39m
+          [36m/>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"mb-3"[39m
+        [36m>[39m
+          [36m<label[39m
+            [33mclass[39m=[32m"form-label"[39m
+            [33mfor[39m=[32m"milestone-deadline"[39m
+          [36m>[39m
+            [0mDeadline (Bangkok time)[0m
+          [36m</label>[39m
+          [36m<input[39m
+            [33mclass[39m=[32m"form-control "[39m
+            [33mid[39m=[32m"milestone-deadline"[39m
+            [33mtype[39m=[32m"datetime-local"[39m
+            [33mvalue[39m=[32m""[39m
+          [36m/>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"mb-3"[39m
+        [36m>[39m
+          [36m<label[39m
+            [33mclass[39m=[32m"form-label"[39m
+            [33mfor[39m=[32m"milestone-max-revisions"[39m
+          [36m>[39m
+            [0mRevision limit[0m
+          [36m</label>[39m
+          [36m<input[39m
+            [33mclass[39m=[32m"form-control "[39m
+            [33mid[39m=[32m"milestone-max-revisions"[39m
+            [33mmax[39m=[32m"5"[39m
+            [33mmin[39m=[32m"1"[39m
+            [33mstep[39m=[32m"1"[39m
+            [33mtype[39m=[32m"number"[39m
+            [33mvalue[39m=[32m"3"[39m
+          [36m/>[39m
+        [36m</div>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"btn btn-primary"[39m
+          [33mtype[39m=[32m"submit"[39m
+        [36m>[39m
+          [0mCreate milestone[0m
+        [36m</button>[39m
+      [36m</form>[39m
+    [36m</main>[39m
+    [36m<footer[39m
+      [33mclass[39m=[32m"container border-top mt-5 py-3 small text-body-secondary"[39m
+    [36m>[39m
+      [0mCoursePM development build[0m
+    [36m</footer>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ tests/lab-06/new-milestone-scope.test.tsx:27:25
+     25|     })
+     26|     renderAt('/teams/2/milestones/new')
+     27|     expect(await screen.findByRole('heading', { name: 'Team not found'…
+       |                         ^
+     28|     expect(screen.queryByLabelText('Title')).not.toBeInTheDocument()
+     29|     expect(screen.queryByRole('button', { name: 'Create milestone' }))…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  tests/lab-06/new-milestone-scope.test.tsx > TEST-L6-60-02 (AC-04-1): New milestone page for the supervisor's own team > shows the form, naming the team, once the team has loaded
+TestingLibraryElementError: Unable to find an element with the text: Team Alpha. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<nav[39m
+      [33mclass[39m=[32m"navbar navbar-expand bg-body-tertiary border-bottom mb-4"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"container"[39m
+      [36m>[39m
+        [36m<a[39m
+          [33mclass[39m=[32m"navbar-brand fw-semibold"[39m
+          [33mdata-discover[39m=[32m"true"[39m
+          [33mhref[39m=[32m"/teams"[39m
+        [36m>[39m
+          [0mCoursePM[0m
+        [36m</a>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"d-flex align-items-center gap-3"[39m
+        [36m>[39m
+          [36m<span>[39m
+            [0mDr. Supervisor One[0m
+          [36m</span>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"badge text-bg-secondary"[39m
+          [36m>[39m
+            [0mSupervisor[0m
+          [36m</span>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"btn btn-outline-secondary btn-sm"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0mLog out[0m
+          [36m</button>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</nav>[39m
+    [36m<main[39m
+      [33mclass[39m=[32m"container"[39m
+      [33mstyle[39m=[32m"max-width: 720px;"[39m
+    [36m>[39m
+      [36m<a[39m
+        [33mclass[39m=[32m"d-inline-block mb-3"[39m
+        [33mdata-discover[39m=[32m"true"[39m
+        [33mhref[39m=[32m"/teams/1"[39m
+      [36m>[39m
+        [0mBack to team[0m
+      [36m</a>[39m
+      [36m<h1[39m
+        [33mclass[39m=[32m"h4 mb-3"[39m
+      [36m>[39m
+        [0mNew milestone[0m
+      [36m</h1>[39m
+      [36m<form[39m
+        [33mnovalidate[39m=[32m""[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"mb-3"[39m
+        [36m>[39m
+          [36m<label[39m
+            [33mclass[39m=[32m"form-label"[39m
+            [33mfor[39m=[32m"milestone-title"[39m
+          [36m>[39m
+            [0mTitle[0m
+          [36m</label>[39m
+          [36m<input[39m
+            [33mclass[39m=[32m"form-control "[39m
+            [33mid[39m=[32m"milestone-title"[39m
+            [33mvalue[39m=[32m""[39m
+          [36m/>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"mb-3"[39m
+        [36m>[39m
+          [36m<label[39m
+            [33mclass[39m=[32m"form-label"[39m
+            [33mfor[39m=[32m"milestone-description"[39m
+          [36m>[39m
+            [0mDescription[0m
+          [36m</label>[39m
+          [36m<textarea[39m
+            [33mclass[39m=[32m"form-control "[39m
+            [33mid[39m=[32m"milestone-description"[39m
+            [33mrows[39m=[32m"4"[39m
+          [36m/>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"mb-3"[39m
+        [36m>[39m
+          [36m<label[39m
+            [33mclass[39m=[32m"form-label"[39m
+            [33mfor[39m=[32m"milestone-deadline"[39m
+          [36m>[39m
+            [0mDeadline (Bangkok time)[0m
+          [36m</label>[39m
+          [36m<input[39m
+            [33mclass[39m=[32m"form-control "[39m
+            [33mid[39m=[32m"milestone-deadline"[39m
+            [33mtype[39m=[32m"datetime-local"[39m
+            [33mvalue[39m=[32m""[39m
+          [36m/>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"mb-3"[39m
+        [36m>[39m
+          [36m<label[39m
+            [33mclass[39m=[32m"form-label"[39m
+            [33mfor[39m=[32m"milestone-max-revisions"[39m
+          [36m>[39m
+            [0mRevision limit[0m
+          [36m</label>[39m
+          [36m<input[39m
+            [33mclass[39m=[32m"form-control "[39m
+            [33mid[39m=[32m"milestone-max-revisions"[39m
+            [33mmax[39m=[32m"5"[39m
+            [33mmin[39m=[32m"1"[39m
+            [33mstep[39m=[32m"1"[39m
+            [33mtype[39m=[32m"number"[39m
+            [33mvalue[39m=[32m"3"[39m
+          [36m/>[39m
+        [36m</div>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"btn btn-primary"[39m
+          [33mtype[39m=[32m"submit"[39m
+        [36m>[39m
+          [0mCreate milestone[0m
+        [36m</button>[39m
+      [36m</form>[39m
+    [36m</main>[39m
+    [36m<footer[39m
+      [33mclass[39m=[32m"container border-top mt-5 py-3 small text-body-secondary"[39m
+    [36m>[39m
+      [0mCoursePM development build[0m
+    [36m</footer>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ tests/lab-06/new-milestone-scope.test.tsx:43:19
+     41|     renderAt('/teams/1/milestones/new')
+     42|     expect(await screen.findByLabelText('Title')).toBeInTheDocument()
+     43|     expect(screen.getByText('Team Alpha', { exact: false })).toBeInThe…
+       |                   ^
+     44|     expect(screen.getByRole('button', { name: 'Create milestone' })).t…
+     45|   })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed (2)
+   Start at  01:08:46
+   Duration  4.45s (transform 248ms, setup 639ms, import 276ms, tests 1.08s, environment 2.07s)
+
