@@ -146,3 +146,15 @@ the deploy scripts.
 | MAN-L5-C03 | NFR-09, R-01, C-03 | Manual, in Cloud Shell: fresh clone; `cp .env.example .env`; `docker compose up --build -d`; `docker build` with no `.env`; `docker history` and image env checked for secrets; sign in as a seeded Student | Compose exits 0; `migrate` exits 0; `app` healthy; no secret in any layer or the image env; sign-in reaches My teams. Evidence in `docs/labs/lab-05/deployment.md` |
 | MAN-L5-C04 | C-04, FR-04, FR-06, BR-07, NFR-02 | Manual, on the live URL: supervisor signs in and creates a milestone with revision limit 1; student submits once; student sends a second submission straight to the API | First submission accepted as revision 1; the second returns `409 REVISION_LIMIT_REACHED` and stores nothing. Evidence in `docs/labs/lab-05/deployment.md` |
 | MAN-L5-C05 | C-05, R-04 | Manual: restart the service (new revision, no code change), redeploy through the pipeline, roll back to the #27 image and forward again, re-reading the C-04 record after each | Record and session survive every step; revisions `00003-d67`, `00004-68n`, `00005-jbt`, `00006-rxx`. Evidence in `docs/labs/lab-05/deployment.md` |
+
+## Lab 6 regression cases (UAT defects)
+
+Each accepted defect from the partner team's UAT (Team GG EZ, run `UAT-20261121-GGEZ` on `8c17581`)
+gets a regression test that fails on the defective release before the fix. The tests live in
+`server/tests/lab-06/`; red and green logs are in `artifacts/lab-06/tdd/`.
+
+| ID | Requirement | Check | Expected result |
+| --- | --- | --- | --- |
+| TEST-L6-57-01 | NFR-02, Issue #57 (DEF-CP-01) | Call `parseId` with `1`, `2147483647`, values above INT4 (`2147483648`, `9999999999999`, `1e20`), and non-canonical forms (`0x1`, `1e0`, `+1`, `01`, ` 1`, `1.0`, `0`, `-1`, `abc`, empty) | Only `1` and `2147483647` are accepted; every other value returns `null` |
+| TEST-L6-57-02 | AC-02-2, AC-02-3, NFR-02, Issue #57 | Send `2147483648`, `9999999999999` and `1e20` to the seven ID routes (`GET /api/teams/:id`, `GET`/`POST /api/teams/:id/milestones`, `GET /api/milestones/:id`, `GET`/`POST /api/milestones/:id/submissions`, `POST /api/submissions/:id/feedback`) with a session | Every request returns `404 NOT_FOUND` in the standard error shape; none returns 500 |
+| TEST-L6-57-03 | AC-03-5, Issue #57 | As a member, request the own team by its real ID and by `0x…`, `…e0`, `+…`, `0…` and `….0` spellings of it | The real ID returns 200; every other spelling returns 404 and no team data |
