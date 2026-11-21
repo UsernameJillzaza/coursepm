@@ -1,0 +1,454 @@
+Issue #57 (DEF-CP-01) RED run
+Commit under test: 8c17581 (lab6-staging) + the new test file, parseId unchanged
+Command: cd server && npx vitest run tests/lab-06/id-bounds.test.ts
+Date: 2026-11-21 (ICT)
+
+
+ RUN  v4.1.12 D:/Claude Projects/coursepm-lab6/server
+
+Loaded Prisma config from prisma.config.ts.
+
+Prisma schema loaded from prisma\schema.prisma.
+Datasource "db": PostgreSQL database "coursepm_test_lab6", schema "public" at "localhost:5432"
+
+6 migrations found in prisma/migrations
+
+Applying migration `20261114193252_users_sessions`
+Applying migration `20261114193953_teams`
+Applying migration `20261115082511_milestones`
+Applying migration `20261115091309_submissions`
+Applying migration `20261115091328_submission_team_matches_milestone`
+Applying migration `20261115094021_feedback`
+
+The following migration(s) have been applied:
+
+migrations/
+  └─ 20261114193252_users_sessions/
+    └─ migration.sql
+  └─ 20261114193953_teams/
+    └─ migration.sql
+  └─ 20261115082511_milestones/
+    └─ migration.sql
+  └─ 20261115091309_submissions/
+    └─ migration.sql
+  └─ 20261115091328_submission_team_matches_milestone/
+    └─ migration.sql
+  └─ 20261115094021_feedback/
+    └─ migration.sql
+
+All migrations have been successfully applied.
+stderr | tests/lab-06/id-bounds.test.ts > TEST-L6-57-02 (AC-02-2, AC-02-3, NFR-02): out-of-range IDs return 404 on every ID route > GET /api/teams/:id
+PrismaClientKnownRequestError: 
+Invalid `prisma.team.findFirst()` invocation in
+D:/Claude Projects/coursepm-lab6/server/src/access/scope.ts:45:33
+
+  42 // Returns null when the team doesn't exist OR is out of scope; callers answer
+  43 // 404 in both cases, so an outsider can't tell them apart.
+  44 export async function loadTeamForUser(user: AuthUser, teamId: number) {
+→ 45   const row = await prisma.team.findFirst(
+Value out of range for the type: value "2147483648" is out of range for type integer
+    at vn.handleRequestError (D:\Claude Projects\coursepm-lab6\server\node_modules\@prisma\client\runtime\client.js:65:8640)
+    at vn.handleAndLogRequestError (D:\Claude Projects\coursepm-lab6\server\node_modules\@prisma\client\runtime\client.js:65:7929)
+    at vn.request (D:\Claude Projects\coursepm-lab6\server\node_modules\@prisma\client\runtime\client.js:65:7636)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async a (D:\Claude Projects\coursepm-lab6\server\node_modules\@prisma\client\runtime\client.js:99:6921)
+    at loadTeamForUser (D:/Claude Projects/coursepm-lab6/server/src/access/scope.ts:45:15)
+    at D:/Claude Projects/coursepm-lab6/server/src/teams/routes.ts:20:25 {
+  code: 'P2020',
+  meta: {
+    modelName: 'Team',
+    driverAdapterError: DriverAdapterError: ValueOutOfRange
+        at PrismaPgAdapter.onError (file:///D:/Claude%20Projects/coursepm-lab6/server/node_modules/@prisma/adapter-pg/dist/index.mjs:666:11)
+        at PrismaPgAdapter.performIO (file:///D:/Claude%20Projects/coursepm-lab6/server/node_modules/@prisma/adapter-pg/dist/index.mjs:661:12)
+        at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+        at async PrismaPgAdapter.queryRaw (file:///D:/Claude%20Projects/coursepm-lab6/server/node_modules/@prisma/adapter-pg/dist/index.mjs:595:30)
+        at async D:\Claude Projects\coursepm-lab6\server\node_modules\@prisma\client\runtime\client.js:11:70479
+        at async e.interpretNode (D:\Claude Projects\coursepm-lab6\server\node_modules\@prisma\client\runtime\client.js:11:69631)
+        at async e.interpretNode (D:\Claude Projects\coursepm-lab6\server\node_modules\@prisma\client\runtime\client.js:11:70920)
+        at async e.interpretNode (D:\Claude Projects\coursepm-lab6\server\node_modules\@prisma\client\runtime\client.js:11:71857)
+        at async e.run (D:\Claude Projects\coursepm-lab6\server\node_modules\@prisma\client\runtime\client.js:11:69273)
+        at async e.execute (D:\Claude Projects\coursepm-lab6\server\node_modules\@prisma\client\runtime\client.js:57:815) {
+      cause: [Object]
+    }
+  },
+  clientVersion: '7.10.1'
+}
+
+stderr | tests/lab-06/id-bounds.test.ts > TEST-L6-57-02 (AC-02-2, AC-02-3, NFR-02): out-of-range IDs return 404 on every ID route > GET /api/teams/:id/milestones
+PrismaClientKnownRequestError: 
+Invalid `prisma.team.findFirst()` invocation in
+D:/Claude Projects/coursepm-lab6/server/src/access/scope.ts:45:33
+
+  42 // Returns null when the team doesn't exist OR is out of scope; callers answer
+  43 // 404 in both cases, so an outsider can't tell them apart.
+  44 export async function loadTeamForUser(user: AuthUser, teamId: number) {
+→ 45   const row = await prisma.team.findFirst(
+Value out of range for the type: value "2147483648" is out of range for type integer
+    at vn.handleRequestError (D:\Claude Projects\coursepm-lab6\server\node_modules\@prisma\client\runtime\client.js:65:8640)
+    at vn.handleAndLogRequestError (D:\Claude Projects\coursepm-lab6\server\node_modules\@prisma\client\runtime\client.js:65:7929)
+    at vn.request (D:\Claude Projects\coursepm-lab6\server\node_modules\@prisma\client\runtime\client.js:65:7636)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async a (D:\Claude Projects\coursepm-lab6\server\node_modules\@prisma\client\runtime\client.js:99:6921)
+    at loadTeamForUser (D:/Claude Projects/coursepm-lab6/server/src/access/scope.ts:45:15)
+    at scopedTeam (D:/Claude Projects/coursepm-lab6/server/src/milestones/routes.ts:42:25)
+    at listTeamMilestones (D:/Claude Projects/coursepm-lab6/server/src/milestones/routes.ts:49:16) {
+  code: 'P2020',
+  meta: {
+    modelName: 'Team',
+    driverAdapterError: DriverAdapterError: ValueOutOfRange
+        at PrismaPgAdapter.onError (file:///D:/Claude%20Projects/coursepm-lab6/server/node_modules/@prisma/adapter-pg/dist/index.mjs:666:11)
+        at PrismaPgAdapter.performIO (file:///D:/Claude%20Projects/coursepm-lab6/server/node_modules/@prisma/adapter-pg/dist/index.mjs:661:12)
+        at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+        at async PrismaPgAdapter.queryRaw (file:///D:/Claude%20Projects/coursepm-lab6/server/node_modules/@prisma/adapter-pg/dist/index.mjs:595:30)
+        at async D:\Claude Projects\coursepm-lab6\server\node_modules\@prisma\client\runtime\client.js:11:70479
+        at async e.interpretNode (D:\Claude Projects\coursepm-lab6\server\node_modules\@prisma\client\runtime\client.js:11:69631)
+        at async e.interpretNode (D:\Claude Projects\coursepm-lab6\server\node_modules\@prisma\client\runtime\client.js:11:70920)
+        at async e.interpretNode (D:\Claude Projects\coursepm-lab6\server\node_modules\@prisma\client\runtime\client.js:11:71857)
+        at async e.run (D:\Claude Projects\coursepm-lab6\server\node_modules\@prisma\client\runtime\client.js:11:69273)
+        at async e.execute (D:\Claude Projects\coursepm-lab6\server\node_modules\@prisma\client\runtime\client.js:57:815) {
+      cause: [Object]
+    }
+  },
+  clientVersion: '7.10.1'
+}
+
+stderr | tests/lab-06/id-bounds.test.ts > TEST-L6-57-02 (AC-02-2, AC-02-3, NFR-02): out-of-range IDs return 404 on every ID route > POST /api/teams/:id/milestones
+PrismaClientKnownRequestError: 
+Invalid `prisma.team.findFirst()` invocation in
+D:/Claude Projects/coursepm-lab6/server/src/access/scope.ts:45:33
+
+  42 // Returns null when the team doesn't exist OR is out of scope; callers answer
+  43 // 404 in both cases, so an outsider can't tell them apart.
+  44 export async function loadTeamForUser(user: AuthUser, teamId: number) {
+→ 45   const row = await prisma.team.findFirst(
+Value out of range for the type: value "2147483648" is out of range for type integer
+    at vn.handleRequestError (D:\Claude Projects\coursepm-lab6\server\node_modules\@prisma\client\runtime\client.js:65:8640)
+    at vn.handleAndLogRequestError (D:\Claude Projects\coursepm-lab6\server\node_modules\@prisma\client\runtime\client.js:65:7929)
+    at vn.request (D:\Claude Projects\coursepm-lab6\server\node_modules\@prisma\client\runtime\client.js:65:7636)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async a (D:\Claude Projects\coursepm-lab6\server\node_modules\@prisma\client\runtime\client.js:99:6921)
+    at loadTeamForUser (D:/Claude Projects/coursepm-lab6/server/src/access/scope.ts:45:15)
+    at scopedTeam (D:/Claude Projects/coursepm-lab6/server/src/milestones/routes.ts:42:25)
+    at createTeamMilestone (D:/Claude Projects/coursepm-lab6/server/src/milestones/routes.ts:58:16) {
+  code: 'P2020',
+  meta: {
+    modelName: 'Team',
+    driverAdapterError: DriverAdapterError: ValueOutOfRange
+        at PrismaPgAdapter.onError (file:///D:/Claude%20Projects/coursepm-lab6/server/node_modules/@prisma/adapter-pg/dist/index.mjs:666:11)
+        at PrismaPgAdapter.performIO (file:///D:/Claude%20Projects/coursepm-lab6/server/node_modules/@prisma/adapter-pg/dist/index.mjs:661:12)
+        at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+        at async PrismaPgAdapter.queryRaw (file:///D:/Claude%20Projects/coursepm-lab6/server/node_modules/@prisma/adapter-pg/dist/index.mjs:595:30)
+        at async D:\Claude Projects\coursepm-lab6\server\node_modules\@prisma\client\runtime\client.js:11:70479
+        at async e.interpretNode (D:\Claude Projects\coursepm-lab6\server\node_modules\@prisma\client\runtime\client.js:11:69631)
+        at async e.interpretNode (D:\Claude Projects\coursepm-lab6\server\node_modules\@prisma\client\runtime\client.js:11:70920)
+        at async e.interpretNode (D:\Claude Projects\coursepm-lab6\server\node_modules\@prisma\client\runtime\client.js:11:71857)
+        at async e.run (D:\Claude Projects\coursepm-lab6\server\node_modules\@prisma\client\runtime\client.js:11:69273)
+        at async e.execute (D:\Claude Projects\coursepm-lab6\server\node_modules\@prisma\client\runtime\client.js:57:815) {
+      cause: [Object]
+    }
+  },
+  clientVersion: '7.10.1'
+}
+
+stderr | tests/lab-06/id-bounds.test.ts > TEST-L6-57-02 (AC-02-2, AC-02-3, NFR-02): out-of-range IDs return 404 on every ID route > GET /api/milestones/:id
+PrismaClientKnownRequestError: 
+Invalid `prisma.milestone.findFirst()` invocation in
+D:/Claude Projects/coursepm-lab6/server/src/access/scope.ts:52:27
+
+  49 // F-04: the milestone and its team are fetched in the same scoped query.
+  50 // A missing milestone and one owned by another team have the same result.
+  51 export async function loadMilestoneForUser(user: AuthUser, milestoneId: number) {
+→ 52   return prisma.milestone.findFirst(
+Value out of range for the type: value "2147483648" is out of range for type integer
+    at vn.handleRequestError (D:\Claude Projects\coursepm-lab6\server\node_modules\@prisma\client\runtime\client.js:65:8640)
+    at vn.handleAndLogRequestError (D:\Claude Projects\coursepm-lab6\server\node_modules\@prisma\client\runtime\client.js:65:7929)
+    at vn.request (D:\Claude Projects\coursepm-lab6\server\node_modules\@prisma\client\runtime\client.js:65:7636)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async a (D:\Claude Projects\coursepm-lab6\server\node_modules\@prisma\client\runtime\client.js:99:6921)
+    at D:/Claude Projects/coursepm-lab6/server/src/milestones/routes.ts:75:29 {
+  code: 'P2020',
+  meta: {
+    modelName: 'Milestone',
+    driverAdapterError: DriverAdapterError: ValueOutOfRange
+        at PrismaPgAdapter.onError (file:///D:/Claude%20Projects/coursepm-lab6/server/node_modules/@prisma/adapter-pg/dist/index.mjs:666:11)
+        at PrismaPgAdapter.performIO (file:///D:/Claude%20Projects/coursepm-lab6/server/node_modules/@prisma/adapter-pg/dist/index.mjs:661:12)
+        at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+        at async PrismaPgAdapter.queryRaw (file:///D:/Claude%20Projects/coursepm-lab6/server/node_modules/@prisma/adapter-pg/dist/index.mjs:595:30)
+        at async D:\Claude Projects\coursepm-lab6\server\node_modules\@prisma\client\runtime\client.js:11:70479
+        at async e.interpretNode (D:\Claude Projects\coursepm-lab6\server\node_modules\@prisma\client\runtime\client.js:11:69631)
+        at async e.interpretNode (D:\Claude Projects\coursepm-lab6\server\node_modules\@prisma\client\runtime\client.js:11:70920)
+        at async e.interpretNode (D:\Claude Projects\coursepm-lab6\server\node_modules\@prisma\client\runtime\client.js:11:71857)
+        at async e.run (D:\Claude Projects\coursepm-lab6\server\node_modules\@prisma\client\runtime\client.js:11:69273)
+        at async e.execute (D:\Claude Projects\coursepm-lab6\server\node_modules\@prisma\client\runtime\client.js:57:815) {
+      cause: [Object]
+    }
+  },
+  clientVersion: '7.10.1'
+}
+
+stderr | tests/lab-06/id-bounds.test.ts > TEST-L6-57-02 (AC-02-2, AC-02-3, NFR-02): out-of-range IDs return 404 on every ID route > GET /api/milestones/:id/submissions
+PrismaClientKnownRequestError: 
+Invalid `prisma.milestone.findFirst()` invocation in
+D:/Claude Projects/coursepm-lab6/server/src/access/scope.ts:52:27
+
+  49 // F-04: the milestone and its team are fetched in the same scoped query.
+  50 // A missing milestone and one owned by another team have the same result.
+  51 export async function loadMilestoneForUser(user: AuthUser, milestoneId: number) {
+→ 52   return prisma.milestone.findFirst(
+Value out of range for the type: value "2147483648" is out of range for type integer
+    at vn.handleRequestError (D:\Claude Projects\coursepm-lab6\server\node_modules\@prisma\client\runtime\client.js:65:8640)
+    at vn.handleAndLogRequestError (D:\Claude Projects\coursepm-lab6\server\node_modules\@prisma\client\runtime\client.js:65:7929)
+    at vn.request (D:\Claude Projects\coursepm-lab6\server\node_modules\@prisma\client\runtime\client.js:65:7636)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async a (D:\Claude Projects\coursepm-lab6\server\node_modules\@prisma\client\runtime\client.js:99:6921)
+    at D:/Claude Projects/coursepm-lab6/server/src/submissions/routes.ts:94:18 {
+  code: 'P2020',
+  meta: {
+    modelName: 'Milestone',
+    driverAdapterError: DriverAdapterError: ValueOutOfRange
+        at PrismaPgAdapter.onError (file:///D:/Claude%20Projects/coursepm-lab6/server/node_modules/@prisma/adapter-pg/dist/index.mjs:666:11)
+        at PrismaPgAdapter.performIO (file:///D:/Claude%20Projects/coursepm-lab6/server/node_modules/@prisma/adapter-pg/dist/index.mjs:661:12)
+        at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+        at async PrismaPgAdapter.queryRaw (file:///D:/Claude%20Projects/coursepm-lab6/server/node_modules/@prisma/adapter-pg/dist/index.mjs:595:30)
+        at async D:\Claude Projects\coursepm-lab6\server\node_modules\@prisma\client\runtime\client.js:11:70479
+        at async e.interpretNode (D:\Claude Projects\coursepm-lab6\server\node_modules\@prisma\client\runtime\client.js:11:69631)
+        at async e.interpretNode (D:\Claude Projects\coursepm-lab6\server\node_modules\@prisma\client\runtime\client.js:11:70920)
+        at async e.interpretNode (D:\Claude Projects\coursepm-lab6\server\node_modules\@prisma\client\runtime\client.js:11:71857)
+        at async e.run (D:\Claude Projects\coursepm-lab6\server\node_modules\@prisma\client\runtime\client.js:11:69273)
+        at async e.execute (D:\Claude Projects\coursepm-lab6\server\node_modules\@prisma\client\runtime\client.js:57:815) {
+      cause: [Object]
+    }
+  },
+  clientVersion: '7.10.1'
+}
+
+stderr | tests/lab-06/id-bounds.test.ts > TEST-L6-57-02 (AC-02-2, AC-02-3, NFR-02): out-of-range IDs return 404 on every ID route > POST /api/milestones/:id/submissions
+PrismaClientKnownRequestError: 
+Invalid `prisma.milestone.findFirst()` invocation in
+D:/Claude Projects/coursepm-lab6/server/src/access/scope.ts:52:27
+
+  49 // F-04: the milestone and its team are fetched in the same scoped query.
+  50 // A missing milestone and one owned by another team have the same result.
+  51 export async function loadMilestoneForUser(user: AuthUser, milestoneId: number) {
+→ 52   return prisma.milestone.findFirst(
+Value out of range for the type: value "2147483648" is out of range for type integer
+    at vn.handleRequestError (D:\Claude Projects\coursepm-lab6\server\node_modules\@prisma\client\runtime\client.js:65:8640)
+    at vn.handleAndLogRequestError (D:\Claude Projects\coursepm-lab6\server\node_modules\@prisma\client\runtime\client.js:65:7929)
+    at vn.request (D:\Claude Projects\coursepm-lab6\server\node_modules\@prisma\client\runtime\client.js:65:7636)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async a (D:\Claude Projects\coursepm-lab6\server\node_modules\@prisma\client\runtime\client.js:99:6921)
+    at D:/Claude Projects/coursepm-lab6/server/src/submissions/routes.ts:73:18 {
+  code: 'P2020',
+  meta: {
+    modelName: 'Milestone',
+    driverAdapterError: DriverAdapterError: ValueOutOfRange
+        at PrismaPgAdapter.onError (file:///D:/Claude%20Projects/coursepm-lab6/server/node_modules/@prisma/adapter-pg/dist/index.mjs:666:11)
+        at PrismaPgAdapter.performIO (file:///D:/Claude%20Projects/coursepm-lab6/server/node_modules/@prisma/adapter-pg/dist/index.mjs:661:12)
+        at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+        at async PrismaPgAdapter.queryRaw (file:///D:/Claude%20Projects/coursepm-lab6/server/node_modules/@prisma/adapter-pg/dist/index.mjs:595:30)
+        at async D:\Claude Projects\coursepm-lab6\server\node_modules\@prisma\client\runtime\client.js:11:70479
+        at async e.interpretNode (D:\Claude Projects\coursepm-lab6\server\node_modules\@prisma\client\runtime\client.js:11:69631)
+        at async e.interpretNode (D:\Claude Projects\coursepm-lab6\server\node_modules\@prisma\client\runtime\client.js:11:70920)
+        at async e.interpretNode (D:\Claude Projects\coursepm-lab6\server\node_modules\@prisma\client\runtime\client.js:11:71857)
+        at async e.run (D:\Claude Projects\coursepm-lab6\server\node_modules\@prisma\client\runtime\client.js:11:69273)
+        at async e.execute (D:\Claude Projects\coursepm-lab6\server\node_modules\@prisma\client\runtime\client.js:57:815) {
+      cause: [Object]
+    }
+  },
+  clientVersion: '7.10.1'
+}
+
+stderr | tests/lab-06/id-bounds.test.ts > TEST-L6-57-02 (AC-02-2, AC-02-3, NFR-02): out-of-range IDs return 404 on every ID route > POST /api/submissions/:id/feedback
+PrismaClientKnownRequestError: 
+Invalid `prisma.submission.findFirst()` invocation in
+D:/Claude Projects/coursepm-lab6/server/src/access/scope.ts:61:28
+
+  58 // F-06: use the submission's database-constrained teamId for a scoped load.
+  59 // The submission's composite FK guarantees that teamId matches its milestone.
+  60 export async function loadSubmissionForUser(user: AuthUser, submissionId: number) {
+→ 61   return prisma.submission.findFirst(
+Value out of range for the type: value "2147483648" is out of range for type integer
+    at vn.handleRequestError (D:\Claude Projects\coursepm-lab6\server\node_modules\@prisma\client\runtime\client.js:65:8640)
+    at vn.handleAndLogRequestError (D:\Claude Projects\coursepm-lab6\server\node_modules\@prisma\client\runtime\client.js:65:7929)
+    at vn.request (D:\Claude Projects\coursepm-lab6\server\node_modules\@prisma\client\runtime\client.js:65:7636)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async a (D:\Claude Projects\coursepm-lab6\server\node_modules\@prisma\client\runtime\client.js:99:6921)
+    at D:/Claude Projects/coursepm-lab6/server/src/feedback/routes.ts:16:37 {
+  code: 'P2020',
+  meta: {
+    modelName: 'Submission',
+    driverAdapterError: DriverAdapterError: ValueOutOfRange
+        at PrismaPgAdapter.onError (file:///D:/Claude%20Projects/coursepm-lab6/server/node_modules/@prisma/adapter-pg/dist/index.mjs:666:11)
+        at PrismaPgAdapter.performIO (file:///D:/Claude%20Projects/coursepm-lab6/server/node_modules/@prisma/adapter-pg/dist/index.mjs:661:12)
+        at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+        at async PrismaPgAdapter.queryRaw (file:///D:/Claude%20Projects/coursepm-lab6/server/node_modules/@prisma/adapter-pg/dist/index.mjs:595:30)
+        at async D:\Claude Projects\coursepm-lab6\server\node_modules\@prisma\client\runtime\client.js:11:70479
+        at async e.run (D:\Claude Projects\coursepm-lab6\server\node_modules\@prisma\client\runtime\client.js:11:69220)
+        at async e.execute (D:\Claude Projects\coursepm-lab6\server\node_modules\@prisma\client\runtime\client.js:57:815)
+        at async yr.request (D:\Claude Projects\coursepm-lab6\server\node_modules\@prisma\client\runtime\client.js:58:2425)
+        at async Object.singleLoader (D:\Claude Projects\coursepm-lab6\server\node_modules\@prisma\client\runtime\client.js:65:6917)
+        at async vn.request (D:\Claude Projects\coursepm-lab6\server\node_modules\@prisma\client\runtime\client.js:65:7523) {
+      cause: [Object]
+    }
+  },
+  clientVersion: '7.10.1'
+}
+
+ ❯ tests/lab-06/id-bounds.test.ts (22 tests | 17 failed) 1150ms
+     × rejects "2147483648" 3ms
+     × rejects "9999999999999" 0ms
+     × rejects "1e20" 0ms
+     × rejects "0x1" 0ms
+     × rejects "1e0" 0ms
+     × rejects "+1" 0ms
+     × rejects "01" 0ms
+     × rejects " 1" 0ms
+     × rejects "1.0" 0ms
+     × GET /api/teams/:id 89ms
+     × GET /api/teams/:id/milestones 65ms
+     × POST /api/teams/:id/milestones 91ms
+     × GET /api/milestones/:id 191ms
+     × GET /api/milestones/:id/submissions 93ms
+     × POST /api/milestones/:id/submissions 97ms
+     × POST /api/submissions/:id/feedback 72ms
+     × returns 404 for 0x1-style spellings of the student's own team ID 214ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 17 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/lab-06/id-bounds.test.ts > TEST-L6-57-01 parseId accepts only canonical IDs within INT4 > rejects "2147483648"
+AssertionError: expected 2147483648 to be null
+
+- Expected:
+null
+
++ Received:
+2147483648
+
+ ❯ tests/lab-06/id-bounds.test.ts:36:28
+     34|
+     35|   it.each([...OUT_OF_RANGE, ...NON_CANONICAL, '0', '-1', 'abc', ''])('…
+     36|     expect(parseId(value)).toBeNull()
+       |                            ^
+     37|   })
+     38| })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/17]⎯
+
+ FAIL  tests/lab-06/id-bounds.test.ts > TEST-L6-57-01 parseId accepts only canonical IDs within INT4 > rejects "9999999999999"
+AssertionError: expected 9999999999999 to be null
+
+- Expected:
+null
+
++ Received:
+9999999999999
+
+ ❯ tests/lab-06/id-bounds.test.ts:36:28
+     34|
+     35|   it.each([...OUT_OF_RANGE, ...NON_CANONICAL, '0', '-1', 'abc', ''])('…
+     36|     expect(parseId(value)).toBeNull()
+       |                            ^
+     37|   })
+     38| })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/17]⎯
+
+ FAIL  tests/lab-06/id-bounds.test.ts > TEST-L6-57-01 parseId accepts only canonical IDs within INT4 > rejects "1e20"
+AssertionError: expected 100000000000000000000 to be null
+
+- Expected:
+null
+
++ Received:
+100000000000000000000
+
+ ❯ tests/lab-06/id-bounds.test.ts:36:28
+     34|
+     35|   it.each([...OUT_OF_RANGE, ...NON_CANONICAL, '0', '-1', 'abc', ''])('…
+     36|     expect(parseId(value)).toBeNull()
+       |                            ^
+     37|   })
+     38| })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/17]⎯
+
+ FAIL  tests/lab-06/id-bounds.test.ts > TEST-L6-57-01 parseId accepts only canonical IDs within INT4 > rejects "0x1"
+ FAIL  tests/lab-06/id-bounds.test.ts > TEST-L6-57-01 parseId accepts only canonical IDs within INT4 > rejects "1e0"
+ FAIL  tests/lab-06/id-bounds.test.ts > TEST-L6-57-01 parseId accepts only canonical IDs within INT4 > rejects "+1"
+ FAIL  tests/lab-06/id-bounds.test.ts > TEST-L6-57-01 parseId accepts only canonical IDs within INT4 > rejects "01"
+ FAIL  tests/lab-06/id-bounds.test.ts > TEST-L6-57-01 parseId accepts only canonical IDs within INT4 > rejects " 1"
+ FAIL  tests/lab-06/id-bounds.test.ts > TEST-L6-57-01 parseId accepts only canonical IDs within INT4 > rejects "1.0"
+AssertionError: expected 1 to be null
+
+- Expected:
+null
+
++ Received:
+1
+
+ ❯ tests/lab-06/id-bounds.test.ts:36:28
+     34|
+     35|   it.each([...OUT_OF_RANGE, ...NON_CANONICAL, '0', '-1', 'abc', ''])('…
+     36|     expect(parseId(value)).toBeNull()
+       |                            ^
+     37|   })
+     38| })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/17]⎯
+
+ FAIL  tests/lab-06/id-bounds.test.ts > TEST-L6-57-02 (AC-02-2, AC-02-3, NFR-02): out-of-range IDs return 404 on every ID route > GET /api/teams/:id
+ FAIL  tests/lab-06/id-bounds.test.ts > TEST-L6-57-02 (AC-02-2, AC-02-3, NFR-02): out-of-range IDs return 404 on every ID route > GET /api/teams/:id/milestones
+ FAIL  tests/lab-06/id-bounds.test.ts > TEST-L6-57-02 (AC-02-2, AC-02-3, NFR-02): out-of-range IDs return 404 on every ID route > POST /api/teams/:id/milestones
+ FAIL  tests/lab-06/id-bounds.test.ts > TEST-L6-57-02 (AC-02-2, AC-02-3, NFR-02): out-of-range IDs return 404 on every ID route > GET /api/milestones/:id
+ FAIL  tests/lab-06/id-bounds.test.ts > TEST-L6-57-02 (AC-02-2, AC-02-3, NFR-02): out-of-range IDs return 404 on every ID route > GET /api/milestones/:id/submissions
+ FAIL  tests/lab-06/id-bounds.test.ts > TEST-L6-57-02 (AC-02-2, AC-02-3, NFR-02): out-of-range IDs return 404 on every ID route > POST /api/milestones/:id/submissions
+ FAIL  tests/lab-06/id-bounds.test.ts > TEST-L6-57-02 (AC-02-2, AC-02-3, NFR-02): out-of-range IDs return 404 on every ID route > POST /api/submissions/:id/feedback
+AssertionError: expected { id: '2147483648', status: 500 } to deeply equal { id: '2147483648', status: 404 }
+
+- Expected
++ Received
+
+  {
+    "id": "2147483648",
+-   "status": 404,
++   "status": 500,
+  }
+
+ ❯ tests/lab-06/id-bounds.test.ts:63:42
+     61|       const req = agent[method](path(id))
+     62|       const res = body ? await req.send(body) : await req
+     63|       expect({ id, status: res.status }).toEqual({ id, status: 404 })
+       |                                          ^
+     64|       expect(res.body.error.code).toBe('NOT_FOUND')
+     65|     }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/17]⎯
+
+ FAIL  tests/lab-06/id-bounds.test.ts > TEST-L6-57-03 (AC-03-5): non-canonical spellings of a real team ID are not that team > returns 404 for 0x1-style spellings of the student's own team ID
+AssertionError: expected { id: '0x1', status: 200 } to deeply equal { id: '0x1', status: 404 }
+
+- Expected
++ Received
+
+  {
+    "id": "0x1",
+-   "status": 404,
++   "status": 200,
+  }
+
+ ❯ tests/lab-06/id-bounds.test.ts:76:42
+     74|     for (const id of spellings) {
+     75|       const res = await agent.get(`/api/teams/${encodeURIComponent(id)…
+     76|       expect({ id, status: res.status }).toEqual({ id, status: 404 })
+       |                                          ^
+     77|       expect(res.text).not.toContain('Team Lab6 ID bounds')
+     78|     }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/17]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  17 failed | 5 passed (22)
+   Start at  22:41:46
+   Duration  4.42s (transform 272ms, setup 0ms, import 507ms, tests 1.15s, environment 0ms)
+
