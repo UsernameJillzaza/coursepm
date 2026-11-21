@@ -100,7 +100,7 @@ seed creates the complete set above in one repeatable command.
 | `/login` | Login form | public |
 | `/teams` | My teams (cards with member names) | Student, Supervisor |
 | `/teams/:teamId` | Team detail: members, milestone list with status badges; **New milestone** button | Student, Supervisor (button for Supervisor only) |
-| `/teams/:teamId/milestones/new` | Create milestone form | Supervisor |
+| `/teams/:teamId/milestones/new` | Create milestone form, shown after the team loads (**Team not found** for an out-of-scope team) | Supervisor |
 | `/milestones/:milestoneId` | Milestone detail: deadline (Bangkok time) with an Open/Closed badge, revisions used / limit, submit form (Student, while open), revision list with feedback, feedback form (Supervisor) | Student, Supervisor |
 
 **Shared behavior (R-02).** A top bar shows the user's name and role and a **Log out** button. A

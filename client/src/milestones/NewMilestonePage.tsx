@@ -2,6 +2,9 @@ import { useState, type FormEvent } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { api, ApiError, type FieldErrors } from '../api'
 import { useAuth } from '../auth/AuthContext'
+import { ErrorAlert, Loading } from '../components/States'
+import { useApi } from '../components/useApi'
+import type { Team } from '../teams/types'
 
 function bangkokInputToUtc(local: string) {
   const value = new Date(`${local}:00+07:00`)
@@ -19,10 +22,29 @@ export default function NewMilestonePage() {
   const [fields, setFields] = useState<FieldErrors>({})
   const [error, setError] = useState('')
   const [saving, setSaving] = useState(false)
+  // Load the team first, so a team the supervisor cannot see shows "Team not
+  // found" (F-03 UI rule) instead of a form that only fails on submit
+  // (Issue #60, DEF-CP-04). The server check (AC-04-3) is unchanged.
+  const teamRequest = useApi<{ team: Team }>(`/teams/${teamId}`)
 
   if (user?.role !== 'SUPERVISOR') {
     return <main className="container"><h1 className="h4">New milestone</h1><p>Only supervisors can create milestones.</p><Link to={`/teams/${teamId}`}>Back to team</Link></main>
   }
+
+  if (teamRequest.loading) return <main className="container"><Loading /></main>
+  if (teamRequest.error?.status === 404) {
+    return (
+      <main className="container">
+        <h1 className="h4">Team not found</h1>
+        <p className="text-body-secondary">It doesn't exist, or you aren't a supervisor of it.</p>
+        <Link to="/teams">Back to My teams</Link>
+      </main>
+    )
+  }
+  if (teamRequest.error || !teamRequest.data) {
+    return <main className="container"><ErrorAlert message={teamRequest.error?.message ?? 'Error'} onRetry={teamRequest.reload} /></main>
+  }
+  const { team } = teamRequest.data
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -51,7 +73,8 @@ export default function NewMilestonePage() {
   return (
     <main className="container" style={{ maxWidth: 720 }}>
       <Link to={`/teams/${teamId}`} className="d-inline-block mb-3">Back to team</Link>
-      <h1 className="h4 mb-3">New milestone</h1>
+      <h1 className="h4 mb-0">New milestone</h1>
+      <p className="text-body-secondary mb-3">for {team.name}</p>
       {error && <div className="alert alert-danger" role="alert">{error}</div>}
       <form onSubmit={onSubmit} noValidate>
         <div className="mb-3">

@@ -151,7 +151,7 @@ the deploy scripts.
 
 Each accepted defect from the partner team's UAT (Team GG EZ, run `UAT-20261121-GGEZ` on `8c17581`)
 gets a regression test that fails on the defective release before the fix. The tests live in
-`server/tests/lab-06/`; red and green logs are in `artifacts/lab-06/tdd/`.
+`server/tests/lab-06/` (API) and `client/tests/lab-06/` (UI); red and green logs are in `artifacts/lab-06/tdd/`.
 TEST-L6-57-02 sends the out-of-range values to all seven ID routes; the non-canonical spellings are
 sent to `GET /api/teams/:id` only (TEST-L6-57-03), because all seven routes read the ID through the
 same `parseId`, which TEST-L6-57-01 covers for every spelling.
@@ -163,3 +163,6 @@ same `parseId`, which TEST-L6-57-01 covers for every spelling.
 | TEST-L6-57-03 | AC-03-5, Issue #57 | As a member, request the own team by its real ID and by `0x…`, `…e0`, `+…`, `0…` and `….0` spellings of it | The real ID returns 200; every other spelling returns 404 and no team data |
 | TEST-L6-58-01 | AC-01-2, FR-01, Issue #58 (DEF-CP-02) | `POST /api/auth/login` with a NUL byte inside a real account's e-mail (wrong and correct password), and at the end of the e-mail | 401 `INVALID_CREDENTIALS` with the same body as a wrong password, no cookie; never 500 |
 | TEST-L6-58-02 | AC-01-2, Issue #58 | Login with SOH, US or DEL inside the e-mail, and with NUL appended to the account's correct password; then the real credentials | Each control-character attempt gets the same 401 and no cookie; the real credentials still return 200 with a cookie |
+| TEST-L6-60-01 | AC-04-3, F-03 UI rule, Issue #60 (DEF-CP-04) | Component test: as a supervisor, open `/teams/2/milestones/new` while `GET /api/teams/2` returns 404 (`client/tests/lab-06/new-milestone-scope.test.tsx`) | **Team not found** heading; no Title field, no **Create milestone** button; no POST is sent |
+| TEST-L6-60-02 | AC-04-1, Issue #60 | Component test: as a supervisor, open `/teams/1/milestones/new` while `GET /api/teams/1` returns the team | The form appears after the team loads and names the team |
+| TEST-L6-60-03 | AC-02-10, Issue #60 | Component test: `GET /api/teams/1` returns 500 once, then the team; click **Retry** | Error alert with **Retry** and no form; after Retry the form appears (2 team requests). Added after the fix as extra coverage, not part of the RED run |
