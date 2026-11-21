@@ -22,8 +22,15 @@ export class AppError extends Error {
   }
 }
 
-// Path IDs are positive integers; anything else is treated as "not found".
+// Largest value of a PostgreSQL INT4 column (every ID column is Int).
+const MAX_ID = 2147483647
+
+// Path IDs are positive integers written in plain decimal digits, no larger
+// than INT4 allows; anything else is treated as "not found". Number() alone is
+// not enough: it accepts "0x1", "1e0", "+1" and " 1", and a value above INT4
+// makes the database query fail with a 500 (Issue #57, DEF-CP-01).
 export function parseId(value: unknown): number | null {
+  if (typeof value !== 'string' || !/^[1-9][0-9]*$/.test(value)) return null
   const n = Number(value)
-  return Number.isInteger(n) && n > 0 ? n : null
+  return n <= MAX_ID ? n : null
 }
