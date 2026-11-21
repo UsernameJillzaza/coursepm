@@ -134,7 +134,9 @@ field, and keeps the typed values on error. Every list has a loading spinner, an
 | 503 | `NOT_READY` | Database unreachable; returned by the public readiness probe only, without connection details. |
 
 Validation happens on the server for every input; client checks are only hints. Unknown body fields
-are ignored. IDs in paths are positive integers; anything else returns 404.
+are ignored. IDs in paths are canonical decimal integers from 1 to 2147483647 (the PostgreSQL INT4
+maximum); anything else, including `0x1`, `1e0`, `+1`, `01` and larger values, returns 404 `NOT_FOUND`
+(Lab 6, Issue #57).
 
 **API endpoints** (Sprint 1 contracts in [sprints/sprint-1/](sprints/sprint-1/); readiness added in Lab 5):
 
