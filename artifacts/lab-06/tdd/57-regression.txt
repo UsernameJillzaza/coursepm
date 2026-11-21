@@ -1,17 +1,9 @@
 Issue #57 regression run
-Date: 2026-11-21 22:42:45 +0700
-Commit: 8d1afbe + uncommitted parseId fix
-Branch: fix/57-id-bounds
-Worktree: D:/Claude Projects/coursepm-lab6
-Commands:
-  (1) npm --prefix server test
-  (2) cd server && npx tsc --noEmit
-  (3) npm --prefix client test
-  (4) npm --prefix client run build
-E2E: skipped
-========================================
+Commit under test: 257a152 (clean tree)
+Date: 2026-11-21 (ICT)
+E2E: not run (Playwright/Edge suite is run before the release)
 
-##### (1) npm --prefix server test
+$ npm --prefix server test
 
 > coursepm-server@0.1.0 test
 > vitest run
@@ -31,15 +23,15 @@ No pending migrations to apply.
 
  Test Files  15 passed (15)
       Tests  141 passed (141)
-   Start at  22:42:46
-   Duration  12.23s (transform 290ms, setup 0ms, import 2.29s, tests 5.63s, environment 1ms)
+   Start at  22:44:55
+   Duration  15.57s (transform 348ms, setup 0ms, import 3.02s, tests 7.29s, environment 1ms)
 
 EXIT=0
 
-##### (2) cd server && npx tsc --noEmit
+$ cd server && npx tsc --noEmit
 EXIT=0
 
-##### (3) npm --prefix client test
+$ npm --prefix client test
 
 > coursepm-client@0.1.0 test
 > vitest run
@@ -50,17 +42,17 @@ EXIT=0
 
  Test Files  7 passed (7)
       Tests  41 passed (41)
-   Start at  22:43:07
-   Duration  4.28s (transform 669ms, setup 1.69s, import 1.37s, tests 7.08s, environment 7.91s)
+   Start at  22:45:13
+   Duration  5.47s (transform 908ms, setup 2.68s, import 2.03s, tests 7.93s, environment 12.66s)
 
 EXIT=0
 
-##### (4) npm --prefix client run build
+$ npm --prefix client run build
 
 > coursepm-client@0.1.0 build
 > tsc -b && vite build
 
-vite v8.3.8 building client environment for production...
+[36mvite v8.3.8 [32mbuilding client environment for production...[36m[39m
 transforming...
 ✓ 42 modules transformed.
 rendering chunks...
@@ -69,5 +61,5 @@ dist/index.html                   0.40 kB │ gzip:  0.27 kB
 dist/assets/index-BbRluUcX.css  230.30 kB │ gzip: 30.70 kB
 dist/assets/index-BpwsiIC9.js   278.91 kB │ gzip: 86.90 kB
 
-✓ built in 200ms
+[32m✓ built in 262ms[39m
 EXIT=0

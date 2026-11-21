@@ -1,5 +1,5 @@
 Issue #57 (DEF-CP-01) GREEN run
-Commit under test: 8d1afbe (RED test) + parseId fix in server/src/http.ts
+Commit under test: 257a152 (clean tree; fix commit ad5f00f + docs-only commit)
 Command: cd server && npx vitest run tests/lab-06/id-bounds.test.ts
 Date: 2026-11-21 (ICT)
 
@@ -18,6 +18,6 @@ No pending migrations to apply.
 
  Test Files  1 passed (1)
       Tests  22 passed (22)
-   Start at  22:42:21
-   Duration  3.33s (transform 125ms, setup 0ms, import 364ms, tests 731ms, environment 0ms)
+   Start at  22:44:45
+   Duration  3.76s (transform 158ms, setup 0ms, import 427ms, tests 712ms, environment 0ms)
 
