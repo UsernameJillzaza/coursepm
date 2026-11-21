@@ -3,11 +3,11 @@
 Version 0.1 · 2026-11-15. Requirement → feature → sprint → acceptance criteria → planned tests.
 AC and TEST IDs for Sprint 1 are defined in [sprints/sprint-1/](sprints/sprint-1/). Later-sprint rows
 have a feature and sprint now; their AC and tests are written when that sprint's contract is prepared.
-The **Result** column is filled from the release-candidate run on `daefdff` (Part F); a row passes when every planned test that carries one of its IDs passed. Commands: `npm --prefix server test`, `npm --prefix client test`, `npx tsc --noEmit` (server), `npm --prefix client run build`, `npx playwright test`. Counts: server 112/112 passed, 0 failed, 0 skipped · client 39/39 passed, 0 failed, 0 skipped · E2E 3/3 passed, 0 failed, 0 skipped · type-check OK · client build OK. Lab 6 regression tests (`TEST-L6-*`) were added after that run; their results come from the Issue #57 run on `257a152` (server 141/141, client 41/41, 0 failed, 0 skipped; logs in `artifacts/lab-06/tdd/`).
+The **Result** column is filled from the release-candidate run on `daefdff` (Part F); a row passes when every planned test that carries one of its IDs passed. Commands: `npm --prefix server test`, `npm --prefix client test`, `npx tsc --noEmit` (server), `npm --prefix client run build`, `npx playwright test`. Counts: server 112/112 passed, 0 failed, 0 skipped · client 39/39 passed, 0 failed, 0 skipped · E2E 3/3 passed, 0 failed, 0 skipped · type-check OK · client build OK. Lab 6 regression tests (`TEST-L6-*`) were added after that run; their results come from the Issue #57 run on `257a152` (server 141/141, client 41/41, 0 failed, 0 skipped) and, for `TEST-L6-58-*`, the Issue #58 run on `5c7eece` (server 149/149, client 41/41, 0 failed, 0 skipped); logs in `artifacts/lab-06/tdd/`.
 
 | Requirement | Feature / responsibility | Sprint | AC | Planned tests | Result |
 | --- | --- | --- | --- | --- | --- |
-| FR-01 | F-01 | 1 | AC-01-1, AC-01-2 | TEST-01-01, TEST-01-02, TEST-01-03, E2E-01 | Pass (4/4 tests) |
+| FR-01 | F-01 | 1 | AC-01-1, AC-01-2 | TEST-01-01, TEST-01-02, TEST-01-03, E2E-01, TEST-L6-58-01, TEST-L6-58-02 | Pass (6/6 tests) |
 | FR-02 | F-01 | 1 | AC-01-3, AC-01-4 | TEST-01-04, TEST-01-05, E2E-01 | Pass (3/3 tests) |
 | BR-01 | F-01 | 1 | AC-01-6 | TEST-01-08 | Pass (1/1 tests) |
 | NFR-01 | F-01, F-02, R-01 | 1 | AC-R01-1, AC-02-1, AC-02-7, AC-01-9 | TEST-R01-01, TEST-02-01, TEST-UI-03, TEST-01-11 | Pass (4/4 tests) |
