@@ -40,7 +40,7 @@ lab, so no minor limitation needs to be accepted by the UAT team.
 
 | Finding | Issue | Found | Contract reference | Classification | Severity and reason | Owner | Fix | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| NUL in text fields | #63 | While writing the #58 RED test (same root cause as DEF-CP-02) | AC-04-4, AC-05-5, AC-06-5 | Accepted defect | **Minor**: a NUL in a milestone, submission or feedback field gives 500 instead of 400, but only through a hand-crafted API call; nothing is stored and the UI is unaffected | Jakkarin | PR #66 | In review; verified by TEST-L6-63-01/02 and the post-deploy smoke check |
+| NUL in text fields | #63 | While writing the #58 RED test (same root cause as DEF-CP-02) | AC-04-4, AC-05-5, AC-06-5 | Accepted defect | **Minor**: a NUL in a milestone, submission or feedback field gives 500 instead of 400, but only through a hand-crafted API call; nothing is stored and the UI is unaffected | Jakkarin | PR #66 | On `lab6-staging`; verified by TEST-L6-63-01/02 and the post-deploy smoke check |
 
 ## Retest
 
