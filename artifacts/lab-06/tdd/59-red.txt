@@ -1,5 +1,5 @@
 Issue #59 (DEF-CP-03) RED run
-Commit under test: 755ef1e (lab6-staging) + the new test file, server/src/rules/submission.ts identical to 8c17581
+Commit under test: f1be16d (adds only the test file on top of 755ef1e; server/src/rules/submission.ts identical to 8c17581). The suite-level FK error below comes from this commit's own afterAll cleanup; see 59-red-clean.txt for the same RED with the fixed fixture
 Command: cd server && npx vitest run tests/lab-06/link-validation.test.ts
 Date: 2026-11-22 06:06 (ICT)
 
