@@ -124,7 +124,7 @@ field, and keeps the typed values on error. Every list has a loading spinner, an
 | 400 | `VALIDATION_ERROR` | Field rules failed (BR-05, BR-08, BR-10 length). |
 | 400 | `VALIDATION_ERROR` | Malformed JSON body. |
 | 401 | `UNAUTHENTICATED` | No session, an expired session, a deleted session, or the session of a deactivated account. |
-| 401 | `INVALID_CREDENTIALS` | Login with a wrong password, an unknown e-mail or an inactive account (one generic message). |
+| 401 | `INVALID_CREDENTIALS` | Login with a wrong password, an unknown e-mail, an inactive account, or a control character in the e-mail or password (one generic message). |
 | 403 | `FORBIDDEN` | The record is in scope but the role may not perform the operation (a student creating a milestone or recording feedback). |
 | 404 | `NOT_FOUND` | The record does not exist **or** is outside the user's scope (D-03); also any unknown `/api/*` path. |
 | 409 | `DEADLINE_PASSED`, `REVISION_LIMIT_REACHED`, `FEEDBACK_EXISTS` | A business rule rejects the state change (BR-06, BR-07, BR-10). |
@@ -183,7 +183,10 @@ request.
 **Credentials and sessions.**
 - Passwords are hashed with **scrypt** (`node:crypto`, N=16384, r=8, p=1, 16-byte random salt, 64-byte
   key), stored as `scrypt$N$r$p$salt$key`, and compared in constant time. Login against an unknown
-  e-mail still runs a dummy hash, so response time doesn't reveal which accounts exist.
+  e-mail still runs a dummy hash, so response time doesn't reveal which accounts exist. An e-mail or
+  password containing a control character (U+0000–U+001F, U+007F) is never looked up: PostgreSQL rejects
+  a NUL byte in a text query, and scrypt's HMAC zero-pads the key, so `pw` and `pw` + NUL would derive the
+  same hash. Such a login verifies against the dummy hash and gets the generic 401 (Lab 6, Issue #58).
 - On login, the server makes a 32-byte random token, stores only its SHA-256 hash in `Session` with
   `expiresAt = now + 8 h`, and sets the cookie `cpm_session` (`HttpOnly`, `SameSite=Lax`, `Path=/`,
   `Secure` when `NODE_ENV=production`).
