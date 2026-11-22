@@ -3,7 +3,7 @@
 Version 0.1 · 2026-11-15. Requirement → feature → sprint → acceptance criteria → planned tests.
 AC and TEST IDs for Sprint 1 are defined in [sprints/sprint-1/](sprints/sprint-1/). Later-sprint rows
 have a feature and sprint now; their AC and tests are written when that sprint's contract is prepared.
-The **Result** column is filled from the release-candidate run on `daefdff` (Part F); a row passes when every planned test that carries one of its IDs passed. Commands: `npm --prefix server test`, `npm --prefix client test`, `npx tsc --noEmit` (server), `npm --prefix client run build`, `npx playwright test`. Counts: server 112/112 passed, 0 failed, 0 skipped · client 39/39 passed, 0 failed, 0 skipped · E2E 3/3 passed, 0 failed, 0 skipped · type-check OK · client build OK. Lab 6 regression tests (`TEST-L6-*`) were added after that run; their results come from the Issue #57 run on `257a152` (server 141/141, client 41/41, 0 failed, 0 skipped); for `TEST-L6-60-*`, the Issue #60 run after merging `lab6-staging` into its branch (server 141/141, client 44/44, 0 failed, 0 skipped; `60-regression-after-merge.txt`); for `TEST-L6-58-*`, the Issue #58 run after merging `lab6-staging` into its branch (server 149/149, client 44/44, 0 failed, 0 skipped; `58-regression-after-merge.txt`); and, for `TEST-L6-59-*`, the Issue #59 run on `684c806` (server 170/170, client 44/44, 0 failed, 0 skipped; `59-regression.txt`); logs in `artifacts/lab-06/tdd/`.
+The **Result** column is filled from the release-candidate run on `daefdff` (Part F); a row passes when every planned test that carries one of its IDs passed. Commands: `npm --prefix server test`, `npm --prefix client test`, `npx tsc --noEmit` (server), `npm --prefix client run build`, `npx playwright test`. Counts: server 112/112 passed, 0 failed, 0 skipped · client 39/39 passed, 0 failed, 0 skipped · E2E 3/3 passed, 0 failed, 0 skipped · type-check OK · client build OK. Lab 6 regression tests (`TEST-L6-*`) were added after that run; their results come from the Issue #57 run on `257a152` (server 141/141, client 41/41, 0 failed, 0 skipped); for `TEST-L6-60-*`, the Issue #60 run after merging `lab6-staging` into its branch (server 141/141, client 44/44, 0 failed, 0 skipped; `60-regression-after-merge.txt`); for `TEST-L6-58-*`, the Issue #58 run after merging `lab6-staging` into its branch (server 149/149, client 44/44, 0 failed, 0 skipped; `58-regression-after-merge.txt`); for `TEST-L6-59-*`, the Issue #59 run on `684c806` (server 170/170, client 44/44, 0 failed, 0 skipped; `59-regression.txt`); and, for `TEST-L6-63-*`, the Issue #63 run on `7409b18` (server 185/185, client 44/44, 0 failed, 0 skipped; `63-regression.txt`); logs in `artifacts/lab-06/tdd/`.
 
 | Requirement | Feature / responsibility | Sprint | AC | Planned tests | Result |
 | --- | --- | --- | --- | --- | --- |
@@ -21,19 +21,19 @@ The **Result** column is filled from the release-candidate run on `daefdff` (Par
 | NFR-06 | F-03, R-01 | 1 | AC-03-4, AC-R01-2 | TEST-03-04, TEST-R01-02, MAN-01 restart check | Pass (2/2 tests); MAN-01 Pass on v0.1.0 |
 | FR-04 | F-04 | 1 | AC-04-1 | TEST-04-01, E2E-02, TEST-L6-60-02 | Pass (3/3 tests) |
 | BR-04 | F-04 | 1 | AC-04-2, AC-04-3, AC-04-7 | TEST-04-02, TEST-04-03, E2E-03, TEST-L6-60-01 | Pass (4/4 tests) |
-| BR-05 | F-04 | 1 | AC-04-4 | TEST-04-04, TEST-04-05 | Pass (2/2 tests) |
+| BR-05 | F-04 | 1 | AC-04-4 | TEST-04-04, TEST-04-05, TEST-L6-63-01, TEST-L6-63-02 | Pass (4/4 tests) |
 | FR-05 | F-04 | 1 | AC-04-5 | TEST-04-06 | Pass (1/1 tests) |
 | FR-06 | F-05 | 1 | AC-05-1 | TEST-05-01, E2E-02 | Pass (2/2 tests) |
 | FR-07 | F-05 | 1 | AC-05-2 | TEST-05-02 | Pass (1/1 tests) |
 | FR-08 | F-05 | 1 | AC-05-7 | TEST-05-09, E2E-02 | Pass (2/2 tests) |
 | BR-06 | F-05 | 1 | AC-05-3 | TEST-05-03, TEST-05-04 | Pass (2/2 tests) |
 | BR-07 | F-05 | 1 | AC-05-4 | TEST-05-05, TEST-05-06 | Pass (2/2 tests) |
-| BR-08 | F-05 | 1 | AC-05-5 | TEST-05-07, TEST-L6-59-01, TEST-L6-59-02 | Pass (3/3 tests) |
+| BR-08 | F-05 | 1 | AC-05-5 | TEST-05-07, TEST-L6-59-01, TEST-L6-59-02, TEST-L6-63-01, TEST-L6-63-02 | Pass (5/5 tests) |
 | NFR-05 | F-05 | 1 | AC-05-6, AC-05-9 | TEST-05-08, TEST-05-10 | Pass (2/2 tests) |
 | FR-09 | F-06 | 1 | AC-06-1 | TEST-06-01, E2E-02 | Pass (2/2 tests) |
 | FR-10 | F-06 | 1 | AC-06-4 | TEST-06-04, E2E-02 | Pass (2/2 tests) |
 | BR-09 | F-06 | 1 | AC-06-2, AC-06-3 | TEST-06-02, TEST-06-03 | Pass (2/2 tests) |
-| BR-10 | F-06 | 1 | AC-06-5 | TEST-06-05, TEST-06-06 | Pass (2/2 tests) |
+| BR-10 | F-06 | 1 | AC-06-5 | TEST-06-05, TEST-06-06, TEST-L6-63-01, TEST-L6-63-02 | Pass (4/4 tests) |
 | NFR-10 | R-02 | 1 | AC-R02-1, AC-01-10, AC-02-10, AC-04-6, AC-05-8, AC-05-10, AC-06-6 | TEST-R02-01, TEST-UI-05, TEST-UI-04, TEST-UI-01, TEST-UI-02, TEST-UI-07, TEST-UI-06, TEST-L6-60-03 | Pass (8/8 tests) |
 | FR-11 | F-07 | 2 | (Sprint 2 contract) | | |
 | FR-12 | F-08 | 2 | (Sprint 2 contract) | | |

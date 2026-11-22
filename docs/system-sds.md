@@ -136,7 +136,9 @@ field, and keeps the typed values on error. Every list has a loading spinner, an
 Validation happens on the server for every input; client checks are only hints. Unknown body fields
 are ignored. IDs in paths are canonical decimal integers from 1 to 2147483647 (the PostgreSQL INT4
 maximum); anything else, including `0x1`, `1e0`, `+1`, `01` and larger values, returns 404 `NOT_FOUND`
-(Lab 6, Issue #57).
+(Lab 6, Issue #57). Text fields reject control characters as a 400 field error before any query: titles reject
+all of them, multi-line descriptions and feedback keep only tab, line feed and carriage return (Lab 6, Issue #63;
+PostgreSQL cannot store a NUL byte in text).
 
 **API endpoints** (Sprint 1 contracts in [sprints/sprint-1/](sprints/sprint-1/); readiness added in Lab 5):
 
