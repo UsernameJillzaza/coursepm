@@ -1,0 +1,65 @@
+Issue #59 regression run
+Commit under test: 684c806 (clean tree apart from untracked logs)
+Date: 2026-11-22 06:08 (ICT)
+E2E: re-run on lab6-staging before the release PR
+
+$ npm --prefix server test
+
+> coursepm-server@0.1.0 test
+> vitest run
+
+
+ RUN  v4.1.12 D:/Claude Projects/coursepm-lab6/server
+
+Loaded Prisma config from prisma.config.ts.
+
+Prisma schema loaded from prisma\schema.prisma.
+Datasource "db": PostgreSQL database "coursepm_test_lab6", schema "public" at "localhost:5432"
+
+6 migrations found in prisma/migrations
+
+
+No pending migrations to apply.
+
+ Test Files  17 passed (17)
+      Tests  170 passed (170)
+   Start at  13:08:02
+   Duration  14.02s (transform 252ms, setup 0ms, import 2.73s, tests 6.80s, environment 1ms)
+
+EXIT=0
+
+$ npm --prefix client test
+
+> coursepm-client@0.1.0 test
+> vitest run
+
+
+ RUN  v4.1.12 D:/Claude Projects/coursepm-lab6/client
+
+
+ Test Files  8 passed (8)
+      Tests  44 passed (44)
+   Start at  13:08:17
+   Duration  4.23s (transform 611ms, setup 2.10s, import 1.48s, tests 7.13s, environment 9.36s)
+
+EXIT=0
+
+$ npm --prefix client run build
+
+> coursepm-client@0.1.0 build
+> tsc -b && vite build
+
+vite v8.3.8 building client environment for production...
+transforming...
+✓ 42 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.40 kB │ gzip:  0.27 kB
+dist/assets/index-BbRluUcX.css  230.30 kB │ gzip: 30.70 kB
+dist/assets/index-Cr0td5c0.js   279.57 kB │ gzip: 86.96 kB
+
+✓ built in 185ms
+EXIT=0
+
+$ cd server && npx tsc --noEmit
+EXIT=0
