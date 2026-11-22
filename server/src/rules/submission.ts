@@ -47,10 +47,22 @@ export function validateSubmission(
   return { ok: true, value: { title, description: (rawDescription as string).trim(), link } }
 }
 
+// URL() alone is too forgiving (Issue #59, DEF-CP-03): it turns "http:///path"
+// into "http://path/", accepts "http://." and silently drops tabs and
+// newlines. So the text itself must have no whitespace or control character,
+// must start with "http://" or "https://" followed directly by a host, and the
+// parsed host must have no empty labels (one trailing dot, as in
+// "example.com.", is allowed).
+const WHITESPACE_OR_CONTROL = /[\s\u0000-\u001f\u007f]/
+const SCHEME_THEN_HOST = /^https?:\/\/[^/?#]/i
+
 function isHttpUrl(value: string): boolean {
+  if (WHITESPACE_OR_CONTROL.test(value) || !SCHEME_THEN_HOST.test(value)) return false
   try {
     const url = new URL(value)
-    return url.protocol === 'http:' || url.protocol === 'https:'
+    if (url.protocol !== 'http:' && url.protocol !== 'https:') return false
+    const labels = url.hostname.replace(/\.$/, '').split('.')
+    return labels.every((label) => label.length > 0)
   } catch {
     return false
   }
