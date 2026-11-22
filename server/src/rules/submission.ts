@@ -1,4 +1,5 @@
 import type { FieldErrors } from '../http'
+import { hasMultiLineControl, hasSingleLineControl } from './text'
 
 // F-05 business rules as pure functions, so they are unit-tested without a
 // database (TEST-05-03, TEST-05-05, TEST-05-07). The route calls them with
@@ -32,10 +33,13 @@ export function validateSubmission(
 
   const title = typeof input.title === 'string' ? input.title.trim() : ''
   if (title.length < TITLE_MIN || title.length > TITLE_MAX) fields.title = `Title must be ${TITLE_MIN}–${TITLE_MAX} characters.`
+  else if (hasSingleLineControl(title)) fields.title = 'Title must not contain control characters.'
 
   const rawDescription = input.description === undefined ? '' : input.description
   if (typeof rawDescription !== 'string' || rawDescription.length > DESCRIPTION_MAX) {
     fields.description = `Description must be at most ${DESCRIPTION_MAX.toLocaleString('en')} characters.`
+  } else if (hasMultiLineControl(rawDescription)) {
+    fields.description = 'Description must not contain control characters.'
   }
 
   const link = typeof input.link === 'string' ? input.link.trim() : ''

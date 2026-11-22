@@ -1,0 +1,279 @@
+Issue #63 RED run
+Commit under test: 642c3b4 (adds only the test file on top of 94884e4; the milestone and feedback rules and all title/description checks are unchanged since 8c17581)
+Command: cd server && npx vitest run tests/lab-06/text-control-chars.test.ts
+Date: 2026-11-22 13:36 (ICT)
+
+
+ RUN  v4.1.12 C:/Users/BTCOM/Desktop/ticktokit_cloud_shield/coursepm/server
+
+Loaded Prisma config from prisma.config.ts.
+
+Prisma schema loaded from prisma\schema.prisma.
+Datasource "db": PostgreSQL database "coursepm_test", schema "public" at "localhost:5432"
+
+6 migrations found in prisma/migrations
+
+
+No pending migrations to apply.
+stderr | tests/lab-06/text-control-chars.test.ts > TEST-L6-63-02 (AC-04-4, AC-05-5, AC-06-2): the API answers 400 naming the field and stores nothing > POST /api/teams/:id/milestones with NUL in title or description
+PrismaClientKnownRequestError: 
+Invalid `prisma.milestone.create()` invocation in
+C:/Users/BTCOM/Desktop/ticktokit_cloud_shield/coursepm/server/src/milestones/routes.ts:65:38
+
+  62 const result = validateMilestone(req.body, new Date())
+  63 if (!result.ok) return sendError(res, 400, 'VALIDATION_ERROR', 'Please correct the highlighted fields.', result.fields)
+  64 
+→ 65 const row = await prisma.milestone.create(
+Database error. Code: `22021`. Message: `invalid byte sequence for encoding "UTF8": 0x00`
+    at vn.handleRequestError (C:\Users\BTCOM\Desktop\ticktokit_cloud_shield\coursepm\server\node_modules\@prisma\client\runtime\client.js:65:8640)
+    at vn.handleAndLogRequestError (C:\Users\BTCOM\Desktop\ticktokit_cloud_shield\coursepm\server\node_modules\@prisma\client\runtime\client.js:65:7929)
+    at vn.request (C:\Users\BTCOM\Desktop\ticktokit_cloud_shield\coursepm\server\node_modules\@prisma\client\runtime\client.js:65:7636)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async a (C:\Users\BTCOM\Desktop\ticktokit_cloud_shield\coursepm\server\node_modules\@prisma\client\runtime\client.js:99:6921)
+    at createTeamMilestone (C:/Users/BTCOM/Desktop/ticktokit_cloud_shield/coursepm/server/src/milestones/routes.ts:65:15) {
+  code: 'P2039',
+  meta: {
+    modelName: 'Milestone',
+    driverAdapterError: DriverAdapterError: invalid byte sequence for encoding "UTF8": 0x00
+        at PrismaPgAdapter.onError (file:///C:/Users/BTCOM/Desktop/ticktokit_cloud_shield/coursepm/server/node_modules/@prisma/adapter-pg/dist/index.mjs:666:11)
+        at PrismaPgAdapter.performIO (file:///C:/Users/BTCOM/Desktop/ticktokit_cloud_shield/coursepm/server/node_modules/@prisma/adapter-pg/dist/index.mjs:661:12)
+        at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+        at async PrismaPgAdapter.queryRaw (file:///C:/Users/BTCOM/Desktop/ticktokit_cloud_shield/coursepm/server/node_modules/@prisma/adapter-pg/dist/index.mjs:595:30)
+        at async C:\Users\BTCOM\Desktop\ticktokit_cloud_shield\coursepm\server\node_modules\@prisma\client\runtime\client.js:11:70479
+        at async e.interpretNode (C:\Users\BTCOM\Desktop\ticktokit_cloud_shield\coursepm\server\node_modules\@prisma\client\runtime\client.js:11:70920)
+        at async e.interpretNode (C:\Users\BTCOM\Desktop\ticktokit_cloud_shield\coursepm\server\node_modules\@prisma\client\runtime\client.js:11:71857)
+        at async e.run (C:\Users\BTCOM\Desktop\ticktokit_cloud_shield\coursepm\server\node_modules\@prisma\client\runtime\client.js:11:69273)
+        at async e.execute (C:\Users\BTCOM\Desktop\ticktokit_cloud_shield\coursepm\server\node_modules\@prisma\client\runtime\client.js:57:815)
+        at async yr.request (C:\Users\BTCOM\Desktop\ticktokit_cloud_shield\coursepm\server\node_modules\@prisma\client\runtime\client.js:58:2425) {
+      cause: [Object]
+    }
+  },
+  clientVersion: '7.10.1'
+}
+
+stderr | tests/lab-06/text-control-chars.test.ts > TEST-L6-63-02 (AC-04-4, AC-05-5, AC-06-2): the API answers 400 naming the field and stores nothing > POST /api/milestones/:id/submissions with NUL in title, description or link
+PrismaClientKnownRequestError: 
+Invalid `tx.submission.create()` invocation in
+C:/Users/BTCOM/Desktop/ticktokit_cloud_shield/coursepm/server/src/submissions/routes.ts:59:26
+
+  56 const now = new Date()
+  57 const check = checkCanSubmit({ deadline: m.deadline, maxRevisions: m.maxRevisions, revisionsUsed, now })
+  58 if (!check.ok) throw new AppError(409, check.code, RULE_MESSAGES[check.code])
+→ 59 return tx.submission.create(
+Database error. Code: `22021`. Message: `invalid byte sequence for encoding "UTF8": 0x00`
+    at vn.handleRequestError (C:\Users\BTCOM\Desktop\ticktokit_cloud_shield\coursepm\server\node_modules\@prisma\client\runtime\client.js:65:8640)
+    at vn.handleAndLogRequestError (C:\Users\BTCOM\Desktop\ticktokit_cloud_shield\coursepm\server\node_modules\@prisma\client\runtime\client.js:65:7929)
+    at vn.request (C:\Users\BTCOM\Desktop\ticktokit_cloud_shield\coursepm\server\node_modules\@prisma\client\runtime\client.js:65:7636)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async a (C:\Users\BTCOM\Desktop\ticktokit_cloud_shield\coursepm\server\node_modules\@prisma\client\runtime\client.js:99:6921)
+    at async Proxy._transactionWithCallback (C:\Users\BTCOM\Desktop\ticktokit_cloud_shield\coursepm\server\node_modules\@prisma\client\runtime\client.js:99:4854)
+    at C:/Users/BTCOM/Desktop/ticktokit_cloud_shield/coursepm/server/src/submissions/routes.ts:82:23 {
+  code: 'P2039',
+  meta: {
+    modelName: 'Submission',
+    driverAdapterError: DriverAdapterError: invalid byte sequence for encoding "UTF8": 0x00
+        at PgTransaction.onError (file:///C:/Users/BTCOM/Desktop/ticktokit_cloud_shield/coursepm/server/node_modules/@prisma/adapter-pg/dist/index.mjs:666:11)
+        at PgTransaction.performIO (file:///C:/Users/BTCOM/Desktop/ticktokit_cloud_shield/coursepm/server/node_modules/@prisma/adapter-pg/dist/index.mjs:661:12)
+        at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+        at async PgTransaction.queryRaw (file:///C:/Users/BTCOM/Desktop/ticktokit_cloud_shield/coursepm/server/node_modules/@prisma/adapter-pg/dist/index.mjs:595:30)
+        at async C:\Users\BTCOM\Desktop\ticktokit_cloud_shield\coursepm\server\node_modules\@prisma\client\runtime\client.js:11:70479
+        at async e.interpretNode (C:\Users\BTCOM\Desktop\ticktokit_cloud_shield\coursepm\server\node_modules\@prisma\client\runtime\client.js:11:70920)
+        at async e.interpretNode (C:\Users\BTCOM\Desktop\ticktokit_cloud_shield\coursepm\server\node_modules\@prisma\client\runtime\client.js:11:69631)
+        at async e.interpretNode (C:\Users\BTCOM\Desktop\ticktokit_cloud_shield\coursepm\server\node_modules\@prisma\client\runtime\client.js:11:71857)
+        at async e.run (C:\Users\BTCOM\Desktop\ticktokit_cloud_shield\coursepm\server\node_modules\@prisma\client\runtime\client.js:11:69273)
+        at async e.execute (C:\Users\BTCOM\Desktop\ticktokit_cloud_shield\coursepm\server\node_modules\@prisma\client\runtime\client.js:57:815) {
+      cause: [Object]
+    }
+  },
+  clientVersion: '7.10.1'
+}
+
+stderr | tests/lab-06/text-control-chars.test.ts > TEST-L6-63-02 (AC-04-4, AC-05-5, AC-06-2): the API answers 400 naming the field and stores nothing > POST /api/submissions/:id/feedback with NUL in the body, then a multi-line body is saved
+PrismaClientKnownRequestError: 
+Invalid `prisma.feedback.create()` invocation in
+C:/Users/BTCOM/Desktop/ticktokit_cloud_shield/coursepm/server/src/feedback/routes.ts:28:44
+
+  25 }
+  26 
+  27 try {
+→ 28   const feedback = await prisma.feedback.create(
+Database error. Code: `22021`. Message: `invalid byte sequence for encoding "UTF8": 0x00`
+    at vn.handleRequestError (C:\Users\BTCOM\Desktop\ticktokit_cloud_shield\coursepm\server\node_modules\@prisma\client\runtime\client.js:65:8640)
+    at vn.handleAndLogRequestError (C:\Users\BTCOM\Desktop\ticktokit_cloud_shield\coursepm\server\node_modules\@prisma\client\runtime\client.js:65:7929)
+    at vn.request (C:\Users\BTCOM\Desktop\ticktokit_cloud_shield\coursepm\server\node_modules\@prisma\client\runtime\client.js:65:7636)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async a (C:\Users\BTCOM\Desktop\ticktokit_cloud_shield\coursepm\server\node_modules\@prisma\client\runtime\client.js:99:6921)
+    at C:/Users/BTCOM/Desktop/ticktokit_cloud_shield/coursepm/server/src/feedback/routes.ts:28:22 {
+  code: 'P2039',
+  meta: {
+    modelName: 'Feedback',
+    driverAdapterError: DriverAdapterError: invalid byte sequence for encoding "UTF8": 0x00
+        at PgTransaction.onError (file:///C:/Users/BTCOM/Desktop/ticktokit_cloud_shield/coursepm/server/node_modules/@prisma/adapter-pg/dist/index.mjs:666:11)
+        at PgTransaction.performIO (file:///C:/Users/BTCOM/Desktop/ticktokit_cloud_shield/coursepm/server/node_modules/@prisma/adapter-pg/dist/index.mjs:661:12)
+        at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+        at async PgTransaction.queryRaw (file:///C:/Users/BTCOM/Desktop/ticktokit_cloud_shield/coursepm/server/node_modules/@prisma/adapter-pg/dist/index.mjs:595:30)
+        at async C:\Users\BTCOM\Desktop\ticktokit_cloud_shield\coursepm\server\node_modules\@prisma\client\runtime\client.js:11:70479
+        at async e.interpretNode (C:\Users\BTCOM\Desktop\ticktokit_cloud_shield\coursepm\server\node_modules\@prisma\client\runtime\client.js:11:70920)
+        at async e.interpretNode (C:\Users\BTCOM\Desktop\ticktokit_cloud_shield\coursepm\server\node_modules\@prisma\client\runtime\client.js:11:69631)
+        at async e.interpretNode (C:\Users\BTCOM\Desktop\ticktokit_cloud_shield\coursepm\server\node_modules\@prisma\client\runtime\client.js:11:71857)
+        at async #l (C:\Users\BTCOM\Desktop\ticktokit_cloud_shield\coursepm\server\node_modules\@prisma\client\runtime\client.js:11:76077)
+        at async e.run (C:\Users\BTCOM\Desktop\ticktokit_cloud_shield\coursepm\server\node_modules\@prisma\client\runtime\client.js:11:69273) {
+      cause: [Object]
+    }
+  },
+  clientVersion: '7.10.1'
+}
+
+ ❯ tests/lab-06/text-control-chars.test.ts (15 tests | 14 failed) 1327ms
+     × milestone title with NUL 11ms
+     × milestone title with SOH 2ms
+     × milestone description with NUL 1ms
+     × milestone description with DEL 1ms
+     × submission title with NUL 2ms
+     × submission title with SOH 1ms
+     × submission description with NUL 1ms
+     × submission description with DEL 0ms
+     × feedback body with NUL 1ms
+     × feedback body with SOH 1ms
+     × feedback body with DEL 0ms
+     × POST /api/teams/:id/milestones with NUL in title or description 360ms
+     × POST /api/milestones/:id/submissions with NUL in title, description or link 115ms
+     × POST /api/submissions/:id/feedback with NUL in the body, then a multi-line body is saved 190ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 14 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/lab-06/text-control-chars.test.ts > TEST-L6-63-01 (AC-04-4, AC-05-5, AC-06-2): rule functions reject control characters in text fields > milestone title with NUL
+ FAIL  tests/lab-06/text-control-chars.test.ts > TEST-L6-63-01 (AC-04-4, AC-05-5, AC-06-2): rule functions reject control characters in text fields > milestone title with SOH
+ FAIL  tests/lab-06/text-control-chars.test.ts > TEST-L6-63-01 (AC-04-4, AC-05-5, AC-06-2): rule functions reject control characters in text fields > milestone description with NUL
+ FAIL  tests/lab-06/text-control-chars.test.ts > TEST-L6-63-01 (AC-04-4, AC-05-5, AC-06-2): rule functions reject control characters in text fields > milestone description with DEL
+AssertionError: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ tests/lab-06/text-control-chars.test.ts:31:18
+     29|     const input = { ...milestoneInput(), [field]: `Text ${ch} here` }
+     30|     const r = validateMilestone(input, new Date())
+     31|     expect(r.ok).toBe(false)
+       |                  ^
+     32|     if (!r.ok) expect(Object.keys(r.fields)).toEqual([field])
+     33|   })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/14]⎯
+
+ FAIL  tests/lab-06/text-control-chars.test.ts > TEST-L6-63-01 (AC-04-4, AC-05-5, AC-06-2): rule functions reject control characters in text fields > submission title with NUL
+ FAIL  tests/lab-06/text-control-chars.test.ts > TEST-L6-63-01 (AC-04-4, AC-05-5, AC-06-2): rule functions reject control characters in text fields > submission title with SOH
+ FAIL  tests/lab-06/text-control-chars.test.ts > TEST-L6-63-01 (AC-04-4, AC-05-5, AC-06-2): rule functions reject control characters in text fields > submission description with NUL
+ FAIL  tests/lab-06/text-control-chars.test.ts > TEST-L6-63-01 (AC-04-4, AC-05-5, AC-06-2): rule functions reject control characters in text fields > submission description with DEL
+AssertionError: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ tests/lab-06/text-control-chars.test.ts:39:18
+     37|   ])('submission %s with %s', (field, _name, ch) => {
+     38|     const r = validateSubmission({ ...submissionInput, [field]: `Text …
+     39|     expect(r.ok).toBe(false)
+       |                  ^
+     40|     if (!r.ok) expect(Object.keys(r.fields)).toEqual([field])
+     41|   })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/14]⎯
+
+ FAIL  tests/lab-06/text-control-chars.test.ts > TEST-L6-63-01 (AC-04-4, AC-05-5, AC-06-2): rule functions reject control characters in text fields > feedback body with NUL
+ FAIL  tests/lab-06/text-control-chars.test.ts > TEST-L6-63-01 (AC-04-4, AC-05-5, AC-06-2): rule functions reject control characters in text fields > feedback body with SOH
+ FAIL  tests/lab-06/text-control-chars.test.ts > TEST-L6-63-01 (AC-04-4, AC-05-5, AC-06-2): rule functions reject control characters in text fields > feedback body with DEL
+AssertionError: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ tests/lab-06/text-control-chars.test.ts:45:18
+     43|   it.each([['NUL', NUL], ['SOH', SOH], ['DEL', DEL]])('feedback body w…
+     44|     const r = validateFeedback({ body: `Good work ${ch} overall` })
+     45|     expect(r.ok).toBe(false)
+       |                  ^
+     46|     if (!r.ok) expect(Object.keys(r.fields)).toEqual(['body'])
+     47|   })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/14]⎯
+
+ FAIL  tests/lab-06/text-control-chars.test.ts > TEST-L6-63-02 (AC-04-4, AC-05-5, AC-06-2): the API answers 400 naming the field and stores nothing > POST /api/teams/:id/milestones with NUL in title or description
+AssertionError: expected { field: 'title', status: 500 } to deeply equal { field: 'title', status: 400 }
+
+- Expected
++ Received
+
+  {
+    "field": "title",
+-   "status": 400,
++   "status": 500,
+  }
+
+ ❯ tests/lab-06/text-control-chars.test.ts:80:45
+     78|     for (const field of ['title', 'description']) {
+     79|       const res = await agent.post(`/api/teams/${team.id}/milestones`)…
+     80|       expect({ field, status: res.status }).toEqual({ field, status: 4…
+       |                                             ^
+     81|       expect(res.body.error.code).toBe('VALIDATION_ERROR')
+     82|       expect(res.body.error.fields).toHaveProperty(field)
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/14]⎯
+
+ FAIL  tests/lab-06/text-control-chars.test.ts > TEST-L6-63-02 (AC-04-4, AC-05-5, AC-06-2): the API answers 400 naming the field and stores nothing > POST /api/milestones/:id/submissions with NUL in title, description or link
+AssertionError: expected { field: 'title', status: 500 } to deeply equal { field: 'title', status: 400 }
+
+- Expected
++ Received
+
+  {
+    "field": "title",
+-   "status": 400,
++   "status": 500,
+  }
+
+ ❯ tests/lab-06/text-control-chars.test.ts:95:45
+     93|       const value = field === 'link' ? `https://example.com/a${NUL}b` …
+     94|       const res = await agent.post(`/api/milestones/${m.id}/submission…
+     95|       expect({ field, status: res.status }).toEqual({ field, status: 4…
+       |                                             ^
+     96|       expect(res.body.error.code).toBe('VALIDATION_ERROR')
+     97|       expect(res.body.error.fields).toHaveProperty(field)
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/14]⎯
+
+ FAIL  tests/lab-06/text-control-chars.test.ts > TEST-L6-63-02 (AC-04-4, AC-05-5, AC-06-2): the API answers 400 naming the field and stores nothing > POST /api/submissions/:id/feedback with NUL in the body, then a multi-line body is saved
+AssertionError: expected 500 to be 400 // Object.is equality
+
+- Expected
++ Received
+
+- 400
++ 500
+
+ ❯ tests/lab-06/text-control-chars.test.ts:112:24
+    110|
+    111|     const bad = await agent.post(`/api/submissions/${submissionId}/fee…
+    112|     expect(bad.status).toBe(400)
+       |                        ^
+    113|     expect(bad.body.error.code).toBe('VALIDATION_ERROR')
+    114|     expect(bad.body.error.fields).toHaveProperty('body')
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/14]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  14 failed | 1 passed (15)
+   Start at  20:36:29
+   Duration  7.49s (transform 364ms, setup 0ms, import 902ms, tests 1.33s, environment 0ms)
+
+EXIT=1

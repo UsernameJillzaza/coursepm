@@ -1,0 +1,24 @@
+Issue #63 GREEN run
+Commit under test: 7409b18 (clean tree; fix cc6d51c on top of the RED test 642c3b4, plus the AC label correction)
+Command: cd server && npx vitest run tests/lab-06/text-control-chars.test.ts
+Date: 2026-11-22 13:39 (ICT)
+
+
+ RUN  v4.1.12 C:/Users/BTCOM/Desktop/ticktokit_cloud_shield/coursepm/server
+
+Loaded Prisma config from prisma.config.ts.
+
+Prisma schema loaded from prisma\schema.prisma.
+Datasource "db": PostgreSQL database "coursepm_test", schema "public" at "localhost:5432"
+
+6 migrations found in prisma/migrations
+
+
+No pending migrations to apply.
+
+ Test Files  1 passed (1)
+      Tests  15 passed (15)
+   Start at  20:39:55
+   Duration  7.09s (transform 366ms, setup 0ms, import 959ms, tests 1.24s, environment 0ms)
+
+EXIT=0
