@@ -21,7 +21,9 @@ Version 1.1 · 2026-11-15 (data note updated in #7) · Issue: #2 (contract); imp
 5. The list returns revisions newest first, each with its submitter and its feedback (or `null`).
 
 **Rule functions** — `server/src/rules/submission.ts`: `validateSubmission(input)` (title 3–120,
-description ≤ 2,000, link parsed with `new URL()`, protocol `http:`/`https:`, ≤ 2,048 characters) and
+description ≤ 2,000, link parsed with `new URL()`, protocol `http:`/`https:`, ≤ 2,048 characters; since Lab 6
+(Issue #59) the link must also contain no whitespace or control character, start with `http://` or `https://`
+followed directly by a host, and have no empty host label; the check is syntactic, not DNS or host-character validation) and
 `checkCanSubmit(state)`, which returns `{ ok: true, nextRevision } | { ok: false, code }`. Both are pure functions,
 so they are unit-tested without a database. **TDD: the unit tests for `checkCanSubmit` are committed
 failing first.**

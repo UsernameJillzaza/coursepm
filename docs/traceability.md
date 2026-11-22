@@ -3,7 +3,7 @@
 Version 0.1 · 2026-11-15. Requirement → feature → sprint → acceptance criteria → planned tests.
 AC and TEST IDs for Sprint 1 are defined in [sprints/sprint-1/](sprints/sprint-1/). Later-sprint rows
 have a feature and sprint now; their AC and tests are written when that sprint's contract is prepared.
-The **Result** column is filled from the release-candidate run on `daefdff` (Part F); a row passes when every planned test that carries one of its IDs passed. Commands: `npm --prefix server test`, `npm --prefix client test`, `npx tsc --noEmit` (server), `npm --prefix client run build`, `npx playwright test`. Counts: server 112/112 passed, 0 failed, 0 skipped · client 39/39 passed, 0 failed, 0 skipped · E2E 3/3 passed, 0 failed, 0 skipped · type-check OK · client build OK. Lab 6 regression tests (`TEST-L6-*`) were added after that run; their results come from the Issue #57 run on `257a152` (server 141/141, client 41/41, 0 failed, 0 skipped); for `TEST-L6-60-*`, the Issue #60 run after merging `lab6-staging` into its branch (server 141/141, client 44/44, 0 failed, 0 skipped; `60-regression-after-merge.txt`); and, for `TEST-L6-58-*`, the Issue #58 run after merging `lab6-staging` into its branch (server 149/149, client 44/44, 0 failed, 0 skipped; `58-regression-after-merge.txt`); logs in `artifacts/lab-06/tdd/`.
+The **Result** column is filled from the release-candidate run on `daefdff` (Part F); a row passes when every planned test that carries one of its IDs passed. Commands: `npm --prefix server test`, `npm --prefix client test`, `npx tsc --noEmit` (server), `npm --prefix client run build`, `npx playwright test`. Counts: server 112/112 passed, 0 failed, 0 skipped · client 39/39 passed, 0 failed, 0 skipped · E2E 3/3 passed, 0 failed, 0 skipped · type-check OK · client build OK. Lab 6 regression tests (`TEST-L6-*`) were added after that run; their results come from the Issue #57 run on `257a152` (server 141/141, client 41/41, 0 failed, 0 skipped); for `TEST-L6-60-*`, the Issue #60 run after merging `lab6-staging` into its branch (server 141/141, client 44/44, 0 failed, 0 skipped; `60-regression-after-merge.txt`); for `TEST-L6-58-*`, the Issue #58 run after merging `lab6-staging` into its branch (server 149/149, client 44/44, 0 failed, 0 skipped; `58-regression-after-merge.txt`); and, for `TEST-L6-59-*`, the Issue #59 run on `684c806` (server 170/170, client 44/44, 0 failed, 0 skipped; `59-regression.txt`); logs in `artifacts/lab-06/tdd/`.
 
 | Requirement | Feature / responsibility | Sprint | AC | Planned tests | Result |
 | --- | --- | --- | --- | --- | --- |
@@ -28,7 +28,7 @@ The **Result** column is filled from the release-candidate run on `daefdff` (Par
 | FR-08 | F-05 | 1 | AC-05-7 | TEST-05-09, E2E-02 | Pass (2/2 tests) |
 | BR-06 | F-05 | 1 | AC-05-3 | TEST-05-03, TEST-05-04 | Pass (2/2 tests) |
 | BR-07 | F-05 | 1 | AC-05-4 | TEST-05-05, TEST-05-06 | Pass (2/2 tests) |
-| BR-08 | F-05 | 1 | AC-05-5 | TEST-05-07 | Pass (1/1 tests) |
+| BR-08 | F-05 | 1 | AC-05-5 | TEST-05-07, TEST-L6-59-01, TEST-L6-59-02 | Pass (3/3 tests) |
 | NFR-05 | F-05 | 1 | AC-05-6, AC-05-9 | TEST-05-08, TEST-05-10 | Pass (2/2 tests) |
 | FR-09 | F-06 | 1 | AC-06-1 | TEST-06-01, E2E-02 | Pass (2/2 tests) |
 | FR-10 | F-06 | 1 | AC-06-4 | TEST-06-04, E2E-02 | Pass (2/2 tests) |
