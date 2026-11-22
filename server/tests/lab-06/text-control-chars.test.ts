@@ -9,7 +9,7 @@ import { cleanupUsers, createUser, loginAgent, type TestUser } from '../helpers/
 // fixing #58, same root cause as DEF-CP-02). PostgreSQL rejects a NUL byte in
 // a text parameter, so a NUL in a milestone, submission or feedback field
 // returned 500. It must be an ordinary field error: 400 VALIDATION_ERROR
-// naming the field (AC-04-4, AC-05-5, AC-06-2), with nothing stored.
+// naming the field (AC-04-4, AC-05-5, AC-06-5), with nothing stored.
 // Single-line fields reject every control character; multi-line fields keep
 // tab, line feed and carriage return.
 
@@ -22,7 +22,7 @@ const future = () => new Date(Date.now() + 7 * 24 * 3600_000).toISOString()
 const milestoneInput = () => ({ title: 'Design review', description: 'Bring the diagrams', deadline: future(), maxRevisions: 3 })
 const submissionInput = { title: 'Proposal v1', description: 'First draft', link: 'https://example.com/proposal' }
 
-describe('TEST-L6-63-01 (AC-04-4, AC-05-5, AC-06-2): rule functions reject control characters in text fields', () => {
+describe('TEST-L6-63-01 (AC-04-4, AC-05-5, AC-06-5): rule functions reject control characters in text fields', () => {
   it.each([
     ['title', 'NUL', NUL], ['title', 'SOH', SOH], ['description', 'NUL', NUL], ['description', 'DEL', DEL],
   ])('milestone %s with %s', (field, _name, ch) => {
@@ -72,7 +72,7 @@ afterAll(async () => {
   await prisma.$disconnect()
 })
 
-describe('TEST-L6-63-02 (AC-04-4, AC-05-5, AC-06-2): the API answers 400 naming the field and stores nothing', () => {
+describe('TEST-L6-63-02 (AC-04-4, AC-05-5, AC-06-5): the API answers 400 naming the field and stores nothing', () => {
   it('POST /api/teams/:id/milestones with NUL in title or description', async () => {
     const agent = await loginAgent(supervisor)
     for (const field of ['title', 'description']) {
