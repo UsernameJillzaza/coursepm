@@ -59,6 +59,10 @@ beforeAll(async () => {
   team = await createTeam('Team Lab6 links', { members: [student], supervisors: [supervisor] })
 })
 afterAll(async () => {
+  // Foreign keys are RESTRICT, so remove the test's rows child-first (as in
+  // tests/sprint-1/submissions.api.test.ts).
+  await prisma.submission.deleteMany({ where: { teamId: team.id } })
+  await prisma.milestone.deleteMany({ where: { teamId: team.id } })
   await cleanupTeams()
   await cleanupUsers()
   await prisma.$disconnect()
