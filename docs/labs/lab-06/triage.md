@@ -26,6 +26,10 @@ needs a hand-crafted API call (no form can produce the character) and leaves the
 
 ## Received findings (from GG EZ)
 
+All four were reported by GG EZ (Phongsatorn Phutthason, Rapeepitcha Warasinkulpat) against `8c17581` /
+`coursepm-00007-vkl` in run `UAT-20261121-GGEZ`; each Issue holds their reproduction steps, expected and
+actual results and evidence IDs.
+
 | Finding | Issue | Case | Contract reference | Classification | Severity and reason | Owner | Fix | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | DEF-CP-01 | #57 | CP-UAT-EX3 | AC-02-2, AC-02-3, AC-03-5, NFR-02 | Accepted defect | **Major**: an edited URL (`/teams/2147483648`) gives 500 on all seven ID routes and replaces the not-found page; `0x1`, `1e0`, `+1` resolve to team 1 | Achirawit | PR #61 | Released in `v0.2.1`; GG EZ retest **PASS** (`UAT-20261125-GGEZ-R2`); Issue closed |
@@ -69,15 +73,17 @@ severities we proposed follow the same rule as above.
 
 | Finding | Reported by | Their Issue | Our proposed severity | Their classification and disposition | Our retest on `91db0b1` / `sprintduo-00006-wp7` |
 | --- | --- | --- | --- | --- | --- |
-| DEF-SD-01: IDs ≥ 2147483648 → 500 on 5 ID routes; `1e0`, `+1` resolve | Achirawit, Jakkarin | #29 | Major | Accepted defect, Major; fixed in their PR #34 | **PASS** (404 on every route) |
-| DEF-SD-02: success / error banners survive Log Out and Sign In | Achirawit, Jakkarin | #32 | Minor | Accepted defect, Minor; fixed in PR #34 | **PASS** |
+| DEF-SD-01: IDs ≥ 2147483648 → 500 on 5 ID routes; `1e0`, `+1` resolve | Achirawit (found in the first run; their Issue lists both of us, from our v2 package) | #29 | Major | Accepted defect, Major; fixed in their PR #34 | **PASS** (404 on every route) |
+| DEF-SD-02: success / error banners survive Log Out and Sign In | Achirawit (found in the first run; their Issue lists both of us, from our v2 package) | #32 | Minor | Accepted defect, Minor; fixed in PR #34 | **PASS** |
 | DEF-SD-03: Submit Work form offered on a PAST DUE milestone | Achirawit | #33 | Minor | Accepted minor defect; deferred to Sprint 2 as a documented known limitation (server still returns 400 `DEADLINE_PASSED`) | Not fixed; **accepted by us as a minor limitation** |
 | DEF-SD-04: 80,000-character bodies → 500 instead of 413 | Jakkarin | #30 | Major | Accepted defect, Major; fixed in PR #34 | **PASS** (413; malformed JSON 400) |
 | DEF-SD-05: unsent form drafts survive Log Out across users and teams | Jakkarin | #31 | Major | Accepted defect, Major; fixed in PR #34 | **PASS** |
 | ENH-SD-01 … 04 (e.g. ENH-SD-01: `http:///path` accepted, which meets their "starts with http://" rule) | Achirawit, Jakkarin | – | Enhancement | Enhancement, outside the Sprint 1 contract; Sprint 2 backlog | Not required for acceptance |
 
 **Our final decision for SprintDUO:** **Accepted with explicitly documented minor limitations** (DEF-SD-03),
-for `main` `91db0b1` / Cloud Run `sprintduo-00006-wp7`, agreed by both TH-042_P6 students after the retest
+for `main` `91db0b1` / Cloud Run `sprintduo-00006-wp7`, agreed by both TH-042_P6 students (recorded as "Decision
+agreed by both" in the final package `Lab6_Retest_And_Decision_SprintDUO_Package_final.zip`, 2026-11-25 19:14 ICT)
+after the retest
 on 2026-11-25 (Achirawit 18:12–18:26 ICT, full retest and regression; Jakkarin 18:58–19:08 ICT, UI re-check
 of DEF-SD-04, 05 and 02).
 
