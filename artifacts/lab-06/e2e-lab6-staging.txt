@@ -1,0 +1,23 @@
+Lab 6 E2E run on lab6-staging (#57, #58, #59, #60, #63 merged)
+Commit under test: 1ab4ea2 (clean tree, detached at origin/lab6-staging)
+Command: npx playwright test (Microsoft Edge, 1 worker; dev servers started by Playwright)
+Database: local coursepm_e2e_lab6 (migrated + seeded), not the shared development DB
+Date: 2026-11-22 14:44 (ICT)
+
+[WebServer] (node:13184) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:38148) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:16012) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 3 tests using 1 worker
+
+(node:9276) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 1 e2e\sprint-1\e2e-01-login-teams.spec.ts:8:1 › E2E-01: wrong password, login, own team only, reload keeps the session, logout (2.7s)
+  ok 2 e2e\sprint-1\e2e-02-03-journey.spec.ts:12:1 › E2E-02: milestone → submission (rejected link, revision 1, revision 2, limit) → feedback → persisted result (4.0s)
+  ok 3 e2e\sprint-1\e2e-02-03-journey.spec.ts:90:1 › E2E-03: no New milestone control for a student; another team's page by URL shows "Team not found" (1.4s)
+
+  3 passed (12.7s)
+EXIT=0
