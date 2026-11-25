@@ -2,7 +2,7 @@ Issue #59 (DEF-CP-03) RED run with the fixed test fixture
 Rule code: f1be16d (server/src/rules/submission.ts identical to 8c17581, the release GG EZ tested)
 Test file: server/tests/lab-06/link-validation.test.ts from 684c806 (child-first afterAll cleanup; no assertion changed from f1be16d)
 Command: cd server && npx vitest run tests/lab-06/link-validation.test.ts
-Date: 2026-11-22 13:18 (ICT)
+Date: 2026-11-22 20:18 (ICT) [corrected 2026-11-25: originally written as 2026-11-22 13:18, which was UTC mislabelled as ICT]
 
 
  RUN  v4.1.12 D:/Claude Projects/coursepm-lab6/server

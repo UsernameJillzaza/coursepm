@@ -1,6 +1,6 @@
 Issue #63 regression run
 Commit under test: 7409b18 (clean tree)
-Date: 2026-11-22 13:39 (ICT)
+Date: 2026-11-22 20:39 (ICT) [corrected 2026-11-25: originally written as 2026-11-22 13:39, which was UTC mislabelled as ICT]
 E2E: not run (Playwright/Edge suite is run on lab6-staging before the release PR)
 
 $ npm --prefix server test

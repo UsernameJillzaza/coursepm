@@ -2,7 +2,7 @@ Lab 6 E2E run on lab6-staging (#57, #58, #59, #60, #63 merged)
 Commit under test: 1ab4ea2 (clean tree, detached at origin/lab6-staging)
 Command: npx playwright test (Microsoft Edge, 1 worker; dev servers started by Playwright)
 Database: local coursepm_e2e_lab6 (migrated + seeded), not the shared development DB
-Date: 2026-11-22 14:44 (ICT)
+Date: 2026-11-22 21:44 (ICT) [corrected 2026-11-25: originally written as 2026-11-22 14:44, which was UTC mislabelled as ICT]
 
 [WebServer] (node:13184) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 [WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
