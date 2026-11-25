@@ -79,6 +79,8 @@ describe('F-04 milestone UI', () => {
     let sent: Record<string, unknown> | undefined
     fakeApi({
       'GET /api/auth/me': ok({ user: supervisor }),
+      // The page loads the team before showing the form (Issue #60).
+      'GET /api/teams/1': ok({ team }),
       'POST /api/teams/1/milestones': (init) => {
         sent = JSON.parse(String(init?.body))
         return { status: 400, body: { error: {

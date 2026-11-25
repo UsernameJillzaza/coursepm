@@ -1,0 +1,23 @@
+Issue #57 (DEF-CP-01) GREEN run
+Commit under test: 257a152 (clean tree; fix commit ad5f00f + docs-only commit)
+Command: cd server && npx vitest run tests/lab-06/id-bounds.test.ts
+Date: 2026-11-21 (ICT)
+
+
+ RUN  v4.1.12 D:/Claude Projects/coursepm-lab6/server
+
+Loaded Prisma config from prisma.config.ts.
+
+Prisma schema loaded from prisma\schema.prisma.
+Datasource "db": PostgreSQL database "coursepm_test_lab6", schema "public" at "localhost:5432"
+
+6 migrations found in prisma/migrations
+
+
+No pending migrations to apply.
+
+ Test Files  1 passed (1)
+      Tests  22 passed (22)
+   Start at  22:44:45
+   Duration  3.76s (transform 158ms, setup 0ms, import 427ms, tests 712ms, environment 0ms)
+

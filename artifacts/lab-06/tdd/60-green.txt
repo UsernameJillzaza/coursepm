@@ -1,0 +1,18 @@
+Issue #60 (DEF-CP-04) GREEN run
+Commit under test: a72f779 (clean tree)
+Command: npm --prefix client test -- tests/lab-06/new-milestone-scope.test.tsx
+Date: 2026-11-22 (ICT)
+
+
+> coursepm-client@0.1.0 test
+> vitest run tests/lab-06/new-milestone-scope.test.tsx
+
+
+ RUN  v4.1.12 D:/Claude Projects/coursepm-lab6/client
+
+
+ Test Files  1 passed (1)
+      Tests  2 passed (2)
+   Start at  01:09:35
+   Duration  1.51s (transform 116ms, setup 199ms, import 142ms, tests 110ms, environment 905ms)
+

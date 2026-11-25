@@ -6,7 +6,8 @@ Version 1.0 · 2026-11-15 · Issue: #2 (contract); implementation: #8 · Links: 
 1. An assigned Supervisor opens a milestone and, under a revision without feedback, writes feedback and
    clicks **Save feedback**.
 2. The server: load the submission in scope (404) → role must be `SUPERVISOR` (403) → body trimmed 1–4,000
-   characters (400) → insert `Feedback { submissionId, supervisorId, body }`. If the revision already has
+   characters with no control character other than tab, line feed or carriage return (400; the control-character
+   check is Lab 6, Issue #63) → insert `Feedback { submissionId, supervisorId, body }`. If the revision already has
    feedback (unique constraint) → 409 `FEEDBACK_EXISTS`.
 3. Feedback is returned inside each submission of the F-05 list, so it always appears next to **the
    revision it refers to** (the submission/feedback association is preserved). A later resubmission

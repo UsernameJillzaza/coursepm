@@ -1,0 +1,23 @@
+Issue #59 (DEF-CP-03) GREEN run
+Commit under test: 684c806 (fix b5eaf54 + test cleanup fix; clean tree apart from untracked logs)
+Command: cd server && npx vitest run tests/lab-06/link-validation.test.ts
+Date: 2026-11-22 13:07 (ICT) [corrected 2026-11-25: originally written as 2026-11-22 06:07, which was UTC mislabelled as ICT]
+
+
+ RUN  v4.1.12 D:/Claude Projects/coursepm-lab6/server
+
+Loaded Prisma config from prisma.config.ts.
+
+Prisma schema loaded from prisma\schema.prisma.
+Datasource "db": PostgreSQL database "coursepm_test_lab6", schema "public" at "localhost:5432"
+
+6 migrations found in prisma/migrations
+
+
+No pending migrations to apply.
+
+ Test Files  1 passed (1)
+      Tests  21 passed (21)
+   Start at  13:07:58
+   Duration  2.89s (transform 111ms, setup 0ms, import 311ms, tests 305ms, environment 0ms)
+

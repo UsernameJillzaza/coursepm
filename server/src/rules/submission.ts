@@ -1,4 +1,5 @@
 import type { FieldErrors } from '../http'
+import { hasMultiLineControl, hasSingleLineControl } from './text'
 
 // F-05 business rules as pure functions, so they are unit-tested without a
 // database (TEST-05-03, TEST-05-05, TEST-05-07). The route calls them with
@@ -32,10 +33,13 @@ export function validateSubmission(
 
   const title = typeof input.title === 'string' ? input.title.trim() : ''
   if (title.length < TITLE_MIN || title.length > TITLE_MAX) fields.title = `Title must be ${TITLE_MIN}–${TITLE_MAX} characters.`
+  else if (hasSingleLineControl(title)) fields.title = 'Title must not contain control characters.'
 
   const rawDescription = input.description === undefined ? '' : input.description
   if (typeof rawDescription !== 'string' || rawDescription.length > DESCRIPTION_MAX) {
     fields.description = `Description must be at most ${DESCRIPTION_MAX.toLocaleString('en')} characters.`
+  } else if (hasMultiLineControl(rawDescription)) {
+    fields.description = 'Description must not contain control characters.'
   }
 
   const link = typeof input.link === 'string' ? input.link.trim() : ''
@@ -47,10 +51,22 @@ export function validateSubmission(
   return { ok: true, value: { title, description: (rawDescription as string).trim(), link } }
 }
 
+// URL() alone is too forgiving (Issue #59, DEF-CP-03): it turns "http:///path"
+// into "http://path/", accepts "http://." and silently drops tabs and
+// newlines. So the text itself must have no whitespace or control character,
+// must start with "http://" or "https://" followed directly by a host, and the
+// parsed host must have no empty labels (one trailing dot, as in
+// "example.com.", is allowed).
+const WHITESPACE_OR_CONTROL = /[\s\u0000-\u001f\u007f]/
+const SCHEME_THEN_HOST = /^https?:\/\/[^/?#]/i
+
 function isHttpUrl(value: string): boolean {
+  if (WHITESPACE_OR_CONTROL.test(value) || !SCHEME_THEN_HOST.test(value)) return false
   try {
     const url = new URL(value)
-    return url.protocol === 'http:' || url.protocol === 'https:'
+    if (url.protocol !== 'http:' && url.protocol !== 'https:') return false
+    const labels = url.hostname.replace(/\.$/, '').split('.')
+    return labels.every((label) => label.length > 0)
   } catch {
     return false
   }

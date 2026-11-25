@@ -1,0 +1,89 @@
+Issue #59 (DEF-CP-03) RED run with the fixed test fixture
+Rule code: f1be16d (server/src/rules/submission.ts identical to 8c17581, the release GG EZ tested)
+Test file: server/tests/lab-06/link-validation.test.ts from 684c806 (child-first afterAll cleanup; no assertion changed from f1be16d)
+Command: cd server && npx vitest run tests/lab-06/link-validation.test.ts
+Date: 2026-11-22 20:18 (ICT) [corrected 2026-11-25: originally written as 2026-11-22 13:18, which was UTC mislabelled as ICT]
+
+
+ RUN  v4.1.12 D:/Claude Projects/coursepm-lab6/server
+
+Loaded Prisma config from prisma.config.ts.
+
+Prisma schema loaded from prisma\schema.prisma.
+Datasource "db": PostgreSQL database "coursepm_test_lab6", schema "public" at "localhost:5432"
+
+6 migrations found in prisma/migrations
+
+
+No pending migrations to apply.
+ ❯ tests/lab-06/link-validation.test.ts (21 tests | 11 failed) 766ms
+     × rejects "http:///path" with a link field error 7ms
+     × rejects "http://." with a link field error 1ms
+     × rejects "http://..." with a link field error 1ms
+     × rejects "https://example.com/a b" with a link field error 0ms
+     × rejects "https://example.com\nnewline" with a link field error 1ms
+     × rejects "https://example.com/\ttab" with a link field error 1ms
+     × rejects "https:/example.com/one-slash" with a link field error 0ms
+     × rejects "https:example.com" with a link field error 0ms
+     × rejects "http://.example.com/x" with a link field error 0ms
+     × rejects "http://example..com/x" with a link field error 0ms
+     × rejects every partner input on an open milestone, then accepts a normal link 242ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 11 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/lab-06/link-validation.test.ts > TEST-L6-59-01 (BR-08, AC-05-5): validateSubmission rejects links without a real host or with whitespace > rejects "http:///path" with a link field error
+ FAIL  tests/lab-06/link-validation.test.ts > TEST-L6-59-01 (BR-08, AC-05-5): validateSubmission rejects links without a real host or with whitespace > rejects "http://." with a link field error
+ FAIL  tests/lab-06/link-validation.test.ts > TEST-L6-59-01 (BR-08, AC-05-5): validateSubmission rejects links without a real host or with whitespace > rejects "http://..." with a link field error
+ FAIL  tests/lab-06/link-validation.test.ts > TEST-L6-59-01 (BR-08, AC-05-5): validateSubmission rejects links without a real host or with whitespace > rejects "https://example.com/a b" with a link field error
+ FAIL  tests/lab-06/link-validation.test.ts > TEST-L6-59-01 (BR-08, AC-05-5): validateSubmission rejects links without a real host or with whitespace > rejects "https://example.com\nnewline" with a link field error
+ FAIL  tests/lab-06/link-validation.test.ts > TEST-L6-59-01 (BR-08, AC-05-5): validateSubmission rejects links without a real host or with whitespace > rejects "https://example.com/\ttab" with a link field error
+ FAIL  tests/lab-06/link-validation.test.ts > TEST-L6-59-01 (BR-08, AC-05-5): validateSubmission rejects links without a real host or with whitespace > rejects "https:/example.com/one-slash" with a link field error
+ FAIL  tests/lab-06/link-validation.test.ts > TEST-L6-59-01 (BR-08, AC-05-5): validateSubmission rejects links without a real host or with whitespace > rejects "https:example.com" with a link field error
+ FAIL  tests/lab-06/link-validation.test.ts > TEST-L6-59-01 (BR-08, AC-05-5): validateSubmission rejects links without a real host or with whitespace > rejects "http://.example.com/x" with a link field error
+ FAIL  tests/lab-06/link-validation.test.ts > TEST-L6-59-01 (BR-08, AC-05-5): validateSubmission rejects links without a real host or with whitespace > rejects "http://example..com/x" with a link field error
+AssertionError: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ tests/lab-06/link-validation.test.ts:44:18
+     42|   it.each(BAD_LINKS)('rejects %j with a link field error', (link) => {
+     43|     const r = validateSubmission({ ...valid, link })
+     44|     expect(r.ok).toBe(false)
+       |                  ^
+     45|     if (!r.ok) expect(r.fields.link).toBeDefined()
+     46|   })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/11]⎯
+
+ FAIL  tests/lab-06/link-validation.test.ts > TEST-L6-59-02 (AC-05-5): the submission API answers 400 and stores nothing for these links > rejects every partner input on an open milestone, then accepts a normal link
+AssertionError: expected { link: 'http:///path', status: 201 } to deeply equal { link: 'http:///path', status: 400 }
+
+- Expected
++ Received
+
+  {
+    "link": "http:///path",
+-   "status": 400,
++   "status": 201,
+  }
+
+ ❯ tests/lab-06/link-validation.test.ts:79:44
+     77|     for (const link of ['http:///path', 'http://.', 'http://...', 'htt…
+     78|       const res = await agent.post(`/api/milestones/${m.id}/submission…
+     79|       expect({ link, status: res.status }).toEqual({ link, status: 400…
+       |                                            ^
+     80|       expect(res.body.error.code).toBe('VALIDATION_ERROR')
+     81|       expect(res.body.error.fields).toHaveProperty('link')
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/11]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  11 failed | 10 passed (21)
+   Start at  20:18:42
+   Duration  9.23s (transform 347ms, setup 0ms, import 2.99s, tests 766ms, environment 0ms)
+

@@ -1,0 +1,17 @@
+Lab 6 E2E run on lab6-staging (#57, #58, #59, #60, #63 merged)
+Commit under test: 1ab4ea2 (clean tree, detached at origin/lab6-staging)
+Command: npx playwright test (Microsoft Edge, 1 worker; dev servers started by Playwright)
+Database: local coursepm_e2e_lab6 (migrated + seeded), not the shared development DB; for this run the worktree server/.env DATABASE_URL pointed at it (playwright.config.ts starts the dev server, which reads DATABASE_URL)
+Date: 2026-11-22 21:44 (ICT) [corrected 2026-11-25: originally written as 2026-11-22 14:44, which was UTC mislabelled as ICT]
+Result: 3 passed, 0 failed, 0 skipped (Playwright prints only "3 passed" when nothing failed or was skipped)
+Note: four Node warnings "The NO_COLOR env is ignored due to the FORCE_COLOR env being set" and the "(Use `node --trace-warnings ...`)" hint line after each were removed from the output below (2026-11-25); nothing else was changed
+
+
+Running 3 tests using 1 worker
+
+  ok 1 e2e\sprint-1\e2e-01-login-teams.spec.ts:8:1 › E2E-01: wrong password, login, own team only, reload keeps the session, logout (2.7s)
+  ok 2 e2e\sprint-1\e2e-02-03-journey.spec.ts:12:1 › E2E-02: milestone → submission (rejected link, revision 1, revision 2, limit) → feedback → persisted result (4.0s)
+  ok 3 e2e\sprint-1\e2e-02-03-journey.spec.ts:90:1 › E2E-03: no New milestone control for a student; another team's page by URL shows "Team not found" (1.4s)
+
+  3 passed (12.7s)
+EXIT=0

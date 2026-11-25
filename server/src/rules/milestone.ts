@@ -1,3 +1,5 @@
+import { hasMultiLineControl, hasSingleLineControl } from './text'
+
 export type ValidMilestone = {
   title: string
   description: string
@@ -20,10 +22,13 @@ export function validateMilestone(input: unknown, now: Date): MilestoneValidatio
 
   const title = typeof body.title === 'string' ? body.title.trim() : ''
   if (title.length < 3 || title.length > 120) fields.title = 'Title must be 3–120 characters.'
+  else if (hasSingleLineControl(title)) fields.title = 'Title must not contain control characters.'
 
   const description = body.description === undefined ? '' : body.description
   if (typeof description !== 'string' || description.length > 2000) {
     fields.description = 'Description must be at most 2,000 characters.'
+  } else if (hasMultiLineControl(description)) {
+    fields.description = 'Description must not contain control characters.'
   }
 
   const deadlineText = body.deadline

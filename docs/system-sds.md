@@ -100,7 +100,7 @@ seed creates the complete set above in one repeatable command.
 | `/login` | Login form | public |
 | `/teams` | My teams (cards with member names) | Student, Supervisor |
 | `/teams/:teamId` | Team detail: members, milestone list with status badges; **New milestone** button | Student, Supervisor (button for Supervisor only) |
-| `/teams/:teamId/milestones/new` | Create milestone form | Supervisor |
+| `/teams/:teamId/milestones/new` | Create milestone form, shown after the team loads (**Team not found** for an out-of-scope team) | Supervisor |
 | `/milestones/:milestoneId` | Milestone detail: deadline (Bangkok time) with an Open/Closed badge, revisions used / limit, submit form (Student, while open), revision list with feedback, feedback form (Supervisor) | Student, Supervisor |
 
 **Shared behavior (R-02).** A top bar shows the user's name and role and a **Log out** button. A
@@ -124,7 +124,7 @@ field, and keeps the typed values on error. Every list has a loading spinner, an
 | 400 | `VALIDATION_ERROR` | Field rules failed (BR-05, BR-08, BR-10 length). |
 | 400 | `VALIDATION_ERROR` | Malformed JSON body. |
 | 401 | `UNAUTHENTICATED` | No session, an expired session, a deleted session, or the session of a deactivated account. |
-| 401 | `INVALID_CREDENTIALS` | Login with a wrong password, an unknown e-mail or an inactive account (one generic message). |
+| 401 | `INVALID_CREDENTIALS` | Login with a wrong password, an unknown e-mail, an inactive account, or a control character in the e-mail or password (one generic message). |
 | 403 | `FORBIDDEN` | The record is in scope but the role may not perform the operation (a student creating a milestone or recording feedback). |
 | 404 | `NOT_FOUND` | The record does not exist **or** is outside the user's scope (D-03); also any unknown `/api/*` path. |
 | 409 | `DEADLINE_PASSED`, `REVISION_LIMIT_REACHED`, `FEEDBACK_EXISTS` | A business rule rejects the state change (BR-06, BR-07, BR-10). |
@@ -134,7 +134,11 @@ field, and keeps the typed values on error. Every list has a loading spinner, an
 | 503 | `NOT_READY` | Database unreachable; returned by the public readiness probe only, without connection details. |
 
 Validation happens on the server for every input; client checks are only hints. Unknown body fields
-are ignored. IDs in paths are positive integers; anything else returns 404.
+are ignored. IDs in paths are canonical decimal integers from 1 to 2147483647 (the PostgreSQL INT4
+maximum); anything else, including `0x1`, `1e0`, `+1`, `01` and larger values, returns 404 `NOT_FOUND`
+(Lab 6, Issue #57). Text fields reject control characters as a 400 field error before any query: titles reject
+all of them, multi-line descriptions and feedback keep only tab, line feed and carriage return (Lab 6, Issue #63;
+PostgreSQL cannot store a NUL byte in text).
 
 **API endpoints** (Sprint 1 contracts in [sprints/sprint-1/](sprints/sprint-1/); readiness added in Lab 5):
 
@@ -181,7 +185,10 @@ request.
 **Credentials and sessions.**
 - Passwords are hashed with **scrypt** (`node:crypto`, N=16384, r=8, p=1, 16-byte random salt, 64-byte
   key), stored as `scrypt$N$r$p$salt$key`, and compared in constant time. Login against an unknown
-  e-mail still runs a dummy hash, so response time doesn't reveal which accounts exist.
+  e-mail still runs a dummy hash, so response time doesn't reveal which accounts exist. An e-mail or
+  password containing a control character (U+0000–U+001F, U+007F) is never looked up: PostgreSQL rejects
+  a NUL byte in a text query, and scrypt's HMAC zero-pads the key, so `pw` and `pw` + NUL would derive the
+  same hash. Such a login verifies against the dummy hash and gets the generic 401 (Lab 6, Issue #58).
 - On login, the server makes a 32-byte random token, stores only its SHA-256 hash in `Session` with
   `expiresAt = now + 8 h`, and sets the cookie `cpm_session` (`HttpOnly`, `SameSite=Lax`, `Path=/`,
   `Secure` when `NODE_ENV=production`).

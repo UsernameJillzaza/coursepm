@@ -1,3 +1,5 @@
+import { hasMultiLineControl } from './text'
+
 export type FeedbackValidation =
   | { ok: true; value: { body: string } }
   | { ok: false; fields: Record<string, string> }
@@ -9,6 +11,9 @@ export function validateFeedback(input: unknown): FeedbackValidation {
   const body = typeof raw === 'string' ? raw.trim() : ''
   if (body.length < 1 || body.length > 4000) {
     return { ok: false, fields: { body: 'Feedback must be 1–4,000 characters.' } }
+  }
+  if (hasMultiLineControl(body)) {
+    return { ok: false, fields: { body: 'Feedback must not contain control characters.' } }
   }
   return { ok: true, value: { body } }
 }

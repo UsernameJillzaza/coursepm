@@ -14,11 +14,14 @@ Version 1.0 · 2026-11-15 · Issue: #2 (contract); implementation: #6 · Links: 
 **Validation (BR-05)** — `server/src/rules/milestone.ts`, `validateMilestone(input, now)`:
 title trimmed 3–120 characters; description ≤ 2,000 characters; deadline a valid date **after** `now`;
 maxRevisions an integer 1–5. All failing fields are returned together in `fields`.
+Since Lab 6 (Issue #63) a title with a control character, or a description with one other than tab, line feed or carriage return, is also a field error (`server/src/rules/text.ts`), so a NUL byte gets 400 instead of a 500 from the database.
 
 ## UI
 The milestone list on `/teams/:teamId` uses badges `Open` / `Closed` and "2 / 3 revisions". The
 **New milestone** button is shown to supervisors only (the backend still enforces it). The form at
-`/teams/:teamId/milestones/new` shows field errors under each input.
+`/teams/:teamId/milestones/new` shows field errors under each input. The page loads the team first and
+names it above the form; for a team the supervisor cannot see it shows **Team not found** and no form,
+and any other load error shows the standard alert with **Retry** (Lab 6, Issue #60).
 
 ## API
 | Method & path | Request | Success | Errors |
