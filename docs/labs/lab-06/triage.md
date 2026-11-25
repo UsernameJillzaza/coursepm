@@ -69,7 +69,9 @@ Regression tests and red/green logs for every fix are listed in
 We tested GG EZ's **SprintDUO** (`main` `3fe4f48`, "Release B") with their cases UAT-01 … 05 (5/5 PASS) and
 exploratory checks, and reported these findings. Their classification and fixes are in their repository
 ([JinggXd/course-project-sprintDUO](https://github.com/JinggXd/course-project-sprintDUO), label `lab6`). The
-severities we proposed follow the same rule as above.
+severities we proposed follow the same rule as above, except DEF-SD-05: we proposed Major because it showed
+another team's unsent form text (their BR-02, "zero cross-team data disclosed"), and it stays below Critical
+because nothing was stored or sent.
 
 | Finding | Reported by | Their Issue | Our proposed severity | Their classification and disposition | Our retest on `91db0b1` / `sprintduo-00006-wp7` |
 | --- | --- | --- | --- | --- | --- |
@@ -78,7 +80,7 @@ severities we proposed follow the same rule as above.
 | DEF-SD-03: Submit Work form offered on a PAST DUE milestone | Achirawit | #33 | Minor | Accepted minor defect; deferred to Sprint 2 as a documented known limitation (server still returns 400 `DEADLINE_PASSED`) | Not fixed; **accepted by us as a minor limitation** |
 | DEF-SD-04: 80,000-character bodies → 500 instead of 413 | Jakkarin | #30 | Major | Accepted defect, Major; fixed in PR #34 | **PASS** (413; malformed JSON 400) |
 | DEF-SD-05: unsent form drafts survive Log Out across users and teams | Jakkarin | #31 | Major | Accepted defect, Major; fixed in PR #34 | **PASS** |
-| ENH-SD-01 … 04 (e.g. ENH-SD-01: `http:///path` accepted, which meets their "starts with http://" rule) | Achirawit, Jakkarin | – | Enhancement | Enhancement, outside the Sprint 1 contract; Sprint 2 backlog | Not required for acceptance |
+| ENH-SD-01 … 04: (01) `http:///path` accepted, which meets their "starts with http://" rule; (02) a milestone can be created with a past due date, and contracts.md only requires a valid ISO-8601 date; (03) the UI joins several field errors into one line, and the feedback form shows no length limit, only "Validation failed"; (04) after another tab switches user, an old tab still shows the first user's name while its actions run as the new session (the server is correct) | Achirawit, Jakkarin | – | Enhancement | Enhancement, outside the Sprint 1 contract; Sprint 2 backlog | Not required for acceptance |
 
 **Our final decision for SprintDUO:** **Accepted with explicitly documented minor limitations** (DEF-SD-03),
 for `main` `91db0b1` / Cloud Run `sprintduo-00006-wp7`, agreed by both TH-042_P6 students (recorded as "Decision
