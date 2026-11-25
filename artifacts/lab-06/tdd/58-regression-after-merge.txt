@@ -1,6 +1,6 @@
 Issue #58 regression run after merging lab6-staging (#62)
 Commit under test: b4956a2 (clean tree; merge of origin/lab6-staging 6518619 into fix/58-login-nul)
-Date: 2026-11-21 18:54 (ICT)
+Date: 2026-11-22 01:54 (ICT) [corrected 2026-11-25: originally written as 2026-11-21 18:54, which was UTC mislabelled as ICT]
 E2E: not run (Playwright/Edge suite is run on lab6-staging before the release PR)
 
 $ npm --prefix server test
