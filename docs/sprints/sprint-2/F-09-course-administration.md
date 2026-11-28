@@ -1,6 +1,6 @@
 # F-09 Course administration — feature contract
 
-Version 1.0 · 2026-11-28 · Issue: #73 (contract); implementation: S2-2 (Issue to be created) ·
+Version 1.1 · 2026-11-28 (AC-09-12 for the Sprint 2/3 routes, PR #76 review; 1.0 same day) · Issue: #73 (contract); implementation: S2-2 (Issue to be created) ·
 Links: FR-14, BR-01, BR-02, BR-03, NFR-01, NFR-02, NFR-03, NFR-04, NFR-10, D-03, D-07 ·
 Depends on: F-01 (sessions, `isActive`), F-02 (`teamScopeWhere`), F-03 (`Team`, `TeamMember`,
 `SupervisorAssignment`)
@@ -61,8 +61,11 @@ returns a filter that matches **no** team (`{ id: { in: [] } }`). Today an admin
 supervisor branch and match nothing only because admins are never assigned; the explicit branch
 makes that a rule instead of a data accident. Effects:
 
-- `GET /api/teams` → 200 `{ items: [] }`; any team, milestone, submission, feedback (and later
-  score) route → 404, exactly like an out-of-scope Supervisor (NFR-02, D-03).
+- `GET /api/teams` → 200 `{ items: [] }`; any team, milestone, submission or feedback route → 404,
+  exactly like an out-of-scope Supervisor (NFR-02, D-03).
+- The same holds for every Sprint 2/3 route that loads a team-owned record through the scope helpers:
+  F-07 compare, F-08 edit / extension / close / history, F-10 board and F-11 score (AC-09-12). Each
+  is checked once that feature has merged.
 - Role checks on those routes (student-only submit, supervisor-only feedback and milestone
   creation) are never reached by an admin, because scope answers first.
 - F-12 already specifies `ADMIN` → 403 on the summary and 404 on an export; this rule keeps that
@@ -185,10 +188,11 @@ role (403 `FORBIDDEN` "Only a course administrator can do this." otherwise).
 | AC-09-9 | The admin calls the Sprint 1 routes: `GET /api/teams` → 200 `{ items: [] }`; `GET /api/teams/:alpha`, `GET /api/teams/:alpha/milestones`, `GET /api/milestones/:id`, `GET /api/milestones/:id/submissions`, `POST /api/teams/:alpha/milestones`, `POST /api/milestones/:id/submissions` and `POST /api/submissions/:id/feedback` → 404 each, with no Alpha title in any body. |
 | AC-09-10 | `GET /api/admin/users?role=STUDENT&active=true` lists exactly the active students in the documented order; `role=TEACHER` or `active=yes` → 400 naming the field. |
 | AC-09-11 | UI: the admin lands on `/admin` after login and sees the Teams and Accounts sections with their loading, empty and error states; the New team form shows field errors under its inputs and keeps the values; 409 shows the alert; the add selects list only eligible accounts; Deactivate asks for confirmation and **Cancel** sends nothing; no Deactivate button on `ADMIN` or inactive rows. A Student or Supervisor who opens `/admin` sees `NoAccess`, and has no Admin link. |
+| AC-09-12 | Once each feature has merged, the admin calls its routes on an Alpha milestone or team: F-07 `GET …/compare?a=1&b=2`; F-08 `PATCH /api/milestones/:id`, `POST …/extensions`, `POST …/close`, `GET …/history`; F-10 `GET /api/teams/:alpha/board`; F-11 `GET`, `PUT …/score` and `POST …/score/release` → 404 each, no Alpha title in any body, nothing stored. |
 
 ## Software test specification (planned)
 
-TEST-09-01 … TEST-09-13 and TEST-UI-09 in the Sprint 2 [sts.md](sts.md), with levels, inputs and
+TEST-09-01 … TEST-09-14 and TEST-UI-09 in the Sprint 2 [sts.md](sts.md), with levels, inputs and
 expected results. Each RED test is committed before its implementation. Logs go in
 `artifacts/sprint-2/tdd/F-09-*.txt`.
 
