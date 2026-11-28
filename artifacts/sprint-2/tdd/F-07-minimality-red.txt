@@ -1,0 +1,15 @@
+PR #83 review item 1 (Issue #79): diffWords minimality, RED run
+Code under test: 27a7d41 (the LCS counts a whitespace token the same as a word) + the new test cases (committed next as test:)
+Command: cd server && npx vitest run tests/sprint-2/revision-diff.unit.test.ts
+Date: 2026-11-28 22:06 (ICT)
+Expected: assertion failures. The independent word-LCS check finds a real defect: when matching a run of spaces is as long as matching a word, the diff keeps the spaces and shows the unchanged word as removed and added ("one two  three" -> "one  two three" keeps 2 of 3 words; pseudo-random seed 6 keeps 5 of 6).
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+ FAIL  tests/sprint-2/revision-diff.unit.test.ts > TEST-07-01 (AC-07-3): diffWords keeps a longest common subsequence of words (PR #83 review) > spacing only: the same parts hold as many words as the word LCS
+AssertionError: expected 2 to be 3 // Object.is equality
+ FAIL  tests/sprint-2/revision-diff.unit.test.ts > TEST-07-01 (AC-07-3): diffWords keeps a longest common subsequence of words (PR #83 review) > 60 pseudo-random pairs: same words = word LCS, and both texts rebuild exactly
+AssertionError: expected { seed: 6, same: 5 } to deeply equal { seed: 6, same: 6 }
+ FAIL  tests/sprint-2/revision-diff.unit.test.ts > TEST-07-01 (AC-07-3): diffWords keeps a longest common subsequence of words (PR #83 review) > exact parts: an unchanged word is never shown as removed and added just because the spaces around it changed
+AssertionError: expected [ { op: 'same', text: 'one' }, …(4) ] to deeply equal [ { op: 'same', text: 'one' }, …(6) ]
+ Test Files  1 failed (1)
+      Tests  3 failed | 31 passed (34)

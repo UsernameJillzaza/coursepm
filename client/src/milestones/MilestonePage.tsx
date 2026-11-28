@@ -79,7 +79,11 @@ export default function MilestonePage() {
 
       {user?.role === 'STUDENT' && <SubmitForm milestone={m} onSubmitted={refresh} />}
 
-      <h2 className="h6 mt-4">Submissions</h2>
+      <div className="d-flex align-items-center gap-3 mt-4 mb-2">
+        <h2 className="h6 mb-0">Submissions</h2>
+        {/* F-07: every role that sees the page may compare revisions. */}
+        <Link to={`/milestones/${m.id}/revisions`} className="small">Compare revisions</Link>
+      </div>
       {subs.loading && <Loading />}
       {subs.error && <ErrorAlert message={subs.error.message} onRetry={subs.reload} />}
       {!subs.loading && !subs.error && subs.data && <SubmissionList items={subs.data.items} onFeedbackSaved={subs.reload} />}

@@ -1,6 +1,6 @@
 # F-07 Revision history and comparison — feature contract
 
-Version 1.1 · 2026-11-28 (page renamed to `/revisions`, PR #76 review; 1.0 same day) · Issue: #73 (contract); implementation: S2-3 (Issue to be created) ·
+Version 1.2 · 2026-11-28 (UI handling of "Revision not found." and of `?a=` / `?b=` alone, AC-07-8 updated in the PR #83 review, Issue #79; 1.1 page renamed to `/revisions`, PR #76 review; 1.0 same day) · Issue: #73 (contract); implementation: #79 (S2-3) ·
 Links: FR-11, FR-07, FR-08, FR-10, BR-02, BR-03, NFR-02, NFR-10, D-03, D-08 ·
 Depends on: F-05 (revisions), F-06 (feedback per revision)
 
@@ -72,9 +72,12 @@ In `server/src/rules/revisionDiff.ts`:
     from 768 px wide and stacks them (older first) below that, with no horizontal page scroll.
   - Changed fields carry a `Changed` badge; unchanged ones an `Unchanged` badge. Links are clickable
     on both sides (`rel="noopener noreferrer"`, as in F-05).
-  - A 404 from either request shows the same "Milestone not found" page as the milestone route; a
-    400 from a hand-edited URL shows "Choose two different revisions to compare." with the list
-    still usable.
+  - A 404 for the milestone (from the milestone or list request) shows the same "Milestone not
+    found" page as the milestone route. A 400 from a hand-edited URL shows "Choose two different revisions to
+    compare.", and a "Revision not found." 404 (a revision number not in this milestone, also only
+    from a hand-edited URL) shows that message; in both cases the list stays usable. (v1.2: v1.1
+    sent every 404 to the not-found page, which hid a usable list behind a typo in the URL.) `?a=` or
+    `?b=` alone shows "Choose two different revisions to compare." without a request.
 
 ## API
 
@@ -115,7 +118,7 @@ unchanged (BR-07 append-only revisions). No migration.
 | AC-07-5 | Scope: Supervisor 2 and B1 compare on the Alpha milestone → 404 "Milestone not found."; an unknown or malformed milestone ID → 404; without a session → 401. |
 | AC-07-6 | Revision existence: `compare?a=1&b=9` on a milestone with three revisions → 404 "Revision not found."; a revision number that exists only in another Alpha milestone → the same 404. |
 | AC-07-7 | Empty and single cases: the revisions page of a milestone with no revision shows "No revisions yet."; with one revision it shows the list and "Only one revision so far; compare needs two.", and Compare is disabled. |
-| AC-07-8 | UI: the list has loading, empty and error states; Compare is disabled until exactly two are checked and a third checkbox is disabled; checking revision 3 then 1 shows 1 on the left; the URL carries `?a=1&b=3` and a reload shows the same comparison; changed fields show `Changed`, removed words are struck through and added ones highlighted; at 375 px the columns stack and the page has no horizontal scroll. |
+| AC-07-8 | UI: the list has loading, empty and error states; Compare is disabled until exactly two are checked and a third checkbox is disabled; checking revision 3 then 1 shows 1 on the left; the URL carries `?a=1&b=3` and a reload shows the same comparison; changed fields show `Changed`, removed words are struck through and added ones highlighted; at 375 px the columns stack and the page has no horizontal scroll. A hand-edited URL: `a=b` (400) shows "Choose two different revisions to compare."; a revision number not in this milestone (404) shows "Revision not found."; `?a=` or `?b=` alone shows the first message and sends no request; in all three the list stays usable. A milestone 404 shows "Milestone not found". Going Back to the page without `?a=&b=` clears the comparison and the selection. |
 | AC-07-9 | Read-only: after any number of compare requests the revision, feedback and milestone rows are unchanged (counts and `submittedAt` equal before and after). |
 
 ## Software test specification (planned)

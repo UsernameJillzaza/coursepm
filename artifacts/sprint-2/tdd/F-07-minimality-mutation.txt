@@ -1,0 +1,16 @@
+PR #83 review item 1 (Issue #79): mutation check of the minimality tests
+Code under test: c3f11f6 with diffWords temporarily replaced by "all old text removed, all new text added" (equal texts still one same part), which rebuilds both texts and passes every check that existed before the review
+Command: cd server && npx vitest run tests/sprint-2/revision-diff.unit.test.ts
+Date: 2026-11-28 22:07 (ICT)
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 9 ⎯⎯⎯⎯⎯⎯⎯
+ FAIL  tests/sprint-2/revision-diff.unit.test.ts > TEST-07-01 (AC-07-3): diffWords > the documented SRS pair: Draft removed, Final draft and v2 added, of the SRS same
+ FAIL  tests/sprint-2/revision-diff.unit.test.ts > TEST-07-01 (AC-07-3): diffWords keeps a longest common subsequence of words (PR #83 review) > reordered words: the same parts hold as many words as the word LCS
+ FAIL  tests/sprint-2/revision-diff.unit.test.ts > TEST-07-01 (AC-07-3): diffWords keeps a longest common subsequence of words (PR #83 review) > spacing only: the same parts hold as many words as the word LCS
+ FAIL  tests/sprint-2/revision-diff.unit.test.ts > TEST-07-01 (AC-07-3): diffWords keeps a longest common subsequence of words (PR #83 review) > line breaks: the same parts hold as many words as the word LCS
+ FAIL  tests/sprint-2/revision-diff.unit.test.ts > TEST-07-01 (AC-07-3): diffWords keeps a longest common subsequence of words (PR #83 review) > the SRS pair: the same parts hold as many words as the word LCS
+ FAIL  tests/sprint-2/revision-diff.unit.test.ts > TEST-07-01 (AC-07-3): diffWords keeps a longest common subsequence of words (PR #83 review) > Thai text with spaces: the same parts hold as many words as the word LCS
+ FAIL  tests/sprint-2/revision-diff.unit.test.ts > TEST-07-01 (AC-07-3): diffWords keeps a longest common subsequence of words (PR #83 review) > 60 pseudo-random pairs: same words = word LCS, and both texts rebuild exactly
+ FAIL  tests/sprint-2/revision-diff.unit.test.ts > TEST-07-01 (AC-07-3): diffWords keeps a longest common subsequence of words (PR #83 review) > exact parts: an unchanged word is never shown as removed and added just because the spaces around it changed
+ FAIL  tests/sprint-2/revision-diff.unit.test.ts > TEST-07-01 (AC-07-3): diffWords keeps a longest common subsequence of words (PR #83 review) > exact parts: Thai, line breaks and reordered words
+      Tests  9 failed | 25 passed (34)

@@ -135,5 +135,14 @@ No other test is removed, weakened or skipped.
 3. `test:` commit — the revised and new tests, run against the unchanged code → RED (assertion failures,
    `artifacts/lab-07/tdd/red.log`), pushed alone so CI records the failing run.
 4. `feat:` server rule → `feat:` `awaitingFeedback` + UI → `test:` E2E-02 → GREEN logs.
-5. Regression: server, client, type-check, build, E2E; PR B review; merge; release to `main`; deploy;
-   post-deploy checks (changed rule + a preserved scope/role path).
+5. Regression: server, client, type-check, build, E2E; PR B review (Jakkarin); merge into
+   `sprint2-staging`. **Release (decided on #74, 2026-11-28):** CHG-01 ships inside `v0.3.0` through
+   the S2-5 release PR; that deploy and its post-deploy checks (the changed rule + one preserved
+   scope/role path) are the Lab 7 deployment evidence. Fallback: if `v0.3.0` is not ready by
+   Sun 29 Nov 18:00 ICT, `sprint2-staging` up to PR B's merge is released on its own.
+
+**Implementation record (PR B, `maintenance/74-feedback-gate`):** RED `29c75e6` on the unchanged
+code `cf90f2c` (`artifacts/lab-07/tdd/red.txt`: server 6 failed, client 2 failed, E2E-02 failed, all
+assertion failures) → `9a21a3e` server rule + `awaitingFeedback` → `7efaf4e` UI → GREEN and
+regression on `7efaf4e` (`green.txt`, `regression.txt`: server 193/193, client 45/45, E2E 3/3).
+Screenshots: `artifacts/lab-07/screenshots/chg01-*.png`.

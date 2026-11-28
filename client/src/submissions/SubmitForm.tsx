@@ -4,9 +4,10 @@ import { ErrorAlert } from '../components/States'
 import type { Milestone } from '../milestones/types'
 
 // F-05 submit form (FR-06, FR-07). Shown to students only, and only while the
-// milestone is open and below its revision limit (AC-05-8). The server
-// re-checks both rules: a 409 (the state changed while the page was open) is
-// shown as an alert.
+// milestone is open, below its revision limit and (CHG-01, #74) not waiting
+// for feedback on the latest revision (AC-05-8, AC-05-13). Same order as the
+// server. The server re-checks every rule: a 409 (the state changed while the
+// page was open) is shown as an alert.
 export default function SubmitForm({ milestone, onSubmitted }: { milestone: Milestone; onSubmitted: () => void }) {
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
@@ -23,6 +24,9 @@ export default function SubmitForm({ milestone, onSubmitted }: { milestone: Mile
   }
   if (milestone.revisionsUsed >= milestone.maxRevisions) {
     return <p className="alert alert-secondary">{`All ${milestone.maxRevisions} revisions used.`}</p>
+  }
+  if (milestone.awaitingFeedback) {
+    return <p className="alert alert-secondary">{`Waiting for feedback on revision ${milestone.revisionsUsed}.`}</p>
   }
 
   async function onSubmit(e: FormEvent) {

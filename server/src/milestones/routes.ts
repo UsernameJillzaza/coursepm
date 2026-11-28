@@ -7,19 +7,31 @@ import { mergeHistory, validateCloseReason, validateExtension, validateMilestone
 import { lockMilestone } from './lock'
 import type { Milestone } from '../generated/prisma/client'
 
-type Stats = { used: number; latest: Date | null }
+type Stats = { used: number; latest: Date | null; latestHasFeedback: boolean }
 type ExtensionStats = { count: number; originalDeadline: Date | null }
 
 // F-05: how many revisions each milestone has, and when the latest arrived.
+// CHG-01: whether the latest revision has feedback (one query for all IDs).
 async function submissionStats(milestoneIds: number[]): Promise<Map<number, Stats>> {
   if (milestoneIds.length === 0) return new Map()
-  const groups = await prisma.submission.groupBy({
-    by: ['milestoneId'],
-    where: { milestoneId: { in: milestoneIds } },
-    _count: { _all: true },
-    _max: { submittedAt: true },
-  })
-  return new Map(groups.map((g) => [g.milestoneId, { used: g._count._all, latest: g._max.submittedAt }]))
+  const [groups, latestRows] = await Promise.all([
+    prisma.submission.groupBy({
+      by: ['milestoneId'],
+      where: { milestoneId: { in: milestoneIds } },
+      _count: { _all: true },
+      _max: { submittedAt: true },
+    }),
+    prisma.submission.findMany({
+      where: { milestoneId: { in: milestoneIds } },
+      orderBy: [{ milestoneId: 'asc' }, { revision: 'desc' }],
+      distinct: ['milestoneId'],
+      select: { milestoneId: true, feedback: { select: { id: true } } },
+    }),
+  ])
+  const reviewed = new Map(latestRows.map((r) => [r.milestoneId, Boolean(r.feedback)]))
+  return new Map(groups.map((g) => [g.milestoneId, {
+    used: g._count._all, latest: g._max.submittedAt, latestHasFeedback: reviewed.get(g.milestoneId) ?? false,
+  }]))
 }
 
 // F-08: one batched query over the listed milestones (NFR-08, no N+1). Each
@@ -40,7 +52,13 @@ async function extensionStats(milestoneIds: number[]): Promise<Map<number, Exten
 // revisionsUsed / latestSubmittedAt come from the stored revisions (F-05);
 // closedAt / originalDeadline / extended from F-08. status is CLOSED after an
 // early close or once the (inclusive, D-05) deadline has passed.
-function toMilestoneDto(row: Milestone, now: Date, stats: Stats = { used: 0, latest: null }, ext: ExtensionStats = { count: 0, originalDeadline: null }) {
+// awaitingFeedback (CHG-01, F-04 v1.1) is computed here so the client never
+// re-implements BR-07: true when a revision exists and the latest has none.
+function toMilestoneDto(
+  row: Milestone, now: Date,
+  stats: Stats = { used: 0, latest: null, latestHasFeedback: false },
+  ext: ExtensionStats = { count: 0, originalDeadline: null },
+) {
   return {
     id: row.id,
     teamId: row.teamId,
@@ -56,6 +74,7 @@ function toMilestoneDto(row: Milestone, now: Date, stats: Stats = { used: 0, lat
     closedAt: row.closedAt,
     originalDeadline: ext.count > 0 && ext.originalDeadline ? ext.originalDeadline : row.deadline,
     extended: ext.count > 0,
+    awaitingFeedback: stats.used >= 1 && !stats.latestHasFeedback,
   }
 }
 

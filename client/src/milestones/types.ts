@@ -10,6 +10,9 @@ export type Milestone = {
   revisionsUsed: number
   status: 'OPEN' | 'CLOSED'
   latestSubmittedAt: string | null
+  // CHG-01 (#74): true when a revision exists and the latest has no feedback,
+  // computed by the server (F-04 v1.1); the student must wait for feedback.
+  awaitingFeedback: boolean
   // F-08. Optional so the Sprint 1 test fixtures still type-check.
   closedAt?: string | null
   originalDeadline?: string

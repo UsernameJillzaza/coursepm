@@ -10,7 +10,7 @@ const team = { id: 1, name: 'Team Alpha' }
 const milestone = {
   id: 10, teamId: 1, title: 'Proposal', description: '', deadline: '2026-11-22T16:59:00.000Z',
   maxRevisions: 3, createdById: 1, createdAt: '2026-11-15T03:00:00.000Z',
-  status: 'OPEN', revisionsUsed: 2, latestSubmittedAt: '2026-11-16T05:00:00.000Z',
+  status: 'OPEN', revisionsUsed: 2, latestSubmittedAt: '2026-11-16T05:00:00.000Z', awaitingFeedback: true,
 }
 const revision = (number: number, feedback: unknown = null) => ({
   id: 100 + number, revision: number, title: `Proposal v${number}`, description: '',

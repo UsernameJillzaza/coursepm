@@ -7,7 +7,7 @@ import { fail, fakeApi, ok } from '../helpers/fakeApi'
 const supervisor = { id: 1, name: 'Dr. Supervisor One', email: 'supervisor1@coursepm.test', role: 'SUPERVISOR' }
 const student = { id: 2, name: 'Alpha Student 1', email: 'alpha1@coursepm.test', role: 'STUDENT' }
 const team = { id: 1, name: 'Team Alpha', courseCode: 'CPE334-DEMO', members: [{ id: 2, name: student.name }], supervisors: [{ id: 1, name: supervisor.name }] }
-const milestone = { id: 5, teamId: 1, title: 'Proposal', description: '', deadline: '2026-12-01T08:00:00.000Z', maxRevisions: 3, revisionsUsed: 0, status: 'OPEN', latestSubmittedAt: null }
+const milestone = { id: 5, teamId: 1, title: 'Proposal', description: '', deadline: '2026-12-01T08:00:00.000Z', maxRevisions: 3, revisionsUsed: 0, status: 'OPEN', latestSubmittedAt: null, awaitingFeedback: false }
 
 function renderAt(path: string) {
   return render(<MemoryRouter initialEntries={[path]}><App /></MemoryRouter>)
