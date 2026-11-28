@@ -25,8 +25,12 @@ export default function MilestoneList({ teamId }: { teamId: number }) {
             <li className="list-group-item" key={milestone.id}>
               <div className="d-flex justify-content-between gap-2">
                 <strong><Link to={`/milestones/${milestone.id}`}>{milestone.title}</Link></strong>
-                <span className={`badge ${milestone.status === 'OPEN' ? 'text-bg-success' : 'text-bg-secondary'}`}>
-                  {milestone.status === 'OPEN' ? 'Open' : 'Closed'}
+                <span className="d-flex gap-1 align-items-start">
+                  <span className={`badge ${milestone.status === 'OPEN' ? 'text-bg-success' : 'text-bg-secondary'}`}>
+                    {milestone.status === 'OPEN' ? 'Open' : 'Closed'}
+                  </span>
+                  {milestone.closedAt && <span className="badge text-bg-dark">Closed early</span>}
+                  {milestone.extended && <span className="badge text-bg-info">Extended</span>}
                 </span>
               </div>
               <div className="text-body-secondary small">Deadline: {bangkokTime(milestone.deadline)} (Bangkok)</div>

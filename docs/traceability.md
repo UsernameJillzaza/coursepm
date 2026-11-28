@@ -33,16 +33,16 @@ The **Result** column is filled from the release-candidate run on `daefdff` (Par
 | BR-06 | F-05 | 1 | AC-05-3 | TEST-05-03, TEST-05-04 | Pass (2/2 tests) |
 | BR-07 | F-05, F-06 | 1 (changed by CHG-01) | AC-05-4, AC-05-11, AC-05-12 | TEST-05-05, TEST-05-06, TEST-05-11, TEST-05-12, TEST-05-13 | Pass (5/5 tests) on `7efaf4e` |
 | BR-08 | F-05 | 1 | AC-05-5 | TEST-05-07, TEST-L6-59-01, TEST-L6-59-02, TEST-L6-63-01, TEST-L6-63-02 | Pass (5/5 tests) |
-| NFR-05 | F-05 | 1 | AC-05-6 (revised by CHG-01), AC-05-9 | TEST-05-08, TEST-05-10 | Pass (2/2 tests) on `7efaf4e` |
+| NFR-05 | F-05, F-08 | 1 | AC-05-6 (revised by CHG-01), AC-05-9; F-08 AC-08-11 | TEST-05-08, TEST-05-10; TEST-08-13, TEST-08-17 (F-08 races under the milestone row lock) | Pass (4/4 tests) on `0c28fce` (TEST-05-08, TEST-05-10, TEST-08-13, TEST-08-17) |
 | FR-09 | F-06 | 1 | AC-06-1 | TEST-06-01, E2E-02 | Pass (2/2 tests) |
 | FR-10 | F-06 | 1 | AC-06-4 | TEST-06-04, E2E-02 | Pass (2/2 tests) |
 | BR-09 | F-06 | 1 | AC-06-2, AC-06-3 | TEST-06-02, TEST-06-03 | Pass (2/2 tests) |
 | BR-10 | F-06 | 1 | AC-06-5 | TEST-06-05, TEST-06-06, TEST-L6-63-01, TEST-L6-63-02 | Pass (4/4 tests) |
 | NFR-10 | R-02 | 1 | AC-R02-1, AC-01-10, AC-02-10, AC-04-6, AC-05-8 (revised by CHG-01), AC-05-13, AC-05-10, AC-06-6 | TEST-R02-01, TEST-UI-05, TEST-UI-04, TEST-UI-01, TEST-UI-02, TEST-UI-07, TEST-UI-06, TEST-L6-60-03 | Pass (8/8 tests); TEST-UI-02 re-run on `7efaf4e` |
 | FR-11 | F-07 | 2 | AC-07-1 … AC-07-9 | TEST-07-01 … TEST-07-08, TEST-UI-07H | Pass on `e30dc3a` (8/9 tests; TEST-07-08 E2E not run yet) |
-| FR-12 | F-08 | 2 | AC-08-1, AC-08-2, AC-08-3, AC-08-8, AC-08-10, AC-08-11, AC-08-12 | TEST-08-01 … TEST-08-04, TEST-08-10, TEST-08-12, TEST-08-13, TEST-08-14, TEST-08-15, TEST-08-18, TEST-UI-08 | Planned (not run) |
-| FR-13, BR-11 | F-08 (D-06, D-09) | 2 | AC-08-5, AC-08-6, AC-08-7, AC-08-9, AC-08-11 | TEST-08-06 … TEST-08-09, TEST-08-11, TEST-08-15, TEST-08-16, TEST-08-17 | Planned (not run) |
-| FR-14 | F-09 | 2 | AC-09-1 … AC-09-12 | TEST-09-01 … TEST-09-14, TEST-UI-09 | Pass on `c2acd7f` (14/15 tests; TEST-09-14 not run until F-07/F-08/F-10/F-11 merge) |
+| FR-12 | F-08 | 2 | AC-08-1, AC-08-2, AC-08-3, AC-08-8, AC-08-10, AC-08-11, AC-08-12 | TEST-08-01 … TEST-08-04, TEST-08-10, TEST-08-12, TEST-08-13, TEST-08-14, TEST-08-15, TEST-08-18, TEST-UI-08 | Pass on `0c28fce` (integrated head, Issue #77 / PR #85), incl. TEST-08-15 (E2E) |
+| FR-13, BR-11 | F-08 (D-06, D-09) | 2 | AC-08-5, AC-08-6, AC-08-7, AC-08-9, AC-08-11 | TEST-08-06 … TEST-08-09, TEST-08-11, TEST-08-15, TEST-08-16, TEST-08-17, TEST-08-19 | Pass on `0c28fce` (integrated head, Issue #77 / PR #85), incl. TEST-08-15 (E2E) |
+| FR-14 | F-09 | 2 | AC-09-1 … AC-09-12 | TEST-09-01 … TEST-09-14, TEST-UI-09 | Pass on `c2acd7f` (14/15 tests); TEST-09-14 F-07 and F-08 blocks Pass on `0c28fce`, F-10 / F-11 blocks not run yet |
 | BR-01 (`ADMIN`, Sprint 2) | F-09 | 2 | AC-09-1, AC-09-2, AC-09-6, AC-09-9 | TEST-09-01, TEST-09-02, TEST-09-07, TEST-09-08, TEST-09-12 | Pass on `c2acd7f` (5/5 tests) |
 | NFR-04 (deactivation by an admin) | F-09 | 2 | AC-09-7 | TEST-09-09 | Pass on `c2acd7f` (1/1 tests) |
 | FR-15 | F-10 | 2 | AC-10-1 … AC-10-6, AC-10-8, AC-10-9 | TEST-10-01 … TEST-10-06, TEST-10-08, TEST-UI-10 | Planned (not run) |

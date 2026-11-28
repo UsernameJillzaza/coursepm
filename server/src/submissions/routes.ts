@@ -5,6 +5,7 @@ import { requireAuth } from '../auth/middleware'
 import { AppError, parseId, sendError } from '../http'
 import { checkCanSubmit, validateSubmission, type SubmissionInput, type SubmitCheck } from '../rules/submission'
 import { feedbackWithSupervisor, toFeedbackDto } from '../feedback/dto'
+import { lockMilestone } from '../milestones/lock'
 
 // F-05 submission API (FR-06 … FR-08, BR-06 … BR-08, NFR-05).
 // Mounted at /api/milestones/:milestoneId/submissions.
@@ -14,6 +15,7 @@ submissionsRouter.use(requireAuth)
 // The AWAITING_FEEDBACK message names the revision that needs feedback (CHG-01).
 function ruleMessage(check: Exclude<SubmitCheck, { ok: true }>): string {
   switch (check.code) {
+    case 'MILESTONE_CLOSED': return 'This milestone has been closed by the supervisor.'
     case 'DEADLINE_PASSED': return 'The deadline for this milestone has passed.'
     case 'REVISION_LIMIT_REACHED': return 'Your team has used all revisions for this milestone.'
     case 'AWAITING_FEEDBACK': return `Wait for feedback on revision ${check.revision} before submitting again.`
@@ -50,15 +52,18 @@ function isUniqueViolation(err: unknown): boolean {
   return (err as { code?: string })?.code === 'P2002'
 }
 
-// One attempt: read the current state, apply the rules with the SERVER clock,
-// insert revision = nextRevision. If another request stored the same revision
-// first, UNIQUE(milestoneId, revision) makes this insert fail (NFR-05).
-// The latest revision's feedback is read in the same transaction (CHG-01).
-// Feedback is never deleted, so a feedback saved concurrently can only turn a
-// 409 into an accepted retry, never the reverse.
+// One attempt: lock the milestone row first (F-08: the same lock as edit,
+// extension and close, so they cannot interleave with a submission), read the
+// current state, apply the rules with the SERVER clock, insert revision =
+// nextRevision. If another request stored the same revision first,
+// UNIQUE(milestoneId, revision) makes this insert fail (NFR-05); the retry is
+// a new transaction and takes the lock again. The latest revision's feedback
+// is read after the lock, in the same transaction (CHG-01). Feedback is never
+// deleted, so a feedback saved concurrently can only turn a 409 into an
+// accepted retry, never the reverse.
 async function trySubmit(milestoneId: number, teamId: number, userId: number, value: SubmissionInput) {
   return prisma.$transaction(async (tx) => {
-    const m = await tx.milestone.findUniqueOrThrow({ where: { id: milestoneId } })
+    const m = await lockMilestone(tx, milestoneId)
     const revisionsUsed = await tx.submission.count({ where: { milestoneId } })
     const latest = await tx.submission.findFirst({
       where: { milestoneId },
@@ -67,7 +72,8 @@ async function trySubmit(milestoneId: number, teamId: number, userId: number, va
     })
     const now = new Date()
     const check = checkCanSubmit({
-      deadline: m.deadline, maxRevisions: m.maxRevisions, revisionsUsed, latestHasFeedback: Boolean(latest?.feedback), now,
+      deadline: m.deadline, maxRevisions: m.maxRevisions, revisionsUsed,
+      latestHasFeedback: Boolean(latest?.feedback), now, closedAt: m.closedAt,
     })
     if (!check.ok) throw new AppError(409, check.code, ruleMessage(check))
     return tx.submission.create({

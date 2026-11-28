@@ -1,0 +1,116 @@
+# F-08 Lab 6 compatibility check (DoD: additive migration) — 2026-11-28 22:25 ICT
+# Lab 6 code: a342ed5 (tag lab6-v021) in a temporary detached worktree ../coursepm-a342
+# F-08 branch: feature/77-milestone-maintenance at 566fa16
+# Temporary DB: coursepm_l6compat on the same local PostgreSQL as server/.env (credentials not shown).
+# a342 server/.env = copy of the branch's server/.env with the DB name changed and PORT=3100.
+
+## 1. Lab 6 migrations (as they exist at a342ed5) on a new DB
+$ (a342 worktree) cd server; npx prisma migrate deploy
+Loaded Prisma config from prisma.config.ts.
+
+Prisma schema loaded from prisma\schema.prisma.
+Datasource "db": PostgreSQL database "coursepm_l6compat", schema "public" at "localhost:5432"
+
+PostgreSQL database coursepm_l6compat created at localhost:5432
+
+6 migrations found in prisma/migrations
+
+Applying migration `20261114193252_users_sessions`
+Applying migration `20261114193953_teams`
+Applying migration `20261115082511_milestones`
+Applying migration `20261115091309_submissions`
+Applying migration `20261115091328_submission_team_matches_milestone`
+Applying migration `20261115094021_feedback`
+
+The following migration(s) have been applied:
+
+migrations/
+  └─ 20261114193252_users_sessions/
+    └─ migration.sql
+  └─ 20261114193953_teams/
+    └─ migration.sql
+  └─ 20261115082511_milestones/
+    └─ migration.sql
+  └─ 20261115091309_submissions/
+    └─ migration.sql
+  └─ 20261115091328_submission_team_matches_milestone/
+    └─ migration.sql
+  └─ 20261115094021_feedback/
+    └─ migration.sql
+
+All migrations have been successfully applied.
+
+## 2. Lab 6 seed
+$ (a342 worktree) cd server; npx prisma db seed
+Loaded Prisma config from prisma.config.ts.
+
+Running seed command `tsx prisma/seed.ts` ...
+Seeded 8 demo accounts and 3 teams.
+
+The seed command has been executed.
+
+## 3. F-08 branch migrations on the same DB
+$ (branch worktree) cd server; DATABASE_URL=<coursepm_l6compat URL> npx prisma migrate deploy
+Loaded Prisma config from prisma.config.ts.
+
+Prisma schema loaded from prisma\schema.prisma.
+Datasource "db": PostgreSQL database "coursepm_l6compat", schema "public" at "localhost:5432"
+
+8 migrations found in prisma/migrations
+
+Applying migration `20261128124227_milestone_maintenance`
+Applying migration `20261128151322_milestone_change_field_not_null`
+
+The following migration(s) have been applied:
+
+migrations/
+  └─ 20261128124227_milestone_maintenance/
+    └─ migration.sql
+  └─ 20261128151322_milestone_change_field_not_null/
+    └─ migration.sql
+
+All migrations have been successfully applied.
+
+$ (branch worktree) DATABASE_URL=<coursepm_l6compat URL> npx prisma migrate status
+Loaded Prisma config from prisma.config.ts.
+
+Prisma schema loaded from prisma\schema.prisma.
+Datasource "db": PostgreSQL database "coursepm_l6compat", schema "public" at "localhost:5432"
+
+8 migrations found in prisma/migrations
+
+Database schema is up to date!
+
+## 4. a342ed5 server code against the migrated DB (npx tsx src/server.ts in the a342 worktree, PORT=3100)
+$ curl http://localhost:3100/api/health
+{"status":"ok","service":"CoursePM API"}
+[HTTP 200]
+
+$ curl -c <tmpdir>/sup -H Content-Type: application/json -d <login body, password from SEED_PASSWORD> http://localhost:3100/api/auth/login
+{"user":{"id":1,"name":"Dr. Supervisor One","email":"supervisor1@coursepm.test","role":"SUPERVISOR"}}
+[HTTP 200]
+
+$ curl -b <tmpdir>/sup http://localhost:3100/api/teams
+{"items":[{"id":1,"name":"Team Alpha","courseCode":"CPE334-DEMO","members":[{"id":3,"name":"Alpha Student 1"},{"id":4,"name":"Alpha Student 2"}],"supervisors":[{"id":1,"name":"Dr. Supervisor One"}]}]}
+[HTTP 200]
+
+# Team Alpha id = 1. The seed has no milestones, so Supervisor 1 creates one through the Lab 6 API first (a write on the migrated schema).
+$ curl -b <tmpdir>/sup -H Content-Type: application/json -d {"title":"Lab6 compat check","description":"","deadline":"2026-12-05T15:26:15.349Z","maxRevisions":3} http://localhost:3100/api/teams/1/milestones
+{"milestone":{"id":1,"teamId":1,"title":"Lab6 compat check","description":"","deadline":"2026-12-05T15:26:15.349Z","maxRevisions":3,"createdById":1,"createdAt":"2026-11-28T15:26:15.486Z","revisionsUsed":0,"status":"OPEN","latestSubmittedAt":null}}
+[HTTP 201]
+
+$ curl -b <tmpdir>/sup http://localhost:3100/api/teams/1/milestones
+{"items":[{"id":1,"teamId":1,"title":"Lab6 compat check","description":"","deadline":"2026-12-05T15:26:15.349Z","maxRevisions":3,"createdById":1,"createdAt":"2026-11-28T15:26:15.486Z","revisionsUsed":0,"status":"OPEN","latestSubmittedAt":null}]}
+[HTTP 200]
+
+$ curl -c <tmpdir>/stu -H Content-Type: application/json -d <login body, password from SEED_PASSWORD> http://localhost:3100/api/auth/login
+{"user":{"id":3,"name":"Alpha Student 1","email":"alpha1@coursepm.test","role":"STUDENT"}}
+[HTTP 200]
+
+$ curl -b <tmpdir>/stu http://localhost:3100/api/teams/1/milestones
+{"items":[{"id":1,"teamId":1,"title":"Lab6 compat check","description":"","deadline":"2026-12-05T15:26:15.349Z","maxRevisions":3,"createdById":1,"createdAt":"2026-11-28T15:26:15.486Z","revisionsUsed":0,"status":"OPEN","latestSubmittedAt":null}]}
+[HTTP 200]
+
+
+# Result: PASS. Lab 6 migrations + seed, then both F-08 migrations applied cleanly ("Database schema is up to date"). The a342ed5 server on that DB answered health 200, Supervisor 1 and Alpha Student 1 logins 200, teams 200, milestone create 201 and the team milestone list 200 for both users.
+# Cleanup: server process stopped (port 3100 free); temporary worktree deregistered with git worktree remove --force, and its leftover folder (copied .env, node_modules) deleted. The DB coursepm_l6compat was left in place.

@@ -1,6 +1,6 @@
 # F-04 Milestone creation and list — feature contract
 
-Version 1.1 · 2026-11-28 (CHG-01 adds `awaitingFeedback` to the milestone response) · 1.0 2026-11-15 · Issue: #2 (contract); implementation: #6 · Links: FR-04, FR-05, BR-04, BR-05, D-05
+Version 1.2 · 2026-11-28 (F-08, #77: `closedAt`, `originalDeadline`, `extended` and the closed-early `status`) · 1.1 2026-11-28 (CHG-01 adds `awaitingFeedback` to the milestone response) · 1.0 2026-11-15 · Issue: #2 (contract); implementation: #6 · Links: FR-04, FR-05, BR-04, BR-05, D-05
 
 ## Behavior and workflow
 1. The Supervisor opens an assigned team and clicks **New milestone**.
@@ -35,6 +35,11 @@ and any other load error shows the standard alert with **Retry** (Lab 6, Issue #
 ## Data
 `Milestone` (teamId FK, title, description, deadline timestamptz, maxRevisions int with CHECK 1–5,
 createdById FK, createdAt). Migration `<timestamp>_milestones`.
+
+### Since F-08 (#77)
+- The milestone object (list, create, get, and the F-08 edit / extension / close responses) also has `closedAt` (null or a time), `originalDeadline` (the earliest extension's `previousDeadline`, otherwise equal to `deadline`) and `extended` (boolean). The list reads the extension data in one batched query over the listed IDs, like `revisionsUsed` (no N+1, NFR-08).
+- `status` is also `CLOSED` after an early close: `CLOSED` when `closedAt` is set **or** `now > deadline`, otherwise `OPEN`. AC-04-5 reads with that definition.
+- The list keeps the `Open` / `Closed` badge on `status` and adds `Closed early` and `Extended` badges. See [F-08](../sprint-2/F-08-milestone-maintenance.md).
 
 ## Acceptance criteria
 | ID | Given / When / Then |

@@ -30,7 +30,10 @@ model User {
   sessions          Session[]
   memberships       TeamMember[]
   supervising       SupervisorAssignment[]
-  milestonesCreated Milestone[]
+  milestonesCreated Milestone[]          @relation("MilestoneCreatedBy")
+  milestonesClosed  Milestone[]          @relation("MilestoneClosedBy")
+  milestoneChanges  MilestoneChange[]
+  extensionsGranted DeadlineExtension[]
   submissions       Submission[]
   feedbackGiven     Feedback[]
 }
@@ -91,9 +94,15 @@ model Milestone {
   deadline     DateTime     @db.Timestamptz(3)
   maxRevisions Int          @default(3)
   createdById  Int
-  createdBy    User         @relation(fields: [createdById], references: [id])
+  createdBy    User         @relation("MilestoneCreatedBy", fields: [createdById], references: [id])
   createdAt    DateTime     @default(now()) @db.Timestamptz(3)
+  // F-08: closed early by an assigned supervisor. CHECK: both null or both set.
+  closedAt     DateTime?    @db.Timestamptz(3)
+  closedById   Int?
+  closedBy     User?        @relation("MilestoneClosedBy", fields: [closedById], references: [id], onDelete: Restrict)
   submissions  Submission[]
+  changes      MilestoneChange[]
+  extensions   DeadlineExtension[]
 
   @@unique([id, teamId])
   @@index([teamId, deadline])
@@ -135,4 +144,45 @@ model Feedback {
   createdAt    DateTime   @default(now()) @db.Timestamptz(3)
 
   @@index([supervisorId])
+}
+
+// F-08 (FR-12): audit of an edit (one row per changed field) or an early
+// close. CHECKs in the migration tie field/values/reason to the kind. Rows are
+// never updated or deleted by the app.
+enum MilestoneChangeKind {
+  EDIT
+  CLOSE
+}
+
+model MilestoneChange {
+  id          Int                 @id @default(autoincrement())
+  milestoneId Int
+  milestone   Milestone           @relation(fields: [milestoneId], references: [id])
+  kind        MilestoneChangeKind
+  field       String?
+  oldValue    String?
+  newValue    String?
+  reason      String?
+  changedById Int
+  changedBy   User                @relation(fields: [changedById], references: [id])
+  changedAt   DateTime            @db.Timestamptz(3)
+
+  @@index([milestoneId, changedAt])
+}
+
+// F-08 (FR-13, BR-11): a deadline extension. CHECK newDeadline >
+// previousDeadline enforces BR-11 in the database; Milestone.deadline holds
+// the newest value. Rows are never updated or deleted by the app.
+model DeadlineExtension {
+  id               Int       @id @default(autoincrement())
+  milestoneId      Int
+  milestone        Milestone @relation(fields: [milestoneId], references: [id])
+  previousDeadline DateTime  @db.Timestamptz(3)
+  newDeadline      DateTime  @db.Timestamptz(3)
+  reason           String
+  grantedById      Int
+  grantedBy        User      @relation(fields: [grantedById], references: [id])
+  grantedAt        DateTime  @db.Timestamptz(3)
+
+  @@index([milestoneId, grantedAt])
 }

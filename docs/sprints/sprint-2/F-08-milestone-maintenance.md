@@ -1,6 +1,6 @@
 # F-08 Milestone maintenance and deadline extension — feature contract
 
-Version 1.0 · 2026-11-28 · Issue: #73 (contract); implementation: S2-1 (Issue to be created) ·
+Version 1.1 · 2026-11-28 (implementation notes: two migrations, Issue #77) · 1.0 2026-11-28 · Issue: #73 (contract); implementation: #77 ·
 Links: FR-12, FR-13, BR-04, BR-05, BR-06, BR-07, BR-11, D-03, D-05, D-06, D-09, NFR-02, NFR-05, NFR-08
 
 ## Purpose
@@ -163,7 +163,7 @@ one's new deadline: it gets 201 if it is still later, otherwise 400 `fields.newD
   - Each extension's `previousDeadline` equals the deadline before it.
   - No submission is accepted after a close.
   - `MilestoneChange` and `DeadlineExtension` rows are never updated or deleted (no API does so), the same as `Submission` today.
-- **Migration:** `<UTC timestamp>_milestone_maintenance`. Migration order = merge order: if S2-2's migration merges first, this folder is renamed to a later timestamp after `sprint2-staging` is merged in.
+- **Migration:** `20261128154000_milestone_maintenance` (tables, columns, indexes and CHECKs), plus `20261128154001_milestone_change_field_not_null`, which replaces `MilestoneChange_kind_check`. The first version let an EDIT row with a null `field` through, because `"field" IN (...)` is NULL when `field` is NULL and PostgreSQL accepts a CHECK that evaluates to NULL. TEST-08-16 found it (`artifacts/sprint-2/tdd/F-08-red.txt` → fix `f178d55`). It is a second migration rather than an edit of the first, because the first was already applied to the local databases. Migration order = merge order. S2-2 (#82, `20261128132923_admin_role`) merged first, so both F-08 folders were renamed after `sprint2-staging` was merged in (from `20261128124227_…` / `20261128151322_…`; the branch logs in `artifacts/sprint-2/tdd/` written before the rename keep the old names).
 - **Known limit:** the tagged Lab 6 revision (`lab6-v021`) does not know `closedAt`, so through its URL a milestone closed early would still accept a submission. It is only a grading copy. Our tests and demonstrations use the current revision.
 
 **Files expected to change:**
