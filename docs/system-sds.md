@@ -1,6 +1,6 @@
 # CoursePM — System-Level Software Design Specification (SDS)
 
-Version 0.1 · 2026-11-15 · implements [srs.md](srs.md) v0.1.
+Version 0.2 · 2026-11-28 (CHG-01) · implements [srs.md](srs.md) v0.2 · 0.1 2026-11-15.
 
 ## 1. Architecture and stack
 
@@ -36,18 +36,19 @@ the **scope loader runs first**: it fetches the record *together with* the calle
 assignment and answers 404 when the record is missing **or** outside the caller's scope. Only then is
 the **role checked for the operation** (403), so an outsider never learns that a record exists (D-03).
 Routes without a target record (for example `GET /api/teams`, which is filtered by scope) need no
-separate role check. Validation (400) and the rule checks (deadline, revision limit; 409) are small pure
+separate role check. Validation (400) and the rule checks (deadline, revision limit, and since CHG-01 feedback on the previous revision; 409) are small pure
 functions in `server/src/rules/`, so they are unit-testable. The handler writes inside a Prisma
 transaction.
 
 **Concurrent submissions (NFR-05).** Two requests can read the same number of revisions and both try
 revision *n + 1*. The insert runs in a transaction that re-reads the milestone and the current revision
-count and re-applies **both** rules (deadline and revision limit) with the server clock. `UNIQUE
+count, plus whether the latest revision has feedback, and re-applies **all three** rules (deadline, revision limit,
+feedback before resubmission since CHG-01) with the server clock. `UNIQUE
 (milestoneId, revision)` makes the losing insert fail; the server then **retries the whole transaction
 (up to 3 attempts)**, so the loser gets the next free revision if capacity remains, or `409
-REVISION_LIMIT_REACHED` / `409 DEADLINE_PASSED` if the fresh state no longer allows it. If all
+REVISION_LIMIT_REACHED` / `409 DEADLINE_PASSED` / `409 AWAITING_FEEDBACK` if the fresh state no longer allows it. If all
 attempts collide, the client receives `409 CONFLICT` ("try again"). Covered by TEST-05-08 (two at once
-with capacity → revisions 1 and 2) and a limit-1 variant (two at once → one 201, one 409).
+→ one new revision and one `AWAITING_FEEDBACK`, since CHG-01) and a limit-1 variant (two at once → one 201, one 409).
 
 **Communication.** The client and API share one origin in development through the Vite proxy (`/api`
 → `localhost:3000`), so the cookie stays first-party. In production it is **planned** (Lab 5, §6) that Express also serves the built client from the same
@@ -127,7 +128,7 @@ field, and keeps the typed values on error. Every list has a loading spinner, an
 | 401 | `INVALID_CREDENTIALS` | Login with a wrong password, an unknown e-mail, an inactive account, or a control character in the e-mail or password (one generic message). |
 | 403 | `FORBIDDEN` | The record is in scope but the role may not perform the operation (a student creating a milestone or recording feedback). |
 | 404 | `NOT_FOUND` | The record does not exist **or** is outside the user's scope (D-03); also any unknown `/api/*` path. |
-| 409 | `DEADLINE_PASSED`, `REVISION_LIMIT_REACHED`, `FEEDBACK_EXISTS` | A business rule rejects the state change (BR-06, BR-07, BR-10). |
+| 409 | `DEADLINE_PASSED`, `REVISION_LIMIT_REACHED`, `AWAITING_FEEDBACK` (CHG-01), `FEEDBACK_EXISTS` | A business rule rejects the state change (BR-06, BR-07, BR-10). |
 | 409 | `CONFLICT` | A concurrent submission kept winning the same revision number through every retry (§1, NFR-05); the client may simply try again. |
 | 413 | `PAYLOAD_TOO_LARGE` | The JSON body is over the 100 kB limit. |
 | 500 | `INTERNAL_ERROR` | Unexpected; generic message, details only in the server log. |
@@ -168,7 +169,7 @@ where teams and accounts come from the seed (D-04).
 | View team + members | own team | assigned team | any team | 401 |
 | List / view milestones | own team | assigned team | any team (read-only) | 401 |
 | Create milestone | 403 | assigned team only | 403 (supervisors own milestones) | 401 |
-| Submit / resubmit | own team, before the deadline, within the limit | 403 | 403 | 401 |
+| Submit / resubmit | own team, before the deadline, within the limit, after feedback on the previous revision (CHG-01) | 403 | 403 | 401 |
 | View submissions | own team | assigned team | any team (read-only) | 401 |
 | Record feedback | 403 | assigned team only, one per revision | 403 | 401 |
 | View feedback | own team | assigned team | any team (read-only) | 401 |

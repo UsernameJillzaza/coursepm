@@ -8,7 +8,7 @@ Version 0.1 · 2026-11-15 · requirement IDs refer to [srs.md](srs.md).
 | F-02 | Access-scope enforcement (cross-cutting) | Middleware and query helpers that limit every team-owned record to members or assigned supervisors and enforce role-only operations. | BR-02, BR-03, NFR-02, NFR-07 | F-01 | 1 |
 | F-03 | Teams and membership (seeded) | Team, membership and supervisor-assignment tables, seed script, "My teams" page and team detail with members. | FR-03, D-04, D-07, NFR-06 | F-01, F-02 | 1 |
 | F-04 | Milestone creation and list | Supervisor creates a milestone for an assigned team; everyone with access lists the team's milestones with status. | FR-04, FR-05, BR-04, BR-05, D-05 | F-03 | 1 |
-| F-05 | Submission with deadline and revision rules | Student submits/resubmits title, description and link; enforces the deadline and revision limit; lists revisions. | FR-06, FR-07, FR-08, BR-06, BR-07, BR-08, NFR-05, D-08 | F-04 | 1 |
+| F-05 | Submission with deadline and revision rules | Student submits/resubmits title, description and link; enforces the deadline, revision limit and (CHG-01) feedback before resubmission; lists revisions. | FR-06, FR-07, FR-08, BR-06, BR-07, BR-08, NFR-05, D-08 | F-04 | 1 |
 | F-06 | Feedback on a revision | Assigned supervisor records feedback on one revision; team and supervisor read it beside that revision. | FR-09, FR-10, BR-09, BR-10 | F-05 | 1 |
 | F-07 | Revision history and comparison | Full history page with a side-by-side comparison of two revisions. | FR-11 | F-05 | 2 |
 | F-08 | Milestone maintenance and extensions | Edit or close a milestone with an audit record; per-team deadline extension. | FR-12, FR-13, BR-11 | F-04 | 2 |
