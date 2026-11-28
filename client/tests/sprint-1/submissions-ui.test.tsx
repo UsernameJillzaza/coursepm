@@ -77,7 +77,7 @@ describe('F-05 milestone page: revisions', () => {
 })
 
 describe('F-05 submit form', () => {
-  it('AC-05-1: a student submits; the new revision appears and the counter updates', async () => {
+  it('AC-05-1, TEST-UI-02 (AC-05-13): a student submits; the new revision appears, the counter updates and the form waits for feedback', async () => {
     let submitted = false
     fakeApi({
       'GET /api/auth/me': ok({ user: student }),

@@ -51,10 +51,11 @@ function isUniqueViolation(err: unknown): boolean {
 }
 
 // One attempt: read the current state, apply the rules with the SERVER clock,
-// insert revision = nextRevision. The latest revision's feedback is read in the
-// same transaction (CHG-01); feedback is never deleted, so a feedback saved
-// concurrently can only turn a 409 into an accepted retry, never the reverse. If another request stored the same revision
+// insert revision = nextRevision. If another request stored the same revision
 // first, UNIQUE(milestoneId, revision) makes this insert fail (NFR-05).
+// The latest revision's feedback is read in the same transaction (CHG-01).
+// Feedback is never deleted, so a feedback saved concurrently can only turn a
+// 409 into an accepted retry, never the reverse.
 async function trySubmit(milestoneId: number, teamId: number, userId: number, value: SubmissionInput) {
   return prisma.$transaction(async (tx) => {
     const m = await tx.milestone.findUniqueOrThrow({ where: { id: milestoneId } })
