@@ -146,3 +146,23 @@ code `cf90f2c` (`artifacts/lab-07/tdd/red.txt`: server 6 failed, client 2 failed
 assertion failures) → `9a21a3e` server rule + `awaitingFeedback` → `7efaf4e` UI → GREEN and
 regression on `7efaf4e` (`green.txt`, `regression.txt`: server 193/193, client 45/45, E2E 3/3).
 Screenshots: `artifacts/lab-07/screenshots/chg01-*.png`.
+
+**Deployment record (`v0.3.0`, S2-5 release PR #87):** merge commit `9ec23c3` → deploy run
+[46177303923](https://github.com/UsernameJillzaza/coursepm/actions/runs/46177303923) (CI, image, migrate
+job `coursepm-migrate-b4fmd`, deploy, smoke test: all passed) → image
+`sha256:6f2a8d94e99f4e297f6c0a365a401b0c67b27225e2b9f8770d51fcd2c19e4027` → revision
+`coursepm-00009-ctb` serving 100 %. On the public URL (`artifacts/lab-07/deploy/live_check.py`, run
+2026-11-29):
+
+| Check | Result |
+| --- | --- |
+| Changed rule: revision 1 → revision 2 before feedback | 201 → **409 `AWAITING_FEEDBACK`** |
+| Changed rule: supervisor feedback → revision 2 | 201 → **201** |
+| Preserved scope: student reads another team; unassigned supervisor reads the milestone | 404, 404 |
+| Preserved role: student creates a milestone | 403 |
+| Sprint 2 spot checks: F-07 compare, F-08 extension / close / submit after close, F-09 admin and student 403, F-10 board | 200, 201 / 200 / 409 `MILESTONE_CLOSED`, 200 / 403, 200 |
+| Persistence: new sessions, same milestone (2 revisions, history, still closed) | pass |
+| Lab 6 tag `lab6-v021` after the migrations | health 200, ready 200, bundle `a342ed5` |
+
+Log: `artifacts/lab-07/deploy/v030-post-deploy.txt`; screenshots: `v030-live-check.png`,
+`v030-persistence.png` in the same folder.

@@ -1,0 +1,62 @@
+Lab 7 deployment evidence: release v0.3.0 (S2-5, PR #87), CHG-01 included
+=========================================================================
+
+Release
+  PR:               https://github.com/UsernameJillzaza/coursepm/pull/87 (sprint2-staging e344643 -> main)
+  Merge commit:     9ec23c31d679bf47d9e4e040d02a6c9dd54a5cfb (merged 2026-11-28T18:42:23Z)
+  Deploy run:       https://github.com/UsernameJillzaza/coursepm/actions/runs/46177303923 (success)
+                    jobs: test / test-and-docker = success, deploy = success
+  Image digest:     asia-southeast1-docker.pkg.dev/cpe334-2026-th042-coursepm/coursepm/coursepm@sha256:6f2a8d94e99f4e297f6c0a365a401b0c67b27225e2b9f8770d51fcd2c19e4027
+  Migrate job:      coursepm-migrate-b4fmd, "has successfully completed" (2026-11-28T18:46:23Z)
+  Serving revision: coursepm-00009-ctb, 100 % LATEST (traffic updated 2026-11-28T18:46:44Z)
+  Smoke test (run): PASS /api/health, PASS /api/ready, PASS / (client HTML and bundle),
+                    PASS /api/teams requires a session, PASS release commit 9ec23c3 is in the served bundle
+
+Lab 6 tagged revision after the migrations (read-only, 2026-11-29 ~01:50 ICT)
+  https://lab6-v021---coursepm-7cxt6io2na-as.a.run.app
+    /api/health 200, /api/ready 200, served bundle contains a342ed52aa90fc191d9f4e7497e1b890f5dfed14
+  https://coursepm-7cxt6io2na-as.a.run.app
+    /api/health 200, /api/ready 200, served bundle contains 9ec23c31d679bf47d9e4e040d02a6c9dd54a5cfb
+
+Live journey (artifacts/lab-07/deploy/live_check.py against https://coursepm-7cxt6io2na-as.a.run.app,
+run by Jakkarin on 2026-11-29 ~01:56 ICT; the demo password was typed at a getpass prompt and is not
+in this log or the screenshots). Screenshot: v030-live-check.png
+
+[PASS] login supervisor1@coursepm.test: 200 (expected 200)
+[PASS] login alpha1@coursepm.test: 200 (expected 200)
+Team Alpha id = 1
+[PASS] F-04 supervisor creates milestone: 201 (expected 201)
+Milestone id = 4
+[PASS] CHG-01 revision 1: 201 (expected 201)
+[PASS] CHG-01 revision 2 before feedback: 409 AWAITING_FEEDBACK (expected 409 AWAITING_FEEDBACK)
+[PASS] F-06 supervisor feedback on revision 1: 201 (expected 201)
+[PASS] CHG-01 revision 2 after feedback: 201 (expected 201)
+[PASS] login supervisor2@coursepm.test: 200 (expected 200)
+[PASS] scope: alpha student reads Team Beta milestones: 404 NOT_FOUND (expected 404 NOT_FOUND)
+[PASS] scope: unassigned supervisor reads Alpha milestone: 404 NOT_FOUND (expected 404 NOT_FOUND)
+[PASS] role: student creates milestone: 403 FORBIDDEN (expected 403 FORBIDDEN)
+[PASS] F-07 compare revisions 1 and 2: 200 (expected 200)
+[PASS] F-08 extension: 201 (expected 201)
+[PASS] F-10 progress board: 200 (expected 200)
+[PASS] login admin@coursepm.test: 200 (expected 200)
+[PASS] F-09 admin lists teams: 200 (expected 200)
+[PASS] F-09 student on /api/admin/teams: 403 FORBIDDEN (expected 403 FORBIDDEN)
+[PASS] F-08 close milestone: 200 (expected 200)
+[PASS] F-08 submit after close: 409 MILESTONE_CLOSED (expected 409 MILESTONE_CLOSED)
+
+Milestone for the persistence re-check: 4
+RESULT: ALL PASS
+
+Persistence re-check (separate run, new sessions, ~01:57 ICT). Screenshot: v030-persistence.png
+
+[PASS] login supervisor1@coursepm.test: 200 (expected 200)
+[PASS] login alpha1@coursepm.test: 200 (expected 200)
+[PASS] persist: milestone still has 2 revisions: 2 (expected 2)
+[PASS] persist: change history readable: 200 (expected 200)
+[PASS] persist: milestone still closed: True (expected True)
+
+RESULT: ALL PASS
+
+Note: a first re-check was run with the literal placeholder "N" instead of the milestone id and
+failed (404 / 0 rows) because no milestone "N" exists; it was re-run with id 4 above.
+Before the live run the script was dry-run against a local throw-away database (not production).
