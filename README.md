@@ -61,3 +61,4 @@ Node.js 24, PostgreSQL 18 running locally, Microsoft Edge (used by the Playwrigh
 | `npm --prefix client run build` | Type-check and production build of the client |
 | `cd server && npx tsc --noEmit` | Type-check of the server |
 | `npm run test:e2e` | Playwright journeys in Edge against the seeded development database (starts both dev servers if they aren't running). Run `db:seed` first; each run adds a "Design review <timestamp>" milestone to Team Alpha and rewrites the screenshots in `artifacts/sprint-1/screenshots/` |
+| `npm --prefix server run perf:nfr08` | NFR-08 smoke measurement (F-10, TEST-10-07) against the seeded development database: adds a 30-milestone fixture, times 5 warm-ups + 50 requests per main list endpoint as Supervisor 2 and Beta Student 1, removes the fixture, and writes p50 / p95 / max to `artifacts/sprint-2/perf/nfr-08-<commit>.txt`. Run `db:seed` first. Not part of `npm test`, so a busy laptop cannot make the regular suite flaky |
