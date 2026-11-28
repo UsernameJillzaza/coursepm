@@ -205,7 +205,9 @@ describe('TEST-UI-09 (AC-09-11): Teams section', () => {
     expect(add).toBeEnabled()
     await userEvent.click(add)
     expect(sent).toEqual({ userId: 4 })
-    expect(await within(row).findByText(/Alpha Student 2/)).toBeInTheDocument()
+    // The members cell now lists both; the chosen student is no longer offered.
+    expect(await within(row).findByText('Alpha Student 1, Alpha Student 2')).toBeInTheDocument()
+    expect(within(select).getAllByRole('option').map((o) => o.textContent)).toEqual(['Choose a student…'])
   })
 
   it('Add supervisor lists only active supervisors not already assigned, and shows a 400 from the API', async () => {
