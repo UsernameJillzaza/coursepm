@@ -1,0 +1,11 @@
+PR #82 review item 6 (Issue #78): add-member vs deactivation race, GREEN run
+Commit under test: c2acd7f (clean tree)
+Commands: cd server && npx vitest run tests/sprint-2/admin.api.test.ts -t "racing a deactivation" ; npx vitest run tests/sprint-2
+Date: 2026-11-28 21:51 (ICT)
+
+--- race case ---
+      Tests  1 passed | 32 skipped (33)
+
+--- all F-09 server tests ---
+ Test Files  2 passed (2)
+      Tests  52 passed | 4 todo (56)

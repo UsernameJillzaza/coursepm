@@ -10,6 +10,7 @@ import { milestonesRouter } from './milestones/routes'
 import { submissionsRouter } from './submissions/routes'
 import { feedbackRouter } from './feedback/routes'
 import { compareRouter } from './milestones/compare'
+import { adminRouter } from './admin/routes'
 
 // Last-resort error handler (Express 5 forwards rejected async handlers here).
 // NFR-07: details go to the server log only; the client gets the standard
@@ -57,6 +58,7 @@ export function createApp() {
   app.use('/api/submissions', feedbackRouter) // F-06
   app.use('/api/milestones/:milestoneId/compare', compareRouter) // F-07
   app.use('/api/milestones', milestonesRouter) // F-04
+  app.use('/api/admin', adminRouter) // F-09
 
   // Unknown API routes answer in the standard error shape, not Express's HTML page.
   app.use('/api', (_req, res) => {

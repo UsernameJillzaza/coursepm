@@ -1,0 +1,54 @@
+Issue #78 (F-09 course administration) RED run
+Code under test: def1397 (ADMIN enum migration only; no rules/admin.ts, no /api/admin routes, no DEMO_ADMIN yet) + the new test files (uncommitted at run time, committed next as test:)
+Command: cd server && npx vitest run tests/sprint-2
+Date: 2026-11-28 20:32 (ICT)
+Expected: the unit file fails to import rules/admin.ts; the API tests fail on assertions (404 from the unknown-route handler instead of 200/201/400/403/409). TEST-09-12 already passes, because an ADMIN currently falls into the supervisor branch of teamScopeWhere and matches no team by accident; F-09 makes that an explicit rule.
+Note (added 2026-11-28, PR #82 review): this run is on commit def1397 plus the then-uncommitted test files, which were committed unchanged as 4bc1d6e. The unit file fails with an import error ("Cannot find module ../../src/rules/admin"), not an assertion failure, because rules/admin.ts did not exist yet; the API cases fail on assertions. Run on the same machine as the GREEN run (the path below is this workstation's checkout).
+
+ FAIL  tests/sprint-2/admin-rules.unit.test.ts [ tests/sprint-2/admin-rules.unit.test.ts ]
+Error: Cannot find module '../../src/rules/admin' imported from C:/Users/BTCOM/Desktop/ticktokit_cloud_shield/coursepm/server/tests/sprint-2/admin-rules.unit.test.ts
+⎯⎯⎯⎯⎯⎯ Failed Tests 25 ⎯⎯⎯⎯⎯⎯⎯
+ FAIL  tests/sprint-2/admin.api.test.ts > TEST-09-01 (AC-09-1): the seeded admin signs in with role ADMIN > login and /api/auth/me both report role ADMIN and never a password or hash
+TypeError: Cannot read properties of undefined (reading 'email')
+ FAIL  tests/sprint-2/admin.api.test.ts > TEST-09-01 (AC-09-1): the seeded admin signs in with role ADMIN > no admin response carries a password or hash
+AssertionError: expected 404 to be 200 // Object.is equality
+ FAIL  tests/sprint-2/admin.api.test.ts > TEST-09-02 (AC-09-2): only an ADMIN may call the admin routes > a student and a supervisor get 403 FORBIDDEN on all six, and nothing changes
+AssertionError: expected { path: '/api/admin/users', …(2) } to deeply equal { path: '/api/admin/users', …(2) }
+ FAIL  tests/sprint-2/admin.api.test.ts > TEST-09-02 (AC-09-2): only an ADMIN may call the admin routes > without a session all six answer 401 UNAUTHENTICATED
+AssertionError: expected { path: '/api/admin/users', …(2) } to deeply equal { path: '/api/admin/users', …(2) }
+ FAIL  tests/sprint-2/admin.api.test.ts > TEST-09-03 (AC-09-3): create a team > creates CPE334-DEMO / Team Delta with empty lists, lists it, and refuses the same pair again
+AssertionError: expected 404 to be 201 // Object.is equality
+ FAIL  tests/sprint-2/admin.api.test.ts > TEST-09-03 (AC-09-3): create a team > two identical creates at the same moment give exactly one 201 and one 409, and one row
+AssertionError: expected [ 404, 404 ] to deeply equal [ 201, 409 ]
+ FAIL  tests/sprint-2/admin.api.test.ts > TEST-09-03 (AC-09-3): create a team > teams are listed by course code, then name
+TypeError: Cannot read properties of undefined (reading 'map')
+ FAIL  tests/sprint-2/admin.api.test.ts > TEST-09-05 (AC-09-4): create-team validation over HTTP > a 21-character code and an 81-character name → 400 with both fields, nothing stored
+AssertionError: expected 404 to be 400 // Object.is equality
+ FAIL  tests/sprint-2/admin.api.test.ts > TEST-09-06 (AC-09-5): add a member and a supervisor > adds B1 and Supervisor 2 to a new team; both then see it; a repeat is 409
+TypeError: Cannot read properties of undefined (reading 'id')
+ FAIL  tests/sprint-2/admin.api.test.ts > TEST-09-08 (AC-09-6): who can be added, and unknown teams > rejects the wrong role, the admin, an inactive student, an unknown or malformed user ID with 400 fields.userId
+TypeError: Cannot read properties of undefined (reading 'id')
+ FAIL  tests/sprint-2/admin.api.test.ts > TEST-09-08 (AC-09-6): who can be added, and unknown teams > userId "01" is "Choose an account."
+ FAIL  tests/sprint-2/admin.api.test.ts > TEST-09-08 (AC-09-6): who can be added, and unknown teams > userId "1.5" is "Choose an account."
+ FAIL  tests/sprint-2/admin.api.test.ts > TEST-09-08 (AC-09-6): who can be added, and unknown teams > userId "" is "Choose an account."
+ FAIL  tests/sprint-2/admin.api.test.ts > TEST-09-08 (AC-09-6): who can be added, and unknown teams > userId null is "Choose an account."
+ FAIL  tests/sprint-2/admin.api.test.ts > TEST-09-08 (AC-09-6): who can be added, and unknown teams > userId -3 is "Choose an account."
+ FAIL  tests/sprint-2/admin.api.test.ts > TEST-09-08 (AC-09-6): who can be added, and unknown teams > userId 1.5 is "Choose an account."
+ FAIL  tests/sprint-2/admin.api.test.ts > TEST-09-08 (AC-09-6): who can be added, and unknown teams > userId "2147483648" is "Choose an account."
+AssertionError: expected 404 to be 400 // Object.is equality
+ FAIL  tests/sprint-2/admin.api.test.ts > TEST-09-08 (AC-09-6): who can be added, and unknown teams > team ID 999999 → 404 "Team not found."
+ FAIL  tests/sprint-2/admin.api.test.ts > TEST-09-08 (AC-09-6): who can be added, and unknown teams > team ID abc → 404 "Team not found."
+ FAIL  tests/sprint-2/admin.api.test.ts > TEST-09-08 (AC-09-6): who can be added, and unknown teams > team ID 0 → 404 "Team not found."
+AssertionError: expected { error: { code: 'NOT_FOUND', …(1) } } to deeply equal { error: { code: 'NOT_FOUND', …(1) } }
+ FAIL  tests/sprint-2/admin.api.test.ts > TEST-09-09 (AC-09-7, NFR-04): deactivation ends the session and keeps past work > deactivating A2 → 401 on the old cookie, no sessions, login refused like a wrong password; work unchanged
+AssertionError: expected 404 to be 200 // Object.is equality
+ FAIL  tests/sprint-2/admin.api.test.ts > TEST-09-10 (AC-09-8): what cannot be deactivated > another admin and the admin itself → 409 CANNOT_DEACTIVATE_ADMIN; an inactive account → 409 ALREADY_INACTIVE; unknown IDs → 404
+AssertionError: expected 404 to be 409 // Object.is equality
+ FAIL  tests/sprint-2/admin.api.test.ts > TEST-09-13 (AC-09-10): list accounts with filters > role=STUDENT&active=true lists exactly the active students, in order; no filter lists everyone in order
+AssertionError: expected 404 to be 200 // Object.is equality
+ FAIL  tests/sprint-2/admin.api.test.ts > TEST-09-13 (AC-09-10): list accounts with filters > role=TEACHER → 400 fields.role; active=yes → 400 fields.active
+AssertionError: expected 404 to be 400 // Object.is equality
+ FAIL  tests/sprint-2/admin.api.test.ts > the demo seed adds the admin account (F-09 Data, DoD) > DEMO_ADMIN is admin@coursepm.test, role ADMIN, and is in no team
+AssertionError: expected undefined to deeply equal { email: 'admin@coursepm.test', …(2) }
+ Test Files  2 failed (2)
+      Tests  25 failed | 1 passed | 4 todo (30)

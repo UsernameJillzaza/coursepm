@@ -20,6 +20,15 @@ export const DEMO_USERS: { email: string; name: string; role: Role }[] = [
   { email: 'gamma2@coursepm.test', name: 'Gamma Student 2', role: 'STUDENT' },
 ]
 
+// F-09: the Course Administrator. Kept apart from DEMO_USERS because it is in
+// no team and authors no work; the seed upserts it the same way, with the
+// same SEED_PASSWORD.
+export const DEMO_ADMIN: { email: string; name: string; role: Role } = {
+  email: 'admin@coursepm.test',
+  name: 'Course Admin',
+  role: 'ADMIN',
+}
+
 export type AccountInput = { email: string; name: string; role: Role; isActive?: boolean }
 
 // The shared account helper: create or update one account by e-mail with a
@@ -51,6 +60,7 @@ export async function seed(password: string) {
     const row = await upsertAccount(u, password)
     ids.set(u.email.split('@')[0], row.id)
   }
+  await upsertAccount(DEMO_ADMIN, password)
 
   for (const t of DEMO_TEAMS) {
     const team = await prisma.team.upsert({
@@ -75,5 +85,5 @@ export async function seed(password: string) {
       })
     }
   }
-  console.log(`Seeded ${DEMO_USERS.length} demo accounts and ${DEMO_TEAMS.length} teams.`)
+  console.log(`Seeded ${DEMO_USERS.length} demo accounts, 1 admin account and ${DEMO_TEAMS.length} teams.`)
 }

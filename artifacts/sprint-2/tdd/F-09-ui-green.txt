@@ -1,0 +1,14 @@
+Issue #78 (F-09) client GREEN run (TEST-UI-09) and client regression
+Commit under test: 09ee599 (clean tree)
+Commands: cd client && npx vitest run tests/sprint-2 ; npx vitest run
+Date: 2026-11-28 20:40 (ICT)
+
+--- tests/sprint-2 ---
+ Test Files  1 passed (1)
+      Tests  19 passed (19)
+   Duration  4.62s (transform 295ms, setup 253ms, import 462ms, tests 2.76s, environment 896ms)
+
+--- full client suite ---
+ Test Files  9 passed (9)
+      Tests  63 passed (63)
+   Duration  6.66s (transform 2.26s, setup 4.27s, import 4.57s, tests 12.60s, environment 17.42s)

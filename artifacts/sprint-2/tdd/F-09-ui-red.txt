@@ -1,0 +1,47 @@
+Issue #78 (F-09) client RED run (TEST-UI-09)
+Code under test: f1d232e (server side done; no /admin route, RequireRole, NoAccess or admin page in the client yet) + the new test file (committed next as test:)
+Command: cd client && npx vitest run tests/sprint-2
+Date: 2026-11-28 20:37 (ICT)
+Expected: every case fails on an assertion (no "Course administration" heading, no NoAccess text, no Admin link); the catch-all route sends /admin to /teams.
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 19 ⎯⎯⎯⎯⎯⎯⎯
+ FAIL  tests/sprint-2/admin-ui.test.tsx > TEST-UI-09 (AC-09-11): routing, top bar and NoAccess > an admin who logs in is sent to /admin and sees both sections
+TestingLibraryElementError: Unable to find role="heading" and name "Course administration"
+ FAIL  tests/sprint-2/admin-ui.test.tsx > TEST-UI-09 (AC-09-11): routing, top bar and NoAccess > the top bar shows the Admin role and an Admin link, and no My teams link
+TestingLibraryElementError: Unable to find an element with the text: Admin, which matches selector '.badge'. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+ FAIL  tests/sprint-2/admin-ui.test.tsx > TEST-UI-09 (AC-09-11): routing, top bar and NoAccess > an admin opening an unknown path is sent to /admin
+TestingLibraryElementError: Unable to find role="heading" and name "Course administration"
+ FAIL  tests/sprint-2/admin-ui.test.tsx > TEST-UI-09 (AC-09-11): routing, top bar and NoAccess > a student who opens /admin sees NoAccess, no admin data is requested, and there is no Admin link
+TestingLibraryElementError: Unable to find an element with the text: You don't have access to this page.. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+ FAIL  tests/sprint-2/admin-ui.test.tsx > TEST-UI-09 (AC-09-11): routing, top bar and NoAccess > a supervisor who opens /admin sees NoAccess, no admin data is requested, and there is no Admin link
+TestingLibraryElementError: Unable to find an element with the text: You don't have access to this page.. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+ FAIL  tests/sprint-2/admin-ui.test.tsx > TEST-UI-09 (AC-09-11): Teams section > shows a loading state while the team list is pending
+TestingLibraryElementError: Unable to find role="heading" and name "Course administration"
+ FAIL  tests/sprint-2/admin-ui.test.tsx > TEST-UI-09 (AC-09-11): Teams section > shows the empty state
+TestingLibraryElementError: Unable to find role="region" and name "Teams"
+ FAIL  tests/sprint-2/admin-ui.test.tsx > TEST-UI-09 (AC-09-11): Teams section > shows the error state with Retry, which loads again
+TestingLibraryElementError: Unable to find role="region" and name "Teams"
+ FAIL  tests/sprint-2/admin-ui.test.tsx > TEST-UI-09 (AC-09-11): Teams section > lists teams with course code, members and supervisors
+TestingLibraryElementError: Unable to find role="region" and name "Teams"
+ FAIL  tests/sprint-2/admin-ui.test.tsx > TEST-UI-09 (AC-09-11): Teams section > New team: field errors under the inputs, values kept; 409 in the alert
+TestingLibraryElementError: Unable to find role="region" and name "Teams"
+ FAIL  tests/sprint-2/admin-ui.test.tsx > TEST-UI-09 (AC-09-11): Teams section > New team: a 201 adds the team to the table and clears the form
+TestingLibraryElementError: Unable to find role="region" and name "Teams"
+ FAIL  tests/sprint-2/admin-ui.test.tsx > TEST-UI-09 (AC-09-11): Teams section > Add member lists only active students not already in the team; Add is disabled until one is chosen
+TestingLibraryElementError: Unable to find role="region" and name "Teams"
+ FAIL  tests/sprint-2/admin-ui.test.tsx > TEST-UI-09 (AC-09-11): Teams section > Add supervisor lists only active supervisors not already assigned, and shows a 400 from the API
+TestingLibraryElementError: Unable to find role="region" and name "Teams"
+ FAIL  tests/sprint-2/admin-ui.test.tsx > TEST-UI-09 (AC-09-11): Accounts section > shows each account with role and status; Deactivate only on active student and supervisor rows
+TestingLibraryElementError: Unable to find role="region" and name "Accounts"
+ FAIL  tests/sprint-2/admin-ui.test.tsx > TEST-UI-09 (AC-09-11): Accounts section > Deactivate asks for confirmation; Cancel sends nothing
+TestingLibraryElementError: Unable to find role="region" and name "Accounts"
+ FAIL  tests/sprint-2/admin-ui.test.tsx > TEST-UI-09 (AC-09-11): Accounts section > confirming sends the deactivate request and marks the account Inactive
+TestingLibraryElementError: Unable to find role="region" and name "Accounts"
+ FAIL  tests/sprint-2/admin-ui.test.tsx > TEST-UI-09 (AC-09-11): Accounts section > a 409 from deactivate is shown in the alert
+TestingLibraryElementError: Unable to find role="region" and name "Accounts"
+ FAIL  tests/sprint-2/admin-ui.test.tsx > TEST-UI-09 (AC-09-11): Accounts section > the role filter requests the filtered list
+TestingLibraryElementError: Unable to find role="region" and name "Accounts"
+ FAIL  tests/sprint-2/admin-ui.test.tsx > TEST-UI-09 (AC-09-11): Accounts section > shows the empty and error states
+TestingLibraryElementError: Unable to find role="region" and name "Accounts"
+ Test Files  1 failed (1)
+      Tests  19 failed (19)
