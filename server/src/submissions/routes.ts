@@ -3,7 +3,7 @@ import { prisma } from '../db'
 import { loadMilestoneForUser } from '../access/scope'
 import { requireAuth } from '../auth/middleware'
 import { AppError, parseId, sendError } from '../http'
-import { checkCanSubmit, validateSubmission, type SubmissionInput } from '../rules/submission'
+import { checkCanSubmit, validateSubmission, type SubmissionInput, type SubmitCheck } from '../rules/submission'
 import { feedbackWithSupervisor, toFeedbackDto } from '../feedback/dto'
 
 // F-05 submission API (FR-06 … FR-08, BR-06 … BR-08, NFR-05).
@@ -11,10 +11,14 @@ import { feedbackWithSupervisor, toFeedbackDto } from '../feedback/dto'
 export const submissionsRouter = Router({ mergeParams: true })
 submissionsRouter.use(requireAuth)
 
-const RULE_MESSAGES = {
-  DEADLINE_PASSED: 'The deadline for this milestone has passed.',
-  REVISION_LIMIT_REACHED: 'Your team has used all revisions for this milestone.',
-} as const
+// The AWAITING_FEEDBACK message names the revision that needs feedback (CHG-01).
+function ruleMessage(check: Exclude<SubmitCheck, { ok: true }>): string {
+  switch (check.code) {
+    case 'DEADLINE_PASSED': return 'The deadline for this milestone has passed.'
+    case 'REVISION_LIMIT_REACHED': return 'Your team has used all revisions for this milestone.'
+    case 'AWAITING_FEEDBACK': return `Wait for feedback on revision ${check.revision} before submitting again.`
+  }
+}
 
 const submittedBy = { submittedBy: { select: { id: true, name: true } } } as const
 
@@ -46,16 +50,25 @@ function isUniqueViolation(err: unknown): boolean {
   return (err as { code?: string })?.code === 'P2002'
 }
 
-// One attempt: read the current state, apply both rules with the SERVER clock,
-// insert revision = nextRevision. If another request stored the same revision
+// One attempt: read the current state, apply the rules with the SERVER clock,
+// insert revision = nextRevision. The latest revision's feedback is read in the
+// same transaction (CHG-01); feedback is never deleted, so a feedback saved
+// concurrently can only turn a 409 into an accepted retry, never the reverse. If another request stored the same revision
 // first, UNIQUE(milestoneId, revision) makes this insert fail (NFR-05).
 async function trySubmit(milestoneId: number, teamId: number, userId: number, value: SubmissionInput) {
   return prisma.$transaction(async (tx) => {
     const m = await tx.milestone.findUniqueOrThrow({ where: { id: milestoneId } })
     const revisionsUsed = await tx.submission.count({ where: { milestoneId } })
+    const latest = await tx.submission.findFirst({
+      where: { milestoneId },
+      orderBy: { revision: 'desc' },
+      select: { feedback: { select: { id: true } } },
+    })
     const now = new Date()
-    const check = checkCanSubmit({ deadline: m.deadline, maxRevisions: m.maxRevisions, revisionsUsed, now })
-    if (!check.ok) throw new AppError(409, check.code, RULE_MESSAGES[check.code])
+    const check = checkCanSubmit({
+      deadline: m.deadline, maxRevisions: m.maxRevisions, revisionsUsed, latestHasFeedback: Boolean(latest?.feedback), now,
+    })
+    if (!check.ok) throw new AppError(409, check.code, ruleMessage(check))
     return tx.submission.create({
       data: { ...value, milestoneId, teamId, revision: check.nextRevision, submittedById: userId, submittedAt: now },
       include: submittedBy,
@@ -66,8 +79,9 @@ async function trySubmit(milestoneId: number, teamId: number, userId: number, va
 const MAX_ATTEMPTS = 3
 
 // POST: team student only. Order: scope (404) → role (403) → fields (400) →
-// rules (409). A lost race retries the whole transaction, so both rules are
-// checked again against the new state (the limit can't be overshot).
+// rules (409). A lost race retries the whole transaction, so every rule is
+// checked again against the new state (the limit can't be overshot, and the
+// loser now sees the winner's revision without feedback → AWAITING_FEEDBACK).
 submissionsRouter.post('/', async (req, res) => {
   const id = parseId((req.params as { milestoneId?: string }).milestoneId)
   const m = id ? await loadMilestoneForUser(req.user!, id) : null
