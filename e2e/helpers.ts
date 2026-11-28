@@ -15,9 +15,11 @@ export function seedPassword(): string {
 // It first waits until no loading spinner is shown, so a screenshot never
 // catches a list in the middle of a reload.
 export const SHOTS = path.join(__dirname, '..', 'artifacts', 'sprint-1', 'screenshots')
-export async function shot(page: Page, name: string) {
+// Sprint 2 journeys pass this directory, so Sprint 1 evidence is never overwritten.
+export const SHOTS_SPRINT_2 = path.join(__dirname, '..', 'artifacts', 'sprint-2', 'screenshots')
+export async function shot(page: Page, name: string, dir: string = SHOTS) {
   await expect(page.getByRole('status', { name: 'Loading' })).toHaveCount(0)
-  return page.screenshot({ path: path.join(SHOTS, `${name}.png`), fullPage: true })
+  return page.screenshot({ path: path.join(dir, `${name}.png`), fullPage: true })
 }
 
 export async function login(page: Page, email: string) {
