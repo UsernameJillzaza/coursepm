@@ -1,0 +1,25 @@
+Issue #81 (F-11 milestone scoring and release) RED run
+Code under test: 652d66c (the F-11 migration only; no rules/score.ts and no score routes yet) + the new test files (committed next as test:)
+Command: cd server && npx vitest run tests/sprint-3
+Date: 2026-11-28 23:47 (ICT)
+Expected: the unit file fails to import rules/score.ts (an import failure by design: the module does not exist yet); the API cases fail on assertions (404 from the unknown-route handler instead of 200/400/403/409). TEST-11-09 (database CHECKs) already passes, because the migration is committed before the tests; scope cases that only expect 404/401 can pass for the same unknown-route reason. Paths are shown as <repo>.
+
+× tests/sprint-3/score.api.test.ts > TEST-11-04 (AC-11-1): set and change before release > PUT 85, PUT 90 without a reason, GET → value 90, not released, history 90 ← 85 ← —, no-store 117ms
+× tests/sprint-3/score.api.test.ts > TEST-11-05 (AC-11-2): an unreleased score is in no student response > A1 gets { score: null } for an unreleased and an unscored milestone, and no other response carries the value 124ms
+× tests/sprint-3/score.api.test.ts > TEST-11-06 (AC-11-3): release > release → releasedAt and releasedBy; A1 sees only value + releasedAt; again → 409 ALREADY_RELEASED; no score → 409 NO_SCORE 121ms
+× tests/sprint-3/score.api.test.ts > TEST-11-07 (AC-11-4): a released score changes only with a reason > no / 2-char / spaces / NUL / 501-char reason → 400 fields.reason; a real reason → 200; A1 sees the new value with the original releasedAt 116ms
+× tests/sprint-3/score.api.test.ts > TEST-11-07 (AC-11-4): a released score changes only with a reason > reasons of exactly 3 and 500 characters are accepted after release 165ms
+× tests/sprint-3/score.api.test.ts > TEST-11-07 (AC-11-4): a released score changes only with a reason > the released reason message is the documented one 167ms
+× tests/sprint-3/score.api.test.ts > TEST-11-08 (AC-11-5, AC-11-6): validation, roles and scope > invalid scores → 400 fields.score; 0 and 100 accepted; the stored value again → 400 NO_CHANGE 75ms
+× tests/sprint-3/score.api.test.ts > TEST-11-08 (AC-11-5, AC-11-6): validation, roles and scope > a student of the team → 403 on PUT and release; nothing stored 116ms
+× tests/sprint-3/score.api.test.ts > TEST-11-08 (AC-11-5, AC-11-6): validation, roles and scope > Supervisor 2, B1 and an ADMIN get 404 on GET, PUT and release; bad IDs → 404; no session → 401 236ms
+✓ tests/sprint-3/score.api.test.ts > TEST-11-09 (AC-11-7): the database enforces the score rules > rejects bad MilestoneScore rows 48ms
+✓ tests/sprint-3/score.api.test.ts > TEST-11-09 (AC-11-7): the database enforces the score rules > rejects bad ScoreChange rows, including BR-12 (afterRelease needs a SET with a 3–500 character reason) 593ms
+× tests/sprint-3/score.api.test.ts > TEST-11-10 (AC-11-8): races > (a) two PUTs at once, 20 times: both 200, two chained SET rows, stored value = the later row 168ms
+× tests/sprint-3/score.api.test.ts > TEST-11-10 (AC-11-8): races > (b) a release and a reason-less change at once, 20 times: never a released value changed without a reason 115ms
+× tests/sprint-3/score.api.test.ts > TEST-11-11 (AC-11-9): any milestone state can be scored > a milestone past its deadline with no submission, and one closed early: PUT 80 and release → 200 58ms
+Error: Cannot find module '../../src/rules/score' imported from <repo>/server/tests/sprint-3/score-rules.unit.test.ts
+⎯⎯⎯⎯⎯⎯ Failed Tests 12 ⎯⎯⎯⎯⎯⎯⎯
+TypeError: Cannot read properties of undefined (reading 'releasedAt')
+Test Files  2 failed (2)
+Tests  12 failed | 2 passed (14)
