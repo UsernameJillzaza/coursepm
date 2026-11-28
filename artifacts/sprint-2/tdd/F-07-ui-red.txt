@@ -1,0 +1,32 @@
+Issue #79 (F-07) client RED run (TEST-UI-07H)
+Code under test: 88fee80 (server compare API done; no revisions page, route or Compare revisions link in the client yet) + the new test file (committed next as test:)
+Command: cd client && npx vitest run tests/sprint-2
+Date: 2026-11-28 21:08 (ICT)
+Expected: every case fails on an assertion; the unknown path /milestones/10/revisions falls to the catch-all route.
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 13 ⎯⎯⎯⎯⎯⎯⎯
+ FAIL  tests/sprint-2/revisions-ui.test.tsx > TEST-UI-07H (AC-07-7, AC-07-8): the revisions page > the milestone page links to Compare revisions
+TestingLibraryElementError: Unable to find role="link" and name "Compare revisions"
+ FAIL  tests/sprint-2/revisions-ui.test.tsx > TEST-UI-07H (AC-07-7, AC-07-8): the revisions page > shows the breadcrumb, the milestone title and deadline, and every revision newest first with its details
+TestingLibraryElementError: Unable to find role="heading" and name `/Compare revisions/`
+ FAIL  tests/sprint-2/revisions-ui.test.tsx > TEST-UI-07H (AC-07-7, AC-07-8): the revisions page > shows a loading state while the list is pending
+TestingLibraryElementError: Unable to find role="heading" and name `/Compare revisions/`
+ FAIL  tests/sprint-2/revisions-ui.test.tsx > TEST-UI-07H (AC-07-7, AC-07-8): the revisions page > shows the error state with Retry
+ FAIL  tests/sprint-2/revisions-ui.test.tsx > TEST-UI-07H (AC-07-7, AC-07-8): the revisions page > AC-07-7: no revision → "No revisions yet."
+TestingLibraryElementError: Unable to find an element with the text: No revisions yet.. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+ FAIL  tests/sprint-2/revisions-ui.test.tsx > TEST-UI-07H (AC-07-7, AC-07-8): the revisions page > AC-07-7: one revision → the list, the explanation, and Compare disabled
+TestingLibraryElementError: Unable to find an element with the text: Only one revision so far; compare needs two.. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+ FAIL  tests/sprint-2/revisions-ui.test.tsx > TEST-UI-07H (AC-07-7, AC-07-8): the revisions page > Compare is disabled until exactly two are checked, and a third checkbox is then disabled
+TestingLibraryElementError: Unable to find role="checkbox" and name "Select revision 3"
+ FAIL  tests/sprint-2/revisions-ui.test.tsx > TEST-UI-07H (AC-07-7, AC-07-8): the revisions page > checking 3 then 1 and pressing Compare puts the older on the left, with badges and marked words, and keeps ?a=1&b=3 in the URL
+TestingLibraryElementError: Unable to find role="checkbox" and name "Select revision 3"
+ FAIL  tests/sprint-2/revisions-ui.test.tsx > TEST-UI-07H (AC-07-7, AC-07-8): the revisions page > opening the URL with ?a=1&b=3 (a reload or a shared link) shows the same comparison and checks both boxes
+TestingLibraryElementError: Unable to find role="region" and name "Comparison"
+ FAIL  tests/sprint-2/revisions-ui.test.tsx > TEST-UI-07H (AC-07-7, AC-07-8): the revisions page > stacks the two columns below 768 px: each column is full width on small screens and half from md up
+TestingLibraryElementError: Unable to find role="region" and name "Comparison"
+ FAIL  tests/sprint-2/revisions-ui.test.tsx > TEST-UI-07H (AC-07-7, AC-07-8): the revisions page > a hand-edited URL that the API rejects with 400 shows the message and keeps the list usable
+ FAIL  tests/sprint-2/revisions-ui.test.tsx > TEST-UI-07H (AC-07-7, AC-07-8): the revisions page > a revision number that is not in this milestone shows "Revision not found." with the list usable
+ FAIL  tests/sprint-2/revisions-ui.test.tsx > TEST-UI-07H (AC-07-7, AC-07-8): the revisions page > a 404 for the milestone shows the "Milestone not found" page
+TestingLibraryElementError: Unable to find role="heading" and name "Milestone not found"
+ Test Files  1 failed (1)
+      Tests  13 failed (13)
