@@ -82,7 +82,7 @@ Rule functions (pure, unit-tested) in `server/src/rules/summary.ts`:
   - The page title is "Summary of my teams".
   - Loading uses the shared `Loading` spinner, errors use `ErrorAlert` with **Retry** (`components/States.tsx`). The empty state ("You are not assigned to any team.") is a new shared `Empty` component added to `States.tsx` (NFR-10).
   - At phone width the table scrolls inside its own container, and the page itself does not scroll sideways.
-  - F-12 adds a `RequireRole` route guard (next to `RequireAuth`) and a shared `NoAccess` component ("You don't have access to this page." with a link to My teams). A student who opens `/summary` directly sees `NoAccess`. The page is still protected by the API's 403.
+  - F-12 reuses the `RequireRole` route guard and the shared `NoAccess` component created by F-09 (which merges first). A student who opens `/summary` directly sees `NoAccess`. The page is still protected by the API's 403.
   - The table's own horizontal scroll at phone width is a manual check (CSS), recorded with a screenshot.
 - **Export CSV:**
   - The button appears on `/teams/:teamId` for supervisors only, next to **Progress board**. It is disabled while the download is running.
@@ -172,7 +172,7 @@ before its implementation, with logs in `artifacts/sprint-3/tdd/F-12-*.txt`.
 
 The Sprint 1 [definition-of-done.md](../sprint-1/definition-of-done.md) applies, plus:
 - [ ] Built after F-10 and F-11 have merged. The score columns follow the merged F-11 data model. The ADMIN rows of TEST-12-04 run once F-09 has merged.
-- [ ] `RequireRole`, `NoAccess` and `Empty` exist with component tests (TEST-UI-12).
+- [ ] F-12 uses `RequireRole` and `NoAccess` from F-09, and adds `Empty`, with component tests (TEST-UI-12).
 - [ ] F-12 only **appends** `GET /api/summary` to the `perf:nfr08` endpoint list. TEST-10-07 is unchanged, and the Sprint 3 run measures the F-10 endpoints plus the summary. The export is a download, not a list endpoint, so it is not timed.
 - [ ] Manual checks MAN-12-01 (phone-width table) and MAN-12-02 (fixed number of queries, query log printed once) recorded in the STS.
 - [ ] No migration. `docs/system-sds.md` describes both endpoints, and the definitions table above.
