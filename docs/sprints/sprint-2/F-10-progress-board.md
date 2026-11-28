@@ -25,6 +25,9 @@ Consequences, stated so nobody builds it differently:
   deadline stays `SUBMITTED` or `FEEDBACK_GIVEN` after the deadline.
 - `deadline` is the effective deadline after any F-08 extension, so an extension moves an `OVERDUE`
   milestone back to `NOT_SUBMITTED` (D-06).
+- `SUBMITTED` means **waiting for feedback**. Since CHG-01 (F-05 v1.2) it also means the team
+  cannot submit the next revision until the supervisor gives feedback (409 `AWAITING_FEEDBACK`). So
+  this column is where supervisor action is needed, not student action.
 - Feedback on an older revision does not count. If revision 1 has feedback and revision 2 has none,
   the state is `SUBMITTED`, because the newest work is waiting for feedback.
 - A milestone closed early is `CLOSED` even with feedback. Its card still shows the latest revision
