@@ -157,24 +157,25 @@ PostgreSQL cannot store a NUL byte in text).
 
 **Role / permission matrix.** "Own team" = a team the student belongs to; "assigned team" = a team the
 supervisor is assigned to. ✗ outside scope → 404; ✗ wrong role on an accessible record → 403. The
-**Administrator** column is the planned Sprint 2 design (F-09, FR-14); it is not implemented in Sprint 1,
-where teams and accounts come from the seed (D-04).
+**Administrator** column is the Sprint 2 design in the F-09 contract (FR-14, revised 2026-11-28 in PR #76): an
+administrator manages teams and accounts but never sees team work, because `teamScopeWhere` matches no
+team for `ADMIN`. It is not implemented in Sprint 1, where teams and accounts come from the seed (D-04).
 
 | Operation | Student | Supervisor | Administrator (Sprint 2) | Unauthenticated |
 | --- | --- | --- | --- | --- |
 | Log in | ✓ | ✓ | ✓ | ✓ |
 | View own identity (`GET /api/auth/me`) | ✓ | ✓ | ✓ | 401 |
 | Log out (`POST /api/auth/logout`) | ✓ (204, session deleted) | ✓ (204, session deleted) | ✓ (204, session deleted) | 204 (nothing to delete; idempotent) |
-| List teams | own teams only | assigned teams only | all teams | 401 |
-| View team + members | own team | assigned team | any team | 401 |
-| List / view milestones | own team | assigned team | any team (read-only) | 401 |
-| Create milestone | 403 | assigned team only | 403 (supervisors own milestones) | 401 |
-| Submit / resubmit | own team, before the deadline, within the limit, after feedback on the previous revision (CHG-01) | 403 | 403 | 401 |
-| View submissions | own team | assigned team | any team (read-only) | 401 |
-| Record feedback | 403 | assigned team only, one per revision | 403 | 401 |
-| View feedback | own team | assigned team | any team (read-only) | 401 |
-| Create teams, assign students/supervisors | 403 | 403 | ✓ | 401 |
-| Deactivate / reactivate an account | 403 | 403 | ✓ (not their own account) | 401 |
+| List teams | own teams only | assigned teams only | none on `GET /api/teams` (empty list); all teams with members on `GET /api/admin/teams` | 401 |
+| View team + members | own team | assigned team | 404 on `GET /api/teams/:id`; members only through `/api/admin/teams` | 401 |
+| List / view milestones | own team | assigned team | 404 (no team in scope) | 401 |
+| Create milestone | 403 | assigned team only | 404 (no team in scope) | 401 |
+| Submit / resubmit | own team, before the deadline, within the limit, after feedback on the previous revision (CHG-01) | 403 | 404 (no team in scope) | 401 |
+| View submissions | own team | assigned team | 404 | 401 |
+| Record feedback | 403 | assigned team only, one per revision | 404 | 401 |
+| View feedback | own team | assigned team | 404 | 401 |
+| Create teams, assign students/supervisors | 403 | 403 | ✓ (active students as members, active supervisors as supervisors; never an `ADMIN`) | 401 |
+| Deactivate an account | 403 | 403 | ✓ Student or Supervisor accounts only (not an `ADMIN`, so not their own); re-activation is not in Sprint 2 | 401 |
 
 **Account deactivation (`isActive`).** Sprint 1 already enforces it: an inactive account cannot log in
 (the same 401 `INVALID_CREDENTIALS` as a wrong password, so it reveals nothing), and every request
