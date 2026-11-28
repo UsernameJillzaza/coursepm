@@ -1,0 +1,46 @@
+TEST-11-05 board check (F-10 + F-11), base 4bd55e2
+
+== MUTATION: board.ts temporarily returns the stored score (not committed); must fail ==
+
+10 migrations found in prisma/migrations
+
+
+No pending migrations to apply.
+ ❯ tests/sprint-3/score.api.test.ts (14 tests | 1 failed | 13 skipped) 635ms
+     × A1 gets { score: null } for an unreleased and an unscored milestone, and no other response carries the value 275ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/sprint-3/score.api.test.ts > TEST-11-05 (AC-11-2): an unreleased score is in no student response > A1 gets { score: null } for an unreleased and an unscored milestone, and no other response carries the value
+AssertionError: expected '{"team":{"id":575,"name":"Team Alpha …' not to match /"score"/
+
+- Expected:
+/"score"/
+
++ Received:
+"{\"team\":{\"id\":575,\"name\":\"Team Alpha ff489b28\"},\"generatedAt\":\"2026-11-28T19:21:31.278Z\",\"counts\":{\"NOT_SUBMITTED\":1,\"SUBMITTED\":1,\"FEEDBACK_GIVEN\":0,\"OVERDUE\":0,\"CLOSED\":0},\"items\":[{\"milestoneId\":1337,\"title\":\"Hidden 609a0b1d\",\"score\":{\"score\":87},\"deadline\":\"2026-12-01T19:21:31.014Z\",\"originalDeadline\":\"2026-12-01T19:21:31.014Z\",\"extended\":false,\"closedAt\":null,\"state\":\"SUBMITTED\",\"revisionsUsed\":1,\"maxRevisions\":3,\"latest\":{\"revision\":1,\"submittedAt\":\"2026-11-28T19:21:31.130Z\",\"submittedBy\":{\"id\":1435,\"name\":\"Test STUDENT 5f7bbbc33c\"},\"hasFeedback\":false}},{\"milestoneId\":1338,\"title\":\"Score f7a9ed1b\",\"score\":null,\"deadline\":\"2026-12-01T19:21:31.018Z\",\"originalDeadline\":\"2026-12-01T19:21:31.018Z\",\"extended\":false,\"closedAt\":null,\"state\":\"NOT_SUBMITTED\",\"revisionsUsed\":0,\"maxRevisions\":3,\"latest\":null}]}"
+
+ ❯ tests/sprint-3/score.api.test.ts:103:28
+    101|     for (const res of bodies) {
+    102|       expect(res.status).toBe(200)
+    103|       expect(res.text).not.toMatch(/"score"/)
+       |                            ^
+    104|       expect(res.text).not.toMatch(/"(value|score|newScore)"\s*:\s*87/)
+    105|     }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 13 skipped (14)
+   Start at  02:21:26
+   Duration  5.07s (transform 370ms, setup 0ms, import 858ms, tests 635ms, environment 0ms)
+
+
+== Unmodified code: full server suite ==
+
+ Test Files  28 passed (28)
+      Tests  381 passed (381)
+   Start at  02:21:33
+   Duration  46.03s (transform 741ms, setup 0ms, import 6.06s, tests 30.93s, environment 3ms)
+

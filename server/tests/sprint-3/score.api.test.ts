@@ -96,6 +96,7 @@ describe('TEST-11-05 (AC-11-2): an unreleased score is in no student response', 
       await agent.get(`/api/milestones/${scored.id}`),
       await agent.get(`/api/teams/${alpha.id}/milestones`),
       await agent.get(`/api/milestones/${scored.id}/submissions`),
+      await agent.get(`/api/teams/${alpha.id}/board`), // F-10
     ]
     for (const res of bodies) {
       expect(res.status).toBe(200)
