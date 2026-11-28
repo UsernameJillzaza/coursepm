@@ -86,12 +86,10 @@ one's new deadline: it gets 201 if it is still later, otherwise 400 `fields.newD
   sentence and AC-04-5 get a note that `status` is also `CLOSED` after an early close.
 - **F-06 feedback:** unchanged. Feedback on existing revisions is still allowed after a close.
 - **F-10 board** (contract to be written in #73): uses `closedAt` to tell *Closed* from *Overdue*.
-- **Lab 7 change CHG-01** (PR #75, under review): revision n + 1 is accepted only when revision n
-  has feedback, with 409 `AWAITING_FEEDBACK`. If it merges, the F-05 rule order becomes closed →
-  deadline → revision limit → feedback. `MILESTONE_CLOSED` stays first, and an extension does not
-  bypass the feedback rule. The F-08 tests that submit a second revision (TEST-08-09) give feedback on
-  revision 1 first, so they hold with or without CHG-01. F-08 does not change BR-05, so edits keep the
-  BR-05 deadline check as it is.
+- **Lab 7:** the Lab 7 change is not chosen yet and is not part of Sprint 2. Its own change request
+  states its effect on F-05 / F-08 when it is written. F-08 does not change BR-05. The F-08 test that
+  submits a second revision after an extension (TEST-08-09) gives feedback on revision 1 first, so it
+  does not depend on whether a later change ties resubmission to feedback.
 
 ## UI
 
