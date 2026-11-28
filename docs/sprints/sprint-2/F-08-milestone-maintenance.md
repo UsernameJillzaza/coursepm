@@ -86,9 +86,12 @@ one's new deadline: it gets 201 if it is still later, otherwise 400 `fields.newD
   sentence and AC-04-5 get a note that `status` is also `CLOSED` after an early close.
 - **F-06 feedback:** unchanged. Feedback on existing revisions is still allowed after a close.
 - **F-10 board** (contract to be written in #73): uses `closedAt` to tell *Closed* from *Overdue*.
-- **Lab 7 (if approved):** `validateMilestoneEdit` reuses the BR-05 deadline check, so a changed
-  BR-05 minimum notice would apply to edited deadlines too. The Lab 7 contract decides whether it also
-  applies to `validateExtension`.
+- **Lab 7 change CHG-01** (PR #75, under review): revision n + 1 is accepted only when revision n
+  has feedback, with 409 `AWAITING_FEEDBACK`. If it merges, the F-05 rule order becomes closed →
+  deadline → revision limit → feedback. `MILESTONE_CLOSED` stays first, and an extension does not
+  bypass the feedback rule. The F-08 tests that submit a second revision (TEST-08-09) give feedback on
+  revision 1 first, so they hold with or without CHG-01. F-08 does not change BR-05, so edits keep the
+  BR-05 deadline check as it is.
 
 ## UI
 
@@ -179,7 +182,7 @@ one's new deadline: it gets 201 if it is still later, otherwise 400 `fields.newD
 | AC-08-4 | Student A1 calls edit, extension and close on their own team's milestone → 403 each. Supervisor 2 (not assigned to Alpha) → 404 each. A malformed ID (`abc`, `0`) → 404. Nothing is stored. |
 | AC-08-5 | Supervisor 1 grants an extension to a later deadline with the reason "Server outage" → 201 with the `extension` shape. `deadline` is the new value, `originalDeadline` is the old one, `extended` is true. A second extension stores `previousDeadline` = the first one's `newDeadline`, and `originalDeadline` stays the first value. |
 | AC-08-6 | With the current deadline D in the future, an extension to D or D − 1 ms → 400 `fields.newDeadline`, and D + 1 ms is accepted (BR-11 boundary). With D in the past, a new deadline between D and now → 400 `fields.newDeadline`, because it is not in the future. A malformed date → 400. A reason that is missing, 2 or 501 characters, or contains a NUL → 400 `fields.reason`. Lengths 3 and 500 are accepted. |
-| AC-08-7 | A milestone whose deadline has passed (student submit → 409 `DEADLINE_PASSED`) gets an extension. A1 then submits → 201 with the next revision number (D-06: late work only through an extension). |
+| AC-08-7 | A milestone whose deadline has passed, with revision 1 already given feedback (student submit → 409 `DEADLINE_PASSED`), gets an extension. A1 then submits → 201 with the next revision number (D-06: late work only through an extension). |
 | AC-08-8 | Supervisor 1 closes a milestone that is still open → 200, `closedAt` is set and `status` is `CLOSED`. A1 then submits → 409 `MILESTONE_CLOSED`, even if the revision limit is also reached, and nothing is stored. Close, edit or extension on it again → 409 `MILESTONE_CLOSED`. A close reason of 501 characters, or one containing a NUL → 400 `fields.reason`. Feedback on an existing revision is still accepted. |
 | AC-08-9 | The database rejects, when inserted directly without the API: a `DeadlineExtension` with `newDeadline ≤ previousDeadline` or a 2-character reason; a `MilestoneChange` of kind `EDIT` with a null or unknown `field`, a null value or a non-null `reason`, and one of kind `CLOSE` with a `field` or a value; and a `Milestone` with `closedAt` set but `closedById` null. |
 | AC-08-10 | `GET …/history` returns `EDIT`, `EXTENSION` and `CLOSE` entries in the documented order and shape to A1 and to Supervisor 1. Supervisor 2 gets 404. |
