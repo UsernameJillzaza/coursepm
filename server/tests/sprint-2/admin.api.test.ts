@@ -454,7 +454,32 @@ describe('TEST-09-14 (AC-09-12): an admin gets 404 on the Sprint 2/3 routes', ()
     expect(res.text).not.toContain(title)
     expect({ submissions: await prisma.submission.count(), feedback: await prisma.feedback.count() }).toEqual(before)
   })
-  it.todo('F-08: PATCH /api/milestones/:id, POST …/extensions, POST …/close, GET …/history → 404, nothing stored')
+  // F-08 block: enabled once F-08 (#77) and F-09 (#78) are on the same branch (PR #85 review).
+  it('F-08: PATCH /api/milestones/:id, POST …/extensions, POST …/close, GET …/history → 404 each, no Alpha title, nothing stored', async () => {
+    const title = `Admin maintain ${tag()}`
+    const { milestone } = await milestoneWithReviewedRevision(title, a1)
+    const agent = await loginAgent(admin)
+    const before = await prisma.milestone.findUniqueOrThrow({ where: { id: milestone.id } })
+    const counts = async () => ({
+      changes: await prisma.milestoneChange.count({ where: { milestoneId: milestone.id } }),
+      extensions: await prisma.deadlineExtension.count({ where: { milestoneId: milestone.id } }),
+      milestones: await prisma.milestone.count(),
+    })
+    const start = await counts()
+    const responses = [
+      await agent.patch(`/api/milestones/${milestone.id}`).send({ description: 'Changed by the admin' }),
+      await agent.post(`/api/milestones/${milestone.id}/extensions`).send({ newDeadline: new Date(Date.now() + 96 * 3600000).toISOString(), reason: 'Admin try' }),
+      await agent.post(`/api/milestones/${milestone.id}/close`).send({ reason: 'Admin try' }),
+      await agent.get(`/api/milestones/${milestone.id}/history`),
+    ]
+    for (const res of responses) {
+      expect(res.status).toBe(404)
+      expect(res.body).toEqual({ error: { code: 'NOT_FOUND', message: 'Milestone not found.' } })
+      expect(res.text).not.toContain(title)
+    }
+    expect(await counts()).toEqual(start)
+    expect(await prisma.milestone.findUniqueOrThrow({ where: { id: milestone.id } })).toEqual(before)
+  })
   it.todo('F-10: GET /api/teams/:alpha/board → 404')
   it.todo('F-11: GET and PUT /api/milestones/:id/score, POST …/score/release → 404, nothing stored')
 })
