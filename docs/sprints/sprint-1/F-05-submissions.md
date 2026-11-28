@@ -1,6 +1,6 @@
 # F-05 Submission with deadline and revision rules — feature contract
 
-Version 1.2 · 2026-11-28 (CHG-01: resubmission needs feedback on the previous revision) · 1.1 2026-11-15 (data note updated in #7) · Issue: #2 (contract); implementation: #7; change: #<cr-issue> · Links: FR-06, FR-07, FR-08, BR-06, BR-07, BR-08, NFR-05, D-01, D-05, D-06, D-08
+Version 1.2 · 2026-11-28 (CHG-01: resubmission needs feedback on the previous revision) · 1.1 2026-11-15 (data note updated in #7) · Issue: #2 (contract); implementation: #7; change: #74 · Links: FR-06, FR-07, FR-08, BR-06, BR-07, BR-08, NFR-05, D-01, D-05, D-06, D-08
 
 ## Behavior and workflow
 1. A Student of the team opens `/milestones/:id` and fills in a title, description and link.

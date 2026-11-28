@@ -48,7 +48,7 @@ The **Result** column is filled from the release-candidate run on `daefdff` (Par
 
 - **Uncovered requirements:** none. Every FR, BR and NFR in SRS v0.1 maps to a feature or responsibility.
 - **Approved changes:** record each change as `CHG-nn` with the date, reason and affected IDs.
-  - **CHG-01** (2026-11-28, Lab 7, Issue #<cr-issue>): revision n + 1 needs feedback on revision n.
+  - **CHG-01** (2026-11-28, Lab 7, Issue #74): revision n + 1 needs feedback on revision n.
     Reason: stop silent resubmission (D-01). Affects FR-07, BR-07, NFR-05; F-04, F-05, F-06;
     AC-05-2, AC-05-6, AC-05-8, AC-05-11 … AC-05-13; TEST-05-02, 05-05, 05-06, 05-08, 05-09, 05-11 … 05-13,
     TEST-UI-02, E2E-02. Details: [labs/lab-07/change-request.md](labs/lab-07/change-request.md).

@@ -174,7 +174,7 @@ same `parseId`, which TEST-L6-57-01 covers for every spelling.
 | TEST-L6-60-02 | AC-04-1, Issue #60 | Component test: as a supervisor, open `/teams/1/milestones/new` while `GET /api/teams/1` returns the team | The form appears after the team loads and names the team |
 | TEST-L6-60-03 | AC-02-10, Issue #60 | Component test: `GET /api/teams/1` returns 500 once, then the team; click **Retry** | Error alert with **Retry** and no form; after Retry the form appears (2 team requests). Added after the fix as extra coverage, not part of the RED run |
 
-## Lab 7 change CHG-01 (Issue #<cr-issue>)
+## Lab 7 change CHG-01 (Issue #74)
 
 CHG-01 changes BR-07: revision n + 1 needs feedback on revision n (F-05 v1.2, AC-05-11 … AC-05-13).
 The rows marked "Revised by CHG-01" above keep their IDs; their old expectation (v1.0) and the reason

@@ -1,6 +1,6 @@
 # Lab 7 — Change request CHG-01: resubmit only after feedback
 
-Version 1.0 · 2026-11-28 · Issue: #<cr-issue> · Status: **proposed, waiting for team approval**
+Version 1.0 · 2026-11-28 · Issue: #74 · Status: **proposed, waiting for team approval**
 
 | Field | Value |
 | --- | --- |
@@ -11,7 +11,7 @@ Version 1.0 · 2026-11-28 · Issue: #<cr-issue> · Status: **proposed, waiting f
 | Affected features | F-05 (changed rule), F-04 (milestone response gains one derived field), F-06 (feedback now unlocks the next revision; no code change), F-10 Sprint 2 (state meaning, no code change) |
 | Accepted Sprint 1 baseline (old behavior) | `v0.2.1` = `main` `a342ed5`, Cloud Run `coursepm-00008-j5m` — the release Team GG EZ accepted in Lab 6 (`UAT-20261125-GGEZ-R2`) |
 | Pre-change implementation | `sprint2-staging` `36787ae` (PR #72, documents only — the F-05 code is byte-identical to `a342ed5`) |
-| Approval | No instructor/TA approval is required (course announcement "Lab 7 Spec Sheet Change", 2026-11-28). The team approves: Jakkarin (`jakkarin-promsee`) comments "Approved for Lab 7" on Issue #<cr-issue>, dated by GitHub. |
+| Approval | No instructor/TA approval is required (course announcement "Lab 7 Spec Sheet Change", 2026-11-28). The team approves: Jakkarin (`jakkarin-promsee`) comments "Approved for Lab 7" on Issue #74, dated by GitHub. |
 
 ## 1. Old rule and new rule
 
@@ -131,7 +131,7 @@ No other test is removed, weakened or skipped.
 
 1. This document + revised SRS / F-04 / F-05 / F-06 / System SDS / STS / traceability → PR A into
    `sprint2-staging`, reviewed by Jakkarin **before** any code changes.
-2. Branch `maintenance/<cr-issue>-feedback-gate` from `sprint2-staging` after PR A merges.
+2. Branch `maintenance/74-feedback-gate` from `sprint2-staging` after PR A merges.
 3. `test:` commit — the revised and new tests, run against the unchanged code → RED (assertion failures,
    `artifacts/lab-07/tdd/red.log`), pushed alone so CI records the failing run.
 4. `feat:` server rule → `feat:` `awaitingFeedback` + UI → `test:` E2E-02 → GREEN logs.
