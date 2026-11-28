@@ -5,10 +5,11 @@ import { requireAuth } from '../auth/middleware'
 import { AppError, parseId, sendError } from '../http'
 import { mergeHistory, validateCloseReason, validateExtension, validateMilestone, validateMilestoneEdit } from '../rules/milestone'
 import { lockMilestone } from './lock'
+import { awaitsFeedback } from '../rules/board'
 import type { Milestone } from '../generated/prisma/client'
 
 type Stats = { used: number; latest: Date | null; latestHasFeedback: boolean }
-type ExtensionStats = { count: number; originalDeadline: Date | null }
+export type ExtensionStats = { count: number; originalDeadline: Date | null }
 
 // F-05: how many revisions each milestone has, and when the latest arrived.
 // CHG-01: whether the latest revision has feedback (one query for all IDs).
@@ -38,7 +39,8 @@ async function submissionStats(milestoneIds: number[]): Promise<Map<number, Stat
 // extension's previousDeadline is the deadline before it and every extension
 // is later (BR-11, CHECK), so the smallest previousDeadline is the earliest
 // extension's previousDeadline: the original deadline.
-async function extensionStats(milestoneIds: number[]): Promise<Map<number, ExtensionStats>> {
+// Also used by the F-10 board.
+export async function extensionStats(milestoneIds: number[]): Promise<Map<number, ExtensionStats>> {
   if (milestoneIds.length === 0) return new Map()
   const groups = await prisma.deadlineExtension.groupBy({
     by: ['milestoneId'],
@@ -47,6 +49,14 @@ async function extensionStats(milestoneIds: number[]): Promise<Map<number, Exten
     _min: { previousDeadline: true },
   })
   return new Map(groups.map((g) => [g.milestoneId, { count: g._count._all, originalDeadline: g._min.previousDeadline }]))
+}
+
+// F-08 originalDeadline / extended, shared by the milestone DTO and the F-10 board.
+export function extensionFields(deadline: Date, ext: ExtensionStats = { count: 0, originalDeadline: null }) {
+  return {
+    originalDeadline: ext.count > 0 && ext.originalDeadline ? ext.originalDeadline : deadline,
+    extended: ext.count > 0,
+  }
 }
 
 // revisionsUsed / latestSubmittedAt come from the stored revisions (F-05);
@@ -72,9 +82,8 @@ function toMilestoneDto(
     status: row.closedAt === null && now.getTime() <= row.deadline.getTime() ? 'OPEN' : 'CLOSED',
     latestSubmittedAt: stats.latest,
     closedAt: row.closedAt,
-    originalDeadline: ext.count > 0 && ext.originalDeadline ? ext.originalDeadline : row.deadline,
-    extended: ext.count > 0,
-    awaitingFeedback: stats.used >= 1 && !stats.latestHasFeedback,
+    ...extensionFields(row.deadline, ext),
+    awaitingFeedback: awaitsFeedback(stats.used >= 1 ? { hasFeedback: stats.latestHasFeedback } : null),
   }
 }
 

@@ -9,8 +9,8 @@ import { cleanupUsers, createUser, DEMO_PASSWORD, loginAgent, type TestUser } fr
 
 // F-09 Course administration (FR-14, BR-01, NFR-02, NFR-04), API level.
 // Sprint 2 STS TEST-09-01 … TEST-09-03, 09-05, 09-06, 09-08 … 09-10, 09-12, 09-13.
-// TEST-09-14 (AC-09-12, Sprint 2/3 routes) is at the end: the F-07 block runs;
-// the F-08, F-10 and F-11 blocks stay todo until those features are on the branch.
+// TEST-09-14 (AC-09-12, Sprint 2/3 routes) is at the end: the F-07, F-08 and
+// F-10 blocks run; the F-11 block stays todo until that feature is on the branch.
 
 const FORBIDDEN = { error: { code: 'FORBIDDEN', message: 'Only a course administrator can do this.' } }
 const tag = () => randomBytes(4).toString('hex')
@@ -480,6 +480,19 @@ describe('TEST-09-14 (AC-09-12): an admin gets 404 on the Sprint 2/3 routes', ()
     expect(await counts()).toEqual(start)
     expect(await prisma.milestone.findUniqueOrThrow({ where: { id: milestone.id } })).toEqual(before)
   })
-  it.todo('F-10: GET /api/teams/:alpha/board → 404')
+  // F-10 block: enabled once F-10 (#80) and F-09 (#78) are on the same branch.
+  it('F-10: GET /api/teams/:alpha/board (with and without ?state) → 404, no Alpha title or name in the body', async () => {
+    const title = `Admin board ${tag()}`
+    await milestoneWithReviewedRevision(title, a1)
+    const { name } = await prisma.team.findUniqueOrThrow({ where: { id: alpha.id } })
+    const agent = await loginAgent(admin)
+    for (const path of [`/api/teams/${alpha.id}/board`, `/api/teams/${alpha.id}/board?state=SUBMITTED`]) {
+      const res = await agent.get(path)
+      expect(res.status).toBe(404)
+      expect(res.body).toEqual({ error: { code: 'NOT_FOUND', message: 'Team not found.' } })
+      expect(res.text).not.toContain(title)
+      expect(res.text).not.toContain(name)
+    }
+  })
   it.todo('F-11: GET and PUT /api/milestones/:id/score, POST …/score/release → 404, nothing stored')
 })
