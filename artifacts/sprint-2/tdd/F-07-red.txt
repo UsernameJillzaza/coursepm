@@ -3,9 +3,10 @@ Code under test: cf90f2c (sprint2-staging after #75/#76; no rules/revisionDiff.t
 Command: cd server && npx vitest run tests/sprint-2
 Date: 2026-11-28 21:04 (ICT)
 Expected: the unit file fails to import rules/revisionDiff.ts; the API tests fail on assertions (404 from the unknown-route handler instead of 200/400). Two TEST-07-06 cases already pass (an outsider with a bad query gets 404; no session gets 401), because an unknown /api route also answers 404 / 401; the other scope cases fail, since they expect the message "Milestone not found.". Both are kept so the implemented route is held to the same answers.
+Note (added 2026-11-28, PR #83 review): the unit RED is an import failure by design: rules/revisionDiff.ts did not exist yet, so the unit file stops at "Cannot find module" before any assertion. The API RED (18 cases) and the UI RED (F-07-ui-red.txt, 13 cases) are assertion failures. The later minimality tests (F-07-minimality-red.txt) are a real assertion-level RED against the implemented function. Local paths are shown as <repo>.
 
  FAIL  tests/sprint-2/revision-diff.unit.test.ts [ tests/sprint-2/revision-diff.unit.test.ts ]
-Error: Cannot find module '../../src/rules/revisionDiff' imported from C:/Users/BTCOM/Desktop/ticktokit_cloud_shield/coursepm/server/tests/sprint-2/revision-diff.unit.test.ts
+Error: Cannot find module '../../src/rules/revisionDiff' imported from <repo>/server/tests/sprint-2/revision-diff.unit.test.ts
 ⎯⎯⎯⎯⎯⎯ Failed Tests 18 ⎯⎯⎯⎯⎯⎯⎯
  FAIL  tests/sprint-2/compare.api.test.ts > TEST-07-03 (AC-07-1, AC-07-2): compare two revisions > A1 and Supervisor 1 get older = revision 1 with its feedback, newer = revision 3 without
 AssertionError: expected 404 to be 200 // Object.is equality
