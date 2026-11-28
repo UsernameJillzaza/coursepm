@@ -42,7 +42,7 @@ The **Result** column is filled from the release-candidate run on `daefdff` (Par
 | FR-11 | F-07 | 2 | AC-07-1 … AC-07-9 | TEST-07-01 … TEST-07-08, TEST-UI-07H | Pass on `e30dc3a` (8/9 tests; TEST-07-08 E2E not run yet) |
 | FR-12 | F-08 | 2 | AC-08-1, AC-08-2, AC-08-3, AC-08-8, AC-08-10, AC-08-11, AC-08-12 | TEST-08-01 … TEST-08-04, TEST-08-10, TEST-08-12, TEST-08-13, TEST-08-14, TEST-08-15, TEST-08-18, TEST-UI-08 | Pass on `0c28fce` (integrated head, Issue #77 / PR #85), incl. TEST-08-15 (E2E) |
 | FR-13, BR-11 | F-08 (D-06, D-09) | 2 | AC-08-5, AC-08-6, AC-08-7, AC-08-9, AC-08-11 | TEST-08-06 … TEST-08-09, TEST-08-11, TEST-08-15, TEST-08-16, TEST-08-17, TEST-08-19 | Pass on `0c28fce` (integrated head, Issue #77 / PR #85), incl. TEST-08-15 (E2E) |
-| FR-14 | F-09 | 2 | AC-09-1 … AC-09-12 | TEST-09-01 … TEST-09-14, TEST-UI-09 | Pass on `c2acd7f` (14/15 tests); TEST-09-14 F-07 and F-08 blocks Pass on `0c28fce`, F-10 block Pass on `401ba6a`, F-11 block not run yet |
+| FR-14 | F-09 | 2 | AC-09-1 … AC-09-12 | TEST-09-01 … TEST-09-14, TEST-UI-09 | Pass on `c2acd7f` (14/15 tests); TEST-09-14 F-07 and F-08 blocks Pass on `0c28fce`, F-10 block Pass on `401ba6a`, F-11 block Pass on `3b94df1`, all four blocks together on `4bd55e2` |
 | BR-01 (`ADMIN`, Sprint 2) | F-09 | 2 | AC-09-1, AC-09-2, AC-09-6, AC-09-9 | TEST-09-01, TEST-09-02, TEST-09-07, TEST-09-08, TEST-09-12 | Pass on `c2acd7f` (5/5 tests) |
 | NFR-04 (deactivation by an admin) | F-09 | 2 | AC-09-7 | TEST-09-09 | Pass on `c2acd7f` (1/1 tests) |
 | FR-15 | F-10 | 2 | AC-10-1 … AC-10-6, AC-10-8, AC-10-9 | TEST-10-01 … TEST-10-06, TEST-10-08, TEST-UI-10 | Pass on `401ba6a` (8/8 tests, Issue #80 branch run), incl. TEST-10-08 (E2E) |
