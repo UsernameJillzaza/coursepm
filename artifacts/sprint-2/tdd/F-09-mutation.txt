@@ -1,0 +1,5 @@
+Issue #78 (F-09) mutation check of the hardening test
+Code under test: 50408c4 with the ADMIN branch line removed from teamScopeWhere (temporary, not committed)
+Command: cd server && npx vitest run tests/sprint-2/admin.api.test.ts -t "rule, not a data accident"
+Date: 2026-11-28 20:35 (ICT)
+Result: Tests 2 failed | 30 skipped (32): both new TEST-09-12 cases fail without the branch, and pass with it (GREEN run below). The original TEST-09-12 case passes either way, which is why these were added.

@@ -10,7 +10,9 @@ Version 1.0 · 2026-11-15 · Issue: #2 (contract); implementation: #5 · Links: 
   when the role differs. An out-of-scope student therefore gets 404 before the role check (D-03).
 - Scope helpers in `server/src/access/scope.ts`:
   - `teamScopeWhere(user)` → a Prisma `where` that limits teams to `members.some({userId})` for students and
-    `supervisors.some({userId})` for supervisors.
+    `supervisors.some({userId})` for supervisors. **Sprint 2 (F-09, Issue #78):** an explicit third branch
+    gives an `ADMIN` `{ id: { in: [] } }`, which matches no team, so every team-owned route answers 404 to an
+    administrator (TEST-09-12). The Sprint 1 branches are unchanged.
   - `loadTeamForUser(user, teamId)`, `loadMilestoneForUser(user, milestoneId)`,
     `loadSubmissionForUser(user, submissionId)` → the record, or `null` (handler returns 404).
 - Error handler: a known `AppError` maps to its status/code; anything else returns 500 `INTERNAL_ERROR`

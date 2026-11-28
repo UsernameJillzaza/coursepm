@@ -1,6 +1,6 @@
 # F-09 Course administration — feature contract
 
-Version 1.1 · 2026-11-28 (AC-09-12 for the Sprint 2/3 routes, PR #76 review; 1.0 same day) · Issue: #73 (contract); implementation: S2-2 (Issue to be created) ·
+Version 1.1 · 2026-11-28 (AC-09-12 for the Sprint 2/3 routes, PR #76 review; 1.0 same day) · Issue: #73 (contract); implementation: #78 (S2-2) ·
 Links: FR-14, BR-01, BR-02, BR-03, NFR-01, NFR-02, NFR-03, NFR-04, NFR-10, D-03, D-07 ·
 Depends on: F-01 (sessions, `isActive`), F-02 (`teamScopeWhere`), F-03 (`Team`, `TeamMember`,
 `SupervisorAssignment`)
@@ -36,6 +36,8 @@ re-activation are not in FR-14 and would need a new requirement.
 4. **Add member / add supervisor:** on a team row the administrator picks an account from a list of
    active users of the right role and confirms. The server checks the team exists, the user exists,
    is active and has the right role, then inserts the `TeamMember` or `SupervisorAssignment` row. The
+   check and the insert run in one transaction that locks the user row (`SELECT … FOR UPDATE`), so an
+   add racing a deactivation of the same account waits for it and then answers 400 (PR #82 review). The
    composite primary key makes a repeat (or a race) a 409 `ALREADY_ASSIGNED`. A student may be in
    several teams (D-07).
 5. **Deactivate:** on an account row the administrator presses **Deactivate** and confirms. In one
@@ -199,14 +201,18 @@ expected results. Each RED test is committed before its implementation. Logs go 
 ## Definition of Done
 
 The Sprint 1 [definition-of-done.md](../sprint-1/definition-of-done.md) applies, plus:
-- [ ] The migration only adds the enum value. After `prisma migrate deploy` on a copy of the Lab 6
+- [x] The migration only adds the enum value. After `prisma migrate deploy` on a copy of the Lab 6
       database, the `a342ed5` code still passes its health check, login of a Student and a
       Supervisor, and the milestone list (the admin login on that code is the documented known limit).
+      Evidence: `artifacts/sprint-2/tdd/F-09-lab6-db-copy.txt` (local copy built by the `a342ed5`
+      migrations and seed; the admin login gave the documented 500).
 - [ ] Every AC-09-n has a passing test in the STS, with file › name and the tested commit. The
-      traceability rows are filled in.
-- [ ] The Sprint 1 tests (TEST-01-*, TEST-02-*, TEST-03-*) still pass without their expectations
+      traceability rows are filled in. (AC-09-1 … AC-09-11 pass; AC-09-12 / TEST-09-14 runs as F-07,
+      F-08, F-10 and F-11 merge.)
+- [x] The Sprint 1 tests (TEST-01-*, TEST-02-*, TEST-03-*) still pass without their expectations
       being changed; the F-02 contract notes the `ADMIN` scope branch.
 - [ ] The seed creates the admin account idempotently, and the private test-account handoff lists it
-      (label and role only in Git).
+      (label and role only in Git). (Seed: done, `DEMO_ADMIN` upserted by e-mail. Handoff: Jakkarin
+      confirms in PR #82.)
 - [ ] The PR is reviewed by Achirawit and merged into `sprint2-staging`, and the Issue moves to Done
       on board #8.

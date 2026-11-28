@@ -1,0 +1,10 @@
+PR #82 review item 6 (Issue #78): add-member vs deactivation race, RED run
+Code under test: a9f25e0 (assignRoute reads isActive and inserts without a lock) + the new test (committed next as test:)
+Command: cd server && npx vitest run tests/sprint-2/admin.api.test.ts -t "racing a deactivation"
+Date: 2026-11-28 21:50 (ICT)
+Expected: an assertion failure: the add returns 201 and stores the member while the deactivation transaction is still open, because it reads the last committed (active) row.
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+ FAIL  tests/sprint-2/admin.api.test.ts > TEST-09-08 (AC-09-6): an add racing a deactivation never stores an inactive account (PR #82 review) > while a deactivation of the student is still in its transaction, Add member waits for it and then refuses
+AssertionError: expected 201 to be 400 // Object.is equality
+      Tests  1 failed | 32 skipped (33)

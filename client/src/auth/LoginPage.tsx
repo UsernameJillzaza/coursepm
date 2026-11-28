@@ -2,7 +2,7 @@ import { useState, type FormEvent } from 'react'
 import { Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { ApiError, type FieldErrors } from '../api'
 import HealthStatus from '../components/HealthStatus'
-import { useAuth } from './AuthContext'
+import { homePath, useAuth } from './AuthContext'
 
 // F-01 UI contract (AC-01-10): e-mail + password, the button is disabled
 // while sending. Missing fields show a message beside that field (from the
@@ -18,7 +18,7 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null)
   const [sending, setSending] = useState(false)
 
-  if (user) return <Navigate to="/teams" replace />
+  if (user) return <Navigate to={homePath(user)} replace />
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault()
@@ -26,9 +26,11 @@ export default function LoginPage() {
     setFields({})
     setSending(true)
     try {
-      await login(email, password)
+      const signedIn = await login(email, password)
       const from = (location.state as { from?: string } | null)?.from
-      navigate(from && from !== '/login' ? from : '/teams', { replace: true })
+      // F-09: an ADMIN always starts on /admin; other roles return to the page they asked for.
+      const target = signedIn.role === 'ADMIN' ? homePath(signedIn) : from && from !== '/login' ? from : homePath(signedIn)
+      navigate(target, { replace: true })
     } catch (err) {
       if (err instanceof ApiError && Object.keys(err.fields).length) setFields(err.fields)
       else setError(err instanceof ApiError ? err.message : 'Could not reach the server. Try again.')

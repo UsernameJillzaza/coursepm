@@ -1,0 +1,19 @@
+PR #82 review: full regression after the review fixes (Issue #78)
+Code commit under test: c2acd7f (the lock fix; the remaining changes are docs and logs)
+Commands: npm run test:server ; npm run test:client ; npm --prefix client run build ; npm --prefix server run build
+Date: 2026-11-28 21:55 (ICT)
+
+--- server ---
+7 migrations found in prisma/migrations
+ Test Files  20 passed (20)
+      Tests  237 passed | 4 todo (241)
+
+--- client ---
+ Test Files  9 passed (9)
+      Tests  63 passed (63)
+
+--- client build ---
+✓ built in 537ms
+
+--- server build ---
+server build OK (prisma generate && tsc)

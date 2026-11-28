@@ -26,7 +26,7 @@ written feedback on a specific submitted revision.
 | --- | --- | --- |
 | **Student** (team member) | Sign in; view own team(s) and their milestones; submit milestone work before the deadline and resubmit after feedback on the previous revision (CHG-01); read feedback on own team's submissions. | 1 |
 | **Supervisor** | Sign in; view assigned teams; create milestones (title, description, deadline, revision limit) for an assigned team; read that team's submissions; record feedback on a submitted revision. | 1 |
-| **Course Administrator** | Create teams, assign students and supervisors, deactivate accounts. Done by the seed script in Sprint 1. | 2 |
+| **Course Administrator** | Create teams, assign students and supervisors, deactivate accounts. Done by the seed script in Sprint 1; implemented as the `ADMIN` role and the `/admin` page by F-09 in Sprint 2 (Issue #78). | 2 |
 | System | Enforces authentication, role permissions, record scope, deadlines and revision limits; stores timestamps. | 1 |
 
 ## 3. Scope and exclusions
@@ -67,7 +67,7 @@ the university registration system; real student data (only synthetic demo data 
 
 | ID | Rule | Sprint |
 | --- | --- | --- |
-| BR-01 | Every account has exactly one role: `STUDENT` or `SUPERVISOR` (`ADMIN` added in Sprint 2). | 1 |
+| BR-01 | Every account has exactly one role: `STUDENT`, `SUPERVISOR` or `ADMIN` (`ADMIN` implemented by F-09 in Sprint 2, Issue #78). | 1 |
 | BR-02 | A Student may access only teams they are a member of, and those teams' milestones, submissions and feedback. | 1 |
 | BR-03 | A Supervisor may access only teams they are assigned to, and those teams' milestones, submissions and feedback. | 1 |
 | BR-04 | Only a Supervisor assigned to the team may create a milestone for it. Students can never create milestones. | 1 |

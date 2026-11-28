@@ -42,9 +42,9 @@ The **Result** column is filled from the release-candidate run on `daefdff` (Par
 | FR-11 | F-07 | 2 | AC-07-1 … AC-07-9 | TEST-07-01 … TEST-07-08, TEST-UI-07H | Planned (not run) |
 | FR-12 | F-08 | 2 | AC-08-1, AC-08-2, AC-08-3, AC-08-8, AC-08-10, AC-08-11, AC-08-12 | TEST-08-01 … TEST-08-04, TEST-08-10, TEST-08-12, TEST-08-13, TEST-08-14, TEST-08-15, TEST-08-18, TEST-UI-08 | Planned (not run) |
 | FR-13, BR-11 | F-08 (D-06, D-09) | 2 | AC-08-5, AC-08-6, AC-08-7, AC-08-9, AC-08-11 | TEST-08-06 … TEST-08-09, TEST-08-11, TEST-08-15, TEST-08-16, TEST-08-17 | Planned (not run) |
-| FR-14 | F-09 | 2 | AC-09-1 … AC-09-12 | TEST-09-01 … TEST-09-14, TEST-UI-09 | Planned (not run) |
-| BR-01 (`ADMIN`, Sprint 2) | F-09 | 2 | AC-09-1, AC-09-2, AC-09-6, AC-09-9 | TEST-09-01, TEST-09-02, TEST-09-07, TEST-09-08, TEST-09-12 | Planned (not run) |
-| NFR-04 (deactivation by an admin) | F-09 | 2 | AC-09-7 | TEST-09-09 | Planned (not run) |
+| FR-14 | F-09 | 2 | AC-09-1 … AC-09-12 | TEST-09-01 … TEST-09-14, TEST-UI-09 | Pass on `c2acd7f` (14/15 tests; TEST-09-14 not run until F-07/F-08/F-10/F-11 merge) |
+| BR-01 (`ADMIN`, Sprint 2) | F-09 | 2 | AC-09-1, AC-09-2, AC-09-6, AC-09-9 | TEST-09-01, TEST-09-02, TEST-09-07, TEST-09-08, TEST-09-12 | Pass on `c2acd7f` (5/5 tests) |
+| NFR-04 (deactivation by an admin) | F-09 | 2 | AC-09-7 | TEST-09-09 | Pass on `c2acd7f` (1/1 tests) |
 | FR-15 | F-10 | 2 | AC-10-1 … AC-10-6, AC-10-8, AC-10-9 | TEST-10-01 … TEST-10-06, TEST-10-08, TEST-UI-10 | Planned (not run) |
 | NFR-08 | F-10 (measurement owner), F-12 | 2; summary endpoint added in 3 | AC-10-7, AC-12-9 | TEST-10-07 (`perf:nfr08`), TEST-12-08 | Planned (not run) |
 | NFR-02 (Sprint 2–3 access paths) | F-07, F-08, F-09, F-10, F-11, F-12 | 2, 3 | AC-07-5, AC-07-6, AC-08-4, AC-08-10, AC-09-2, AC-09-9, AC-09-12, AC-10-4, AC-11-2, AC-11-6, AC-12-3, AC-12-5 | TEST-07-06, TEST-07-07, TEST-08-05, TEST-08-12, TEST-09-02, TEST-09-12, TEST-09-14, TEST-10-04, TEST-11-05, TEST-11-08, TEST-12-04, TEST-12-06 | Planned (not run) |
@@ -56,7 +56,7 @@ The **Result** column is filled from the release-candidate run on `daefdff` (Par
 
 ## Coverage gaps and approved changes
 
-- **Uncovered requirements:** none unmapped. Every FR, BR and NFR maps to a feature or responsibility. All Sprint 2 and 3 rows are still **Planned (not run)**, so none of them counts as verified yet.
+- **Uncovered requirements:** none unmapped. Every FR, BR and NFR maps to a feature or responsibility. Sprint 2 and 3 rows are **Planned (not run)** unless they say Pass; F-09's rows (FR-14, BR-01 `ADMIN`, NFR-04 deactivation) were run in Issue #78, and the F-09 parts of the shared NFR-02 / NFR-10 rows passed there too (TEST-09-02, TEST-09-12, TEST-UI-09).
 - **Approved changes:** record each change as `CHG-nn` with the date, reason and affected IDs.
   - **CHG-01** (2026-11-28, Lab 7, Issue #74): revision n + 1 needs feedback on revision n.
     Reason: stop silent resubmission (D-01). Affects FR-07, BR-07, NFR-05; F-04, F-05, F-06;
