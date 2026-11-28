@@ -203,7 +203,9 @@ describe('TEST-UI-11 (AC-11-10): loading and error states', () => {
     }))
     renderPage()
     const p = await panel()
-    expect(within(p).getByRole('status', { name: 'Loading' })).toBeInTheDocument()
+    // Its own text, not a second role="status" spinner (Sprint 1 TEST-UI-04 expects one).
+    expect(within(p).getByText('Loading score…')).toHaveAttribute('aria-busy', 'true')
+    expect(within(p).queryByRole('status')).not.toBeInTheDocument()
   })
 
   it('a failed load shows ErrorAlert with Retry inside the panel, the rest of the page stays, and Retry re-requests', async () => {

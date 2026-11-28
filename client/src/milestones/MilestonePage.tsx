@@ -7,13 +7,14 @@ import SubmitForm from '../submissions/SubmitForm'
 import type { Submission } from '../submissions/types'
 import MilestoneHistory from './MilestoneHistory'
 import MilestoneMaintenance from './MilestoneMaintenance'
+import ScorePanel from './ScorePanel'
 import { bangkokShort, bangkokTime, type HistoryItem, type Milestone } from './types'
 
 // F-05 milestone detail (SDS §3): deadline, "Revisions used: n / max", the
 // student submit form, and the revision list with its loading / empty /
 // error states (AC-02-10), and revision-specific feedback (F-06). F-08 adds
 // the Closed early / Extended badges, the supervisor maintenance controls and
-// the history.
+// the history. F-11 adds the Score panel (the server decides what each role sees).
 export default function MilestonePage() {
   const { milestoneId } = useParams()
   const { user } = useAuth()
@@ -74,6 +75,10 @@ export default function MilestonePage() {
         </p>
       )}
       {m.description && <p style={{ whiteSpace: 'pre-wrap' }}>{m.description}</p>}
+
+      {(user?.role === 'SUPERVISOR' || user?.role === 'STUDENT') && (
+        <ScorePanel milestoneId={m.id} teamName={team.name} role={user.role} />
+      )}
 
       {user?.role === 'SUPERVISOR' && <MilestoneMaintenance milestone={m} onChanged={refreshAfterChange} />}
 
