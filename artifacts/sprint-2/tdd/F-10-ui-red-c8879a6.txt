@@ -1,0 +1,1390 @@
+# F-10 UI RED re-run on c8879a6 — 2026-11-28 23:59 ICT (PR self-review follow-up)
+# Why: F-10-ui-red.txt ran on b997f5d; c8879a6 then tightened the pending-spinner case (it looks inside the board page's <main>, so RequireAuth's own spinner cannot match). This run proves the tightened case still fails on the stub page: c8879a6 = the 6162522 stub (<main className="container" />) + the tightened test, before the implementation 449b426.
+# Command: cd client; npx vitest run tests/sprint-2/board-ui.test.tsx (in a temporary detached worktree at c8879a6, removed afterwards)
+# Result: 11 failed / 0 passed (11), incl. 'shows the shared spinner while the board is pending'. All TestingLibraryElementError on the stub, no import errors.
+
+
+ RUN  v4.1.12 <repo>/client
+
+ ❯ tests/sprint-2/board-ui.test.tsx (11 tests | 11 failed) 10174ms
+     × shows the team name and five columns in BOARD_COLUMNS order with counts, whatever the item order 1034ms
+     × cards link to /milestones/:id and show deadline, extension, revisions, latest revision and the feedback mark 1018ms
+     × has no write controls: no form, text box or action button, for a supervisor too 1016ms
+     × clicking a column title sets ?state= and shows only that column; Show all clears it 1018ms
+     × the filter in the URL survives a reload; an unknown ?state is ignored 1016ms
+     × shows the shared spinner while the board is pending 16ms
+     × an empty team shows "No milestones yet."; a filtered state with no card shows "No milestones are …" 1010ms
+     × an error shows the alert with Retry, and Retry requests the board again 1007ms
+     × out of scope (404) shows the TeamDetailPage heading, text and Back to My teams link 1022ms
+     × at phone width the columns stack: one per row below lg, no fixed widths 1006ms
+     × the team page has a Progress board link to /teams/:id/board 1008ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 11 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/sprint-2/board-ui.test.tsx > TEST-UI-10 (AC-10-8): board page > shows the team name and five columns in BOARD_COLUMNS order with counts, whatever the item order
+TestingLibraryElementError: Unable to find role="heading" and name "Team Alpha"
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <nav
+      class="navbar navbar-expand bg-body-tertiary border-bottom mb-4"
+    >
+      <div
+        class="container"
+      >
+        <a
+          class="navbar-brand fw-semibold"
+          data-discover="true"
+          href="/teams"
+        >
+          CoursePM
+        </a>
+        <div
+          class="d-flex align-items-center gap-3"
+        >
+          <span>
+            Alpha Student 1
+          </span>
+          <span
+            class="badge text-bg-secondary"
+          >
+            Student
+          </span>
+          <button
+            class="btn btn-outline-secondary btn-sm"
+            type="button"
+          >
+            Log out
+          </button>
+        </div>
+      </div>
+    </nav>
+    <main
+      class="container"
+    />
+    <footer
+      class="container border-top mt-5 py-3 small text-body-secondary"
+    >
+      CoursePM development build
+    </footer>
+    <output
+      data-testid="location"
+    >
+      /teams/1/board
+    </output>
+  </div>
+</body>
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <nav
+      class="navbar navbar-expand bg-body-tertiary border-bottom mb-4"
+    >
+      <div
+        class="container"
+      >
+        <a
+          class="navbar-brand fw-semibold"
+          data-discover="true"
+          href="/teams"
+        >
+          CoursePM
+        </a>
+        <div
+          class="d-flex align-items-center gap-3"
+        >
+          <span>
+            Alpha Student 1
+          </span>
+          <span
+            class="badge text-bg-secondary"
+          >
+            Student
+          </span>
+          <button
+            class="btn btn-outline-secondary btn-sm"
+            type="button"
+          >
+            Log out
+          </button>
+        </div>
+      </div>
+    </nav>
+    <main
+      class="container"
+    />
+    <footer
+      class="container border-top mt-5 py-3 small text-body-secondary"
+    >
+      CoursePM development build
+    </footer>
+    <output
+      data-testid="location"
+    >
+      /teams/1/board
+    </output>
+  </div>
+</body>
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ tests/sprint-2/board-ui.test.tsx:61:25
+     59|     boardApi({ 'GET /api/teams/1/board': ok(board()) })
+     60|     renderAt('/teams/1/board')
+     61|     expect(await screen.findByRole('heading', { level: 1, name: 'Team …
+       |                         ^
+     62|     expect(columns().map((c) => c.getAttribute('aria-label'))).toEqual…
+     63|     expect(columns().map((c) => c.getAttribute('aria-label'))).toEqual…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/11]⎯
+
+ FAIL  tests/sprint-2/board-ui.test.tsx > TEST-UI-10 (AC-10-8): board page > cards link to /milestones/:id and show deadline, extension, revisions, latest revision and the feedback mark
+TestingLibraryElementError: Unable to find role="region" and name "Not submitted"
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <nav
+      class="navbar navbar-expand bg-body-tertiary border-bottom mb-4"
+    >
+      <div
+        class="container"
+      >
+        <a
+          class="navbar-brand fw-semibold"
+          data-discover="true"
+          href="/teams"
+        >
+          CoursePM
+        </a>
+        <div
+          class="d-flex align-items-center gap-3"
+        >
+          <span>
+            Alpha Student 1
+          </span>
+          <span
+            class="badge text-bg-secondary"
+          >
+            Student
+          </span>
+          <button
+            class="btn btn-outline-secondary btn-sm"
+            type="button"
+          >
+            Log out
+          </button>
+        </div>
+      </div>
+    </nav>
+    <main
+      class="container"
+    />
+    <footer
+      class="container border-top mt-5 py-3 small text-body-secondary"
+    >
+      CoursePM development build
+    </footer>
+    <output
+      data-testid="location"
+    >
+      /teams/1/board
+    </output>
+  </div>
+</body>
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <nav
+      class="navbar navbar-expand bg-body-tertiary border-bottom mb-4"
+    >
+      <div
+        class="container"
+      >
+        <a
+          class="navbar-brand fw-semibold"
+          data-discover="true"
+          href="/teams"
+        >
+          CoursePM
+        </a>
+        <div
+          class="d-flex align-items-center gap-3"
+        >
+          <span>
+            Alpha Student 1
+          </span>
+          <span
+            class="badge text-bg-secondary"
+          >
+            Student
+          </span>
+          <button
+            class="btn btn-outline-secondary btn-sm"
+            type="button"
+          >
+            Log out
+          </button>
+        </div>
+      </div>
+    </nav>
+    <main
+      class="container"
+    />
+    <footer
+      class="container border-top mt-5 py-3 small text-body-secondary"
+    >
+      CoursePM development build
+    </footer>
+    <output
+      data-testid="location"
+    >
+      /teams/1/board
+    </output>
+  </div>
+</body>
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ tests/sprint-2/board-ui.test.tsx:74:39
+     72|     boardApi({ 'GET /api/teams/1/board': ok(board()) })
+     73|     renderAt('/teams/1/board')
+     74|     const notSubmitted = await screen.findByRole('region', { name: 'No…
+       |                                       ^
+     75|     expect(within(notSubmitted).getByRole('link', { name: 'Milestone N…
+     76|     expect(within(notSubmitted).getByText('Deadline 12 Dec 2026 18:00 …
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/11]⎯
+
+ FAIL  tests/sprint-2/board-ui.test.tsx > TEST-UI-10 (AC-10-8): board page > has no write controls: no form, text box or action button, for a supervisor too
+TestingLibraryElementError: Unable to find role="region" and name "Overdue"
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <nav
+      class="navbar navbar-expand bg-body-tertiary border-bottom mb-4"
+    >
+      <div
+        class="container"
+      >
+        <a
+          class="navbar-brand fw-semibold"
+          data-discover="true"
+          href="/teams"
+        >
+          CoursePM
+        </a>
+        <div
+          class="d-flex align-items-center gap-3"
+        >
+          <span>
+            Dr. Supervisor One
+          </span>
+          <span
+            class="badge text-bg-secondary"
+          >
+            Supervisor
+          </span>
+          <button
+            class="btn btn-outline-secondary btn-sm"
+            type="button"
+          >
+            Log out
+          </button>
+        </div>
+      </div>
+    </nav>
+    <main
+      class="container"
+    />
+    <footer
+      class="container border-top mt-5 py-3 small text-body-secondary"
+    >
+      CoursePM development build
+    </footer>
+    <output
+      data-testid="location"
+    >
+      /teams/1/board
+    </output>
+  </div>
+</body>
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <nav
+      class="navbar navbar-expand bg-body-tertiary border-bottom mb-4"
+    >
+      <div
+        class="container"
+      >
+        <a
+          class="navbar-brand fw-semibold"
+          data-discover="true"
+          href="/teams"
+        >
+          CoursePM
+        </a>
+        <div
+          class="d-flex align-items-center gap-3"
+        >
+          <span>
+            Dr. Supervisor One
+          </span>
+          <span
+            class="badge text-bg-secondary"
+          >
+            Supervisor
+          </span>
+          <button
+            class="btn btn-outline-secondary btn-sm"
+            type="button"
+          >
+            Log out
+          </button>
+        </div>
+      </div>
+    </nav>
+    <main
+      class="container"
+    />
+    <footer
+      class="container border-top mt-5 py-3 small text-body-secondary"
+    >
+      CoursePM development build
+    </footer>
+    <output
+      data-testid="location"
+    >
+      /teams/1/board
+    </output>
+  </div>
+</body>
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ tests/sprint-2/board-ui.test.tsx:95:18
+     93|     boardApi({ 'GET /api/teams/1/board': ok(board()) }, supervisor)
+     94|     renderAt('/teams/1/board')
+     95|     await screen.findByRole('region', { name: 'Overdue' })
+       |                  ^
+     96|     expect(screen.queryByRole('textbox')).not.toBeInTheDocument()
+     97|     expect(document.querySelector('main form')).toBeNull()
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/11]⎯
+
+ FAIL  tests/sprint-2/board-ui.test.tsx > TEST-UI-10 (AC-10-8): board page > clicking a column title sets ?state= and shows only that column; Show all clears it
+TestingLibraryElementError: Unable to find role="button" and name "Overdue"
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <nav
+      class="navbar navbar-expand bg-body-tertiary border-bottom mb-4"
+    >
+      <div
+        class="container"
+      >
+        <a
+          class="navbar-brand fw-semibold"
+          data-discover="true"
+          href="/teams"
+        >
+          CoursePM
+        </a>
+        <div
+          class="d-flex align-items-center gap-3"
+        >
+          <span>
+            Alpha Student 1
+          </span>
+          <span
+            class="badge text-bg-secondary"
+          >
+            Student
+          </span>
+          <button
+            class="btn btn-outline-secondary btn-sm"
+            type="button"
+          >
+            Log out
+          </button>
+        </div>
+      </div>
+    </nav>
+    <main
+      class="container"
+    />
+    <footer
+      class="container border-top mt-5 py-3 small text-body-secondary"
+    >
+      CoursePM development build
+    </footer>
+    <output
+      data-testid="location"
+    >
+      /teams/1/board
+    </output>
+  </div>
+</body>
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <nav
+      class="navbar navbar-expand bg-body-tertiary border-bottom mb-4"
+    >
+      <div
+        class="container"
+      >
+        <a
+          class="navbar-brand fw-semibold"
+          data-discover="true"
+          href="/teams"
+        >
+          CoursePM
+        </a>
+        <div
+          class="d-flex align-items-center gap-3"
+        >
+          <span>
+            Alpha Student 1
+          </span>
+          <span
+            class="badge text-bg-secondary"
+          >
+            Student
+          </span>
+          <button
+            class="btn btn-outline-secondary btn-sm"
+            type="button"
+          >
+            Log out
+          </button>
+        </div>
+      </div>
+    </nav>
+    <main
+      class="container"
+    />
+    <footer
+      class="container border-top mt-5 py-3 small text-body-secondary"
+    >
+      CoursePM development build
+    </footer>
+    <output
+      data-testid="location"
+    >
+      /teams/1/board
+    </output>
+  </div>
+</body>
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ tests/sprint-2/board-ui.test.tsx:112:40
+    110|     })
+    111|     renderAt('/teams/1/board')
+    112|     await userEvent.click(await screen.findByRole('button', { name: 'O…
+       |                                        ^
+    113|     expect(location()).toBe('/teams/1/board?state=OVERDUE')
+    114|     expect(await screen.findByRole('button', { name: 'Show all' })).to…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/11]⎯
+
+ FAIL  tests/sprint-2/board-ui.test.tsx > TEST-UI-10 (AC-10-8): board page > the filter in the URL survives a reload; an unknown ?state is ignored
+TestingLibraryElementError: Unable to find role="region" and name "Overdue"
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <nav
+      class="navbar navbar-expand bg-body-tertiary border-bottom mb-4"
+    >
+      <div
+        class="container"
+      >
+        <a
+          class="navbar-brand fw-semibold"
+          data-discover="true"
+          href="/teams"
+        >
+          CoursePM
+        </a>
+        <div
+          class="d-flex align-items-center gap-3"
+        >
+          <span>
+            Alpha Student 1
+          </span>
+          <span
+            class="badge text-bg-secondary"
+          >
+            Student
+          </span>
+          <button
+            class="btn btn-outline-secondary btn-sm"
+            type="button"
+          >
+            Log out
+          </button>
+        </div>
+      </div>
+    </nav>
+    <main
+      class="container"
+    />
+    <footer
+      class="container border-top mt-5 py-3 small text-body-secondary"
+    >
+      CoursePM development build
+    </footer>
+    <output
+      data-testid="location"
+    >
+      /teams/1/board?state=OVERDUE
+    </output>
+  </div>
+</body>
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <nav
+      class="navbar navbar-expand bg-body-tertiary border-bottom mb-4"
+    >
+      <div
+        class="container"
+      >
+        <a
+          class="navbar-brand fw-semibold"
+          data-discover="true"
+          href="/teams"
+        >
+          CoursePM
+        </a>
+        <div
+          class="d-flex align-items-center gap-3"
+        >
+          <span>
+            Alpha Student 1
+          </span>
+          <span
+            class="badge text-bg-secondary"
+          >
+            Student
+          </span>
+          <button
+            class="btn btn-outline-secondary btn-sm"
+            type="button"
+          >
+            Log out
+          </button>
+        </div>
+      </div>
+    </nav>
+    <main
+      class="container"
+    />
+    <footer
+      class="container border-top mt-5 py-3 small text-body-secondary"
+    >
+      CoursePM development build
+    </footer>
+    <output
+      data-testid="location"
+    >
+      /teams/1/board?state=OVERDUE
+    </output>
+  </div>
+</body>
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ tests/sprint-2/board-ui.test.tsx:132:25
+    130|     })
+    131|     const view = renderAt('/teams/1/board?state=OVERDUE')
+    132|     expect(await screen.findByRole('region', { name: 'Overdue' })).toB…
+       |                         ^
+    133|     expect(columns()).toHaveLength(1)
+    134|     view.unmount()
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/11]⎯
+
+ FAIL  tests/sprint-2/board-ui.test.tsx > TEST-UI-10 (AC-10-8): board page > shows the shared spinner while the board is pending
+TestingLibraryElementError: Unable to find an accessible element with the role "status" and name "Loading"
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+<main
+  class="container"
+/>
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ tests/sprint-2/board-ui.test.tsx:148:25
+    146|     // The session check shows its own spinner first; wait for the pag…
+    147|     const main = await screen.findByRole('main')
+    148|     expect(within(main).getByRole('status', { name: 'Loading' })).toBe…
+       |                         ^
+    149|     expect(screen.queryByRole('region', { name: 'Overdue' })).not.toBe…
+    150|   })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/11]⎯
+
+ FAIL  tests/sprint-2/board-ui.test.tsx > TEST-UI-10 (AC-10-8): board page > an empty team shows "No milestones yet."; a filtered state with no card shows "No milestones are …"
+TestingLibraryElementError: Unable to find an element with the text: No milestones yet.. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <nav
+      class="navbar navbar-expand bg-body-tertiary border-bottom mb-4"
+    >
+      <div
+        class="container"
+      >
+        <a
+          class="navbar-brand fw-semibold"
+          data-discover="true"
+          href="/teams"
+        >
+          CoursePM
+        </a>
+        <div
+          class="d-flex align-items-center gap-3"
+        >
+          <span>
+            Alpha Student 1
+          </span>
+          <span
+            class="badge text-bg-secondary"
+          >
+            Student
+          </span>
+          <button
+            class="btn btn-outline-secondary btn-sm"
+            type="button"
+          >
+            Log out
+          </button>
+        </div>
+      </div>
+    </nav>
+    <main
+      class="container"
+    />
+    <footer
+      class="container border-top mt-5 py-3 small text-body-secondary"
+    >
+      CoursePM development build
+    </footer>
+    <output
+      data-testid="location"
+    >
+      /teams/1/board
+    </output>
+  </div>
+</body>
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <nav
+      class="navbar navbar-expand bg-body-tertiary border-bottom mb-4"
+    >
+      <div
+        class="container"
+      >
+        <a
+          class="navbar-brand fw-semibold"
+          data-discover="true"
+          href="/teams"
+        >
+          CoursePM
+        </a>
+        <div
+          class="d-flex align-items-center gap-3"
+        >
+          <span>
+            Alpha Student 1
+          </span>
+          <span
+            class="badge text-bg-secondary"
+          >
+            Student
+          </span>
+          <button
+            class="btn btn-outline-secondary btn-sm"
+            type="button"
+          >
+            Log out
+          </button>
+        </div>
+      </div>
+    </nav>
+    <main
+      class="container"
+    />
+    <footer
+      class="container border-top mt-5 py-3 small text-body-secondary"
+    >
+      CoursePM development build
+    </footer>
+    <output
+      data-testid="location"
+    >
+      /teams/1/board
+    </output>
+  </div>
+</body>
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ tests/sprint-2/board-ui.test.tsx:158:25
+    156|     })
+    157|     const view = renderAt('/teams/1/board')
+    158|     expect(await screen.findByText('No milestones yet.')).toBeInTheDoc…
+       |                         ^
+    159|     view.unmount()
+    160|     renderAt('/teams/1/board?state=CLOSED')
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/11]⎯
+
+ FAIL  tests/sprint-2/board-ui.test.tsx > TEST-UI-10 (AC-10-8): board page > an error shows the alert with Retry, and Retry requests the board again
+TestingLibraryElementError: Unable to find role="alert"
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <nav
+      class="navbar navbar-expand bg-body-tertiary border-bottom mb-4"
+    >
+      <div
+        class="container"
+      >
+        <a
+          class="navbar-brand fw-semibold"
+          data-discover="true"
+          href="/teams"
+        >
+          CoursePM
+        </a>
+        <div
+          class="d-flex align-items-center gap-3"
+        >
+          <span>
+            Alpha Student 1
+          </span>
+          <span
+            class="badge text-bg-secondary"
+          >
+            Student
+          </span>
+          <button
+            class="btn btn-outline-secondary btn-sm"
+            type="button"
+          >
+            Log out
+          </button>
+        </div>
+      </div>
+    </nav>
+    <main
+      class="container"
+    />
+    <footer
+      class="container border-top mt-5 py-3 small text-body-secondary"
+    >
+      CoursePM development build
+    </footer>
+    <output
+      data-testid="location"
+    >
+      /teams/1/board
+    </output>
+  </div>
+</body>
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <nav
+      class="navbar navbar-expand bg-body-tertiary border-bottom mb-4"
+    >
+      <div
+        class="container"
+      >
+        <a
+          class="navbar-brand fw-semibold"
+          data-discover="true"
+          href="/teams"
+        >
+          CoursePM
+        </a>
+        <div
+          class="d-flex align-items-center gap-3"
+        >
+          <span>
+            Alpha Student 1
+          </span>
+          <span
+            class="badge text-bg-secondary"
+          >
+            Student
+          </span>
+          <button
+            class="btn btn-outline-secondary btn-sm"
+            type="button"
+          >
+            Log out
+          </button>
+        </div>
+      </div>
+    </nav>
+    <main
+      class="container"
+    />
+    <footer
+      class="container border-top mt-5 py-3 small text-body-secondary"
+    >
+      CoursePM development build
+    </footer>
+    <output
+      data-testid="location"
+    >
+      /teams/1/board
+    </output>
+  </div>
+</body>
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ tests/sprint-2/board-ui.test.tsx:171:32
+    169|     })
+    170|     renderAt('/teams/1/board')
+    171|     const alert = await screen.findByRole('alert')
+       |                                ^
+    172|     expect(alert).toHaveTextContent('Unexpected server error.')
+    173|     await userEvent.click(within(alert).getByRole('button', { name: 'R…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/11]⎯
+
+ FAIL  tests/sprint-2/board-ui.test.tsx > TEST-UI-10 (AC-10-8): board page > out of scope (404) shows the TeamDetailPage heading, text and Back to My teams link
+TestingLibraryElementError: Unable to find role="heading" and name "Team not found"
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <nav
+      class="navbar navbar-expand bg-body-tertiary border-bottom mb-4"
+    >
+      <div
+        class="container"
+      >
+        <a
+          class="navbar-brand fw-semibold"
+          data-discover="true"
+          href="/teams"
+        >
+          CoursePM
+        </a>
+        <div
+          class="d-flex align-items-center gap-3"
+        >
+          <span>
+            Alpha Student 1
+          </span>
+          <span
+            class="badge text-bg-secondary"
+          >
+            Student
+          </span>
+          <button
+            class="btn btn-outline-secondary btn-sm"
+            type="button"
+          >
+            Log out
+          </button>
+        </div>
+      </div>
+    </nav>
+    <main
+      class="container"
+    />
+    <footer
+      class="container border-top mt-5 py-3 small text-body-secondary"
+    >
+      CoursePM development build
+    </footer>
+    <output
+      data-testid="location"
+    >
+      /teams/9/board
+    </output>
+  </div>
+</body>
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <nav
+      class="navbar navbar-expand bg-body-tertiary border-bottom mb-4"
+    >
+      <div
+        class="container"
+      >
+        <a
+          class="navbar-brand fw-semibold"
+          data-discover="true"
+          href="/teams"
+        >
+          CoursePM
+        </a>
+        <div
+          class="d-flex align-items-center gap-3"
+        >
+          <span>
+            Alpha Student 1
+          </span>
+          <span
+            class="badge text-bg-secondary"
+          >
+            Student
+          </span>
+          <button
+            class="btn btn-outline-secondary btn-sm"
+            type="button"
+          >
+            Log out
+          </button>
+        </div>
+      </div>
+    </nav>
+    <main
+      class="container"
+    />
+    <footer
+      class="container border-top mt-5 py-3 small text-body-secondary"
+    >
+      CoursePM development build
+    </footer>
+    <output
+      data-testid="location"
+    >
+      /teams/9/board
+    </output>
+  </div>
+</body>
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ tests/sprint-2/board-ui.test.tsx:181:25
+    179|     boardApi({ 'GET /api/teams/9/board': fail(404, 'NOT_FOUND', 'Team …
+    180|     renderAt('/teams/9/board')
+    181|     expect(await screen.findByRole('heading', { name: 'Team not found'…
+       |                         ^
+    182|     expect(screen.getByText("It doesn't exist, or you aren't a member …
+    183|     expect(screen.getByRole('link', { name: 'Back to My teams' })).toH…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/11]⎯
+
+ FAIL  tests/sprint-2/board-ui.test.tsx > TEST-UI-10 (AC-10-8): board page > at phone width the columns stack: one per row below lg, no fixed widths
+TestingLibraryElementError: Unable to find role="region" and name "Overdue"
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <nav
+      class="navbar navbar-expand bg-body-tertiary border-bottom mb-4"
+    >
+      <div
+        class="container"
+      >
+        <a
+          class="navbar-brand fw-semibold"
+          data-discover="true"
+          href="/teams"
+        >
+          CoursePM
+        </a>
+        <div
+          class="d-flex align-items-center gap-3"
+        >
+          <span>
+            Alpha Student 1
+          </span>
+          <span
+            class="badge text-bg-secondary"
+          >
+            Student
+          </span>
+          <button
+            class="btn btn-outline-secondary btn-sm"
+            type="button"
+          >
+            Log out
+          </button>
+        </div>
+      </div>
+    </nav>
+    <main
+      class="container"
+    />
+    <footer
+      class="container border-top mt-5 py-3 small text-body-secondary"
+    >
+      CoursePM development build
+    </footer>
+    <output
+      data-testid="location"
+    >
+      /teams/1/board
+    </output>
+  </div>
+</body>
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <nav
+      class="navbar navbar-expand bg-body-tertiary border-bottom mb-4"
+    >
+      <div
+        class="container"
+      >
+        <a
+          class="navbar-brand fw-semibold"
+          data-discover="true"
+          href="/teams"
+        >
+          CoursePM
+        </a>
+        <div
+          class="d-flex align-items-center gap-3"
+        >
+          <span>
+            Alpha Student 1
+          </span>
+          <span
+            class="badge text-bg-secondary"
+          >
+            Student
+          </span>
+          <button
+            class="btn btn-outline-secondary btn-sm"
+            type="button"
+          >
+            Log out
+          </button>
+        </div>
+      </div>
+    </nav>
+    <main
+      class="container"
+    />
+    <footer
+      class="container border-top mt-5 py-3 small text-body-secondary"
+    >
+      CoursePM development build
+    </footer>
+    <output
+      data-testid="location"
+    >
+      /teams/1/board
+    </output>
+  </div>
+</body>
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ tests/sprint-2/board-ui.test.tsx:189:18
+    187|     boardApi({ 'GET /api/teams/1/board': ok(board()) })
+    188|     renderAt('/teams/1/board')
+    189|     await screen.findByRole('region', { name: 'Overdue' })
+       |                  ^
+    190|     const grid = columns()[0].parentElement!
+    191|     expect(grid).toHaveClass('row', 'row-cols-1', 'row-cols-lg-5')
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/11]⎯
+
+ FAIL  tests/sprint-2/board-ui.test.tsx > TEST-UI-10 (AC-10-8): board page > the team page has a Progress board link to /teams/:id/board
+TestingLibraryElementError: Unable to find role="link" and name "Progress board"
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <nav
+      class="navbar navbar-expand bg-body-tertiary border-bottom mb-4"
+    >
+      <div
+        class="container"
+      >
+        <a
+          class="navbar-brand fw-semibold"
+          data-discover="true"
+          href="/teams"
+        >
+          CoursePM
+        </a>
+        <div
+          class="d-flex align-items-center gap-3"
+        >
+          <span>
+            Alpha Student 1
+          </span>
+          <span
+            class="badge text-bg-secondary"
+          >
+            Student
+          </span>
+          <button
+            class="btn btn-outline-secondary btn-sm"
+            type="button"
+          >
+            Log out
+          </button>
+        </div>
+      </div>
+    </nav>
+    <main
+      class="container"
+    >
+      <nav
+        aria-label="breadcrumb"
+      >
+        <ol
+          class="breadcrumb"
+        >
+          <li
+            class="breadcrumb-item"
+          >
+            <a
+              data-discover="true"
+              href="/teams"
+            >
+              My teams
+            </a>
+          </li>
+          <li
+            aria-current="page"
+            class="breadcrumb-item active"
+          >
+            Team Alpha
+          </li>
+        </ol>
+      </nav>
+      <h1
+        class="h4 mb-0"
+      >
+        Team Alpha
+      </h1>
+      <p
+        class="text-body-secondary"
+      >
+        CPE334-DEMO
+      </p>
+      <div
+        class="row g-4"
+      >
+        <section
+          class="col-md-4"
+        >
+          <h2
+            class="h6"
+          >
+            Members
+          </h2>
+          <ul
+            class="list-group mb-3"
+          />
+          <h2
+            class="h6"
+          >
+            Supervisors
+          </h2>
+          <ul
+            class="list-group"
+          />
+        </section>
+      </div>
+      <section
+        aria-labelledby="milestones-heading"
+        class="mt-4"
+      >
+        <div
+          class="d-flex justify-content-between align-items-center mb-3"
+        >
+          <h2
+            class="h5 mb-0"
+            id="milestones-heading"
+          >
+            Milestones
+          </h2>
+        </div>
+        <p
+          class="text-body-secondary"
+        >
+          No milestones yet.
+        </p>
+      </section>
+    </main>
+    <footer
+      class="container border-top mt-5 py-3 small text-body-secondary"
+    >
+      CoursePM development build
+    </footer>
+    <output
+      data-testid="location"
+    >
+      /teams/1
+    </output>
+  </div>
+</body>
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <nav
+      class="navbar navbar-expand bg-body-tertiary border-bottom mb-4"
+    >
+      <div
+        class="container"
+      >
+        <a
+          class="navbar-brand fw-semibold"
+          data-discover="true"
+          href="/teams"
+        >
+          CoursePM
+        </a>
+        <div
+          class="d-flex align-items-center gap-3"
+        >
+          <span>
+            Alpha Student 1
+          </span>
+          <span
+            class="badge text-bg-secondary"
+          >
+            Student
+          </span>
+          <button
+            class="btn btn-outline-secondary btn-sm"
+            type="button"
+          >
+            Log out
+          </button>
+        </div>
+      </div>
+    </nav>
+    <main
+      class="container"
+    >
+      <nav
+        aria-label="breadcrumb"
+      >
+        <ol
+          class="breadcrumb"
+        >
+          <li
+            class="breadcrumb-item"
+          >
+            <a
+              data-discover="true"
+              href="/teams"
+            >
+              My teams
+            </a>
+          </li>
+          <li
+            aria-current="page"
+            class="breadcrumb-item active"
+          >
+            Team Alpha
+          </li>
+        </ol>
+      </nav>
+      <h1
+        class="h4 mb-0"
+      >
+        Team Alpha
+      </h1>
+      <p
+        class="text-body-secondary"
+      >
+        CPE334-DEMO
+      </p>
+      <div
+        class="row g-4"
+      >
+        <section
+          class="col-md-4"
+        >
+          <h2
+            class="h6"
+          >
+            Members
+          </h2>
+          <ul
+            class="list-group mb-3"
+          />
+          <h2
+            class="h6"
+          >
+            Supervisors
+          </h2>
+          <ul
+            class="list-group"
+          />
+        </section>
+      </div>
+      <section
+        aria-labelledby="milestones-heading"
+        class="mt-4"
+      >
+        <div
+          class="d-flex justify-content-between align-items-center mb-3"
+        >
+          <h2
+            class="h5 mb-0"
+            id="milestones-heading"
+          >
+            Milestones
+          </h2>
+        </div>
+        <p
+          class="text-body-secondary"
+        >
+          No milestones yet.
+        </p>
+      </section>
+    </main>
+    <footer
+      class="container border-top mt-5 py-3 small text-body-secondary"
+    >
+      CoursePM development build
+    </footer>
+    <output
+      data-testid="location"
+    >
+      /teams/1
+    </output>
+  </div>
+</body>
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ tests/sprint-2/board-ui.test.tsx:201:25
+    199|     })
+    200|     renderAt('/teams/1')
+    201|     expect(await screen.findByRole('link', { name: 'Progress board' })…
+       |                         ^
+    202|   })
+    203| })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/11]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  11 failed (11)
+   Start at  23:59:00
+   Duration  12.02s (transform 206ms, setup 236ms, import 340ms, tests 10.17s, environment 1.08s)
+

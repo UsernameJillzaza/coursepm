@@ -33,7 +33,8 @@ const nearestRank = (sorted: number[], p: number) => sorted[Math.ceil(p * sorted
 type Fixture = { milestoneIds: number[] }
 
 // 10 milestones per demo team: 2 per board state, up to 3 revisions each,
-// feedback on about half of the revisions, and 2 extensions per team.
+// feedback on about half of the latest revisions (earlier revisions always
+// have feedback, because CHG-01 requires it), and 2 extensions per team.
 async function createFixture(runTag: string): Promise<Fixture> {
   const teams = await prisma.team.findMany({
     where: { courseCode: 'CPE334-DEMO' },

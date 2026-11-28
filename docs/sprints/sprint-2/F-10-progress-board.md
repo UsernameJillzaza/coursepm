@@ -1,6 +1,6 @@
 # F-10 Team progress board — feature contract
 
-Version 1.0 · 2026-11-28 · Issue: #73 (contract); implementation: S2-4 (Issue to be created) ·
+Version 1.1 · 2026-11-28 (implementation notes, Issue #80) · 1.0 2026-11-28 · Issue: #73 (contract); implementation: #80 ·
 Links: FR-15, NFR-02, NFR-08, NFR-10, BR-06, D-03, D-05, D-06, D-09 · Depends on: F-05, F-06,
 **F-08** (`closedAt`, `originalDeadline`, `extended`)
 
@@ -124,7 +124,7 @@ NFR-08 asks for ("with seed data … on a developer laptop"). It is not a load t
   - Student B1 requests the same records.
 - **Dataset:**
   - The demo seed (3 teams), plus a fixture that **this script creates in its own setup and removes in its teardown**, so other tests still see the plain seed.
-  - The fixture is 10 milestones per team covering all five states, up to 3 revisions each, feedback on about half, and 2 extensions per team.
+  - The fixture is 10 milestones per team covering all five states, up to 3 revisions each, feedback on about half of the latest revisions (every earlier revision has feedback, because CHG-01 requires it before a resubmission, so about 78 % of all revisions have feedback in the measured run), and 2 extensions per team.
   - The script prints the row counts.
 - **Method:**
   - One Express app and one logged-in Supertest agent per user. The logins happen before timing, so the scrypt cost is not timed.
@@ -150,7 +150,7 @@ NFR-08 asks for ("with seed data … on a developer laptop"). It is not a load t
 | AC-10-8 | UI: the five columns appear in `BOARD_COLUMNS` order with their counts, whatever order the API items come in. Each card links to its milestone. Clicking a column sets `?state=` and shows only that column, and **Show all** clears it. Loading, empty, filtered-empty, error (with **Retry**) and 404 states appear. There are no write controls, and at 375 px the columns stack without horizontal scroll. |
 | AC-10-9 | End to end: a student submits, the board shows the milestone under Submitted. Supervisor 1 gives feedback, and after a reload the board shows it under Feedback given. |
 
-## Software test specification (planned)
+## Software test specification
 
 TEST-10-01 … TEST-10-08 and TEST-UI-10 in the Sprint 2 [sts.md](sts.md). The unit tests for
 `deriveMilestoneState` (TEST-10-01, TEST-10-02) are the RED commit before the implementation, with
