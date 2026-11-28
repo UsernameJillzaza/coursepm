@@ -1,6 +1,6 @@
 # F-05 Submission with deadline and revision rules — feature contract
 
-Version 1.2 · 2026-11-28 (CHG-01: resubmission needs feedback on the previous revision) · 1.1 2026-11-15 (data note updated in #7) · Issue: #2 (contract); implementation: #7; change: #74 · Links: FR-06, FR-07, FR-08, BR-06, BR-07, BR-08, NFR-05, D-01, D-05, D-06, D-08
+Version 1.3 · 2026-11-28 (F-08, #77: `MILESTONE_CLOSED` checked first and the milestone row lock) · 1.2 2026-11-28 (CHG-01: resubmission needs feedback on the previous revision) · 1.1 2026-11-15 (data note updated in #7) · Issue: #2 (contract); implementation: #7; change: #74 · Links: FR-06, FR-07, FR-08, BR-06, BR-07, BR-08, NFR-05, D-01, D-05, D-06, D-08
 
 ## Behavior and workflow
 1. A Student of the team opens `/milestones/:id` and fills in a title, description and link.
@@ -35,6 +35,11 @@ since Issue #63 the title rejects any control character and the description any 
 `revision` (= n) so the route can build its message. `latestHasFeedback` is a required input. Both are pure functions,
 so they are unit-tested without a database. **TDD: the unit tests for `checkCanSubmit` are committed
 failing first.**
+
+### Since F-08 (#77)
+- `checkCanSubmit` takes an optional `closedAt` and checks it **first**: a milestone closed early by its supervisor → 409 `MILESTONE_CLOSED` "This milestone has been closed by the supervisor.", even when the deadline has passed or the limit is reached. The combined order is closed → deadline → limit → feedback (CHG-01). Callers without `closedAt` get the earlier results.
+- `trySubmit` locks the milestone row (`SELECT … FOR UPDATE`) as its first statement, before counting revisions, so a submission cannot interleave with an F-08 edit, extension or close. Each retry after a `P2002` is a new transaction and takes the lock again.
+- An extension moves `Milestone.deadline` later, so BR-06 re-opens submission without a rule change (D-06: late work only through an extension). For a milestone closed early the form is replaced by "This milestone has been closed by the supervisor. Submissions are closed." See [F-08](../sprint-2/F-08-milestone-maintenance.md).
 
 ## UI
 Milestone detail shows the deadline, "Revisions used: 1 / 3", and the submit form (Student only).

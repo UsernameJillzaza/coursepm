@@ -68,6 +68,8 @@ erDiagram
   User ||--o{ Submission : submits
   Submission ||--o| Feedback : "has (≤1)"
   User ||--o{ Feedback : writes
+  Milestone ||--o{ MilestoneChange : "audited by (F-08)"
+  Milestone ||--o{ DeadlineExtension : "extended by (F-08)"
 ```
 
 | Entity | Key fields | Constraints / ownership |
@@ -77,11 +79,13 @@ erDiagram
 | `Team` | id, name, courseCode, createdAt | (courseCode, name) unique. |
 | `TeamMember` | teamId, userId | PK (teamId, userId); only `STUDENT` users are added (enforced by the seed, not the DB; see below). |
 | `SupervisorAssignment` | teamId, userId | PK (teamId, userId); only `SUPERVISOR` users are added (enforced by the seed, not the DB; see below). |
-| `Milestone` | id, teamId, title, description, deadline (UTC), maxRevisions (1–5), createdById, createdAt | FK → Team and the creator. A CHECK constraint keeps maxRevisions within 1–5. **UNIQUE (id, teamId)** so submissions can reference the pair. |
+| `Milestone` | id, teamId, title, description, deadline (UTC), maxRevisions (1–5), createdById, createdAt, closedAt?, closedById? (F-08) | FK → Team and the creator. A CHECK constraint keeps maxRevisions within 1–5. **UNIQUE (id, teamId)** so submissions can reference the pair. F-08: `deadline` is the effective deadline (the latest extension's `newDeadline`); CHECK `(closedAt IS NULL) = (closedById IS NULL)`, FK closedById → User. |
 | `Submission` | id, milestoneId, teamId, revision, title, description, link, submittedById, submittedAt | **UNIQUE (milestoneId, revision)** for NFR-05. teamId is copied from the milestone so scope checks are a single join, and a **composite FK (milestoneId, teamId) → Milestone (id, teamId)** makes the database reject a submission whose teamId differs from its milestone's team, so authorization can never use the wrong team. Never updated or deleted (BR-07). |
 | `Feedback` | id, submissionId (unique), supervisorId, body, createdAt | **UNIQUE (submissionId)** for BR-10; FK → Submission keeps the feedback/revision link. |
+| `MilestoneChange` (F-08) | id, milestoneId, kind (`EDIT`\|`CLOSE`), field?, oldValue?, newValue?, reason?, changedById, changedAt | FK → Milestone and the supervisor. CHECK: `EDIT` ⇒ field IS NOT NULL and in (`description`, `deadline`), oldValue and newValue NOT NULL, reason NULL; `CLOSE` ⇒ field, oldValue, newValue NULL; reason ≤ 500 characters. Index (milestoneId, changedAt). Never updated or deleted. Migrations `20261128124227_milestone_maintenance` and `20261128151322_milestone_change_field_not_null` (adds the explicit `field IS NOT NULL`). |
+| `DeadlineExtension` (F-08) | id, milestoneId, previousDeadline, newDeadline, reason, grantedById, grantedAt | FK → Milestone and the supervisor. CHECK **newDeadline > previousDeadline** (BR-11) and reason 3–500 characters. Index (milestoneId, grantedAt). Never updated or deleted. |
 
-**Integrity: database-enforced vs application-enforced.** Enforced by the database: unique e-mail, unique (courseCode, name), membership/assignment primary keys, UNIQUE (milestoneId, revision), the composite FK that ties a submission to its milestone's team, UNIQUE (submissionId) on Feedback, and the maxRevisions CHECK. **Enforced by the application only (accepted for Sprint 1):** that e-mails are stored lowercase (the database enforces uniqueness only; login and the account helper normalise every e-mail); that team members are `STUDENT` users and assigned supervisors are `SUPERVISOR` users (only the seed writes these tables until F-09 adds admin screens with the same checks); that `Milestone.createdById` is an assigned supervisor, `Submission.submittedById` a member and `Feedback.supervisorId` an assigned supervisor (each set from the signed-in user after the scope and role checks, never from the request); and that submissions are never updated or deleted (BR-07: no API route can, and teams/milestones, whose deletion would cascade, are never deleted through the API either).
+**Integrity: database-enforced vs application-enforced.** Enforced by the database: unique e-mail, unique (courseCode, name), membership/assignment primary keys, UNIQUE (milestoneId, revision), the composite FK that ties a submission to its milestone's team, UNIQUE (submissionId) on Feedback, the maxRevisions CHECK, and (F-08) the closed-pair, extension and audit-row CHECKs above. **Enforced by the application only (accepted for Sprint 1):** that e-mails are stored lowercase (the database enforces uniqueness only; login and the account helper normalise every e-mail); that team members are `STUDENT` users and assigned supervisors are `SUPERVISOR` users (only the seed writes these tables until F-09 adds admin screens with the same checks); that `Milestone.createdById` is an assigned supervisor, `Submission.submittedById` a member and `Feedback.supervisorId` an assigned supervisor (each set from the signed-in user after the scope and role checks, never from the request); and that submissions are never updated or deleted (BR-07: no API route can, and teams/milestones, whose deletion would cascade, are never deleted through the API either). F-08 adds, enforced in code under the milestone row lock (`SELECT … FOR UPDATE`) and covered by tests: `Milestone.deadline` equals the latest extension's `newDeadline`, each extension's `previousDeadline` equals the deadline before it, no submission is accepted after a close, and `MilestoneChange` / `DeadlineExtension` rows are never updated or deleted.
 
 **Setup.** `npx prisma migrate dev` builds the schema from versioned migrations.
 `npx prisma db seed` runs `src/seed/demo.ts`, which is idempotent (users upserted by e-mail, teams by
@@ -151,6 +155,7 @@ PostgreSQL cannot store a NUL byte in text).
 | `GET /api/teams` · `GET /api/teams/:teamId` | F-03 |
 | `GET /api/teams/:teamId/milestones` · `POST /api/teams/:teamId/milestones` · `GET /api/milestones/:milestoneId` | F-04 |
 | `GET /api/milestones/:milestoneId/submissions` · `POST /api/milestones/:milestoneId/submissions` | F-05 |
+| `PATCH /api/milestones/:milestoneId` · `POST /api/milestones/:milestoneId/extensions` · `POST /api/milestones/:milestoneId/close` · `GET /api/milestones/:milestoneId/history` | F-08 |
 | `POST /api/submissions/:submissionId/feedback` | F-06 |
 
 ## 5. Roles, permissions and authentication
