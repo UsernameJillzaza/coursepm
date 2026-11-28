@@ -1,6 +1,6 @@
 # F-11 Milestone scoring and release — feature contract
 
-Version 1.0 · 2026-11-28 · Issue: #73 (contract); implementation: S3-1 (Issue to be created), the
+Version 1.1 · 2026-11-28 (BR-12 reason rule also in the database, PR #76 review; 1.0 same day) · Issue: #73 (contract); implementation: S3-1 (Issue to be created), the
 Sprint 3 rule implemented for Deliverable 2 · Links: FR-16, BR-12, BR-02, BR-03, BR-09, NFR-02,
 NFR-10, D-03, D-05, **D-10** (answers Q-01) · Depends on: F-06 (assigned-supervisor rule), F-04
 (milestone) · Used by: F-12 (`score`, `score_released` export columns)
@@ -34,7 +34,7 @@ reason.
    released) and saves. In one transaction the server locks the milestone row (`SELECT … FOR
    UPDATE`, as F-08 does), reads the current score, applies the rules below, upserts
    `MilestoneScore` and appends a `ScoreChange` of kind `SET` (old value, new value, reason, who,
-   when).
+   when, and `afterRelease` = whether the locked row was already released).
 3. **Release:** after a confirmation dialog the server locks the row, checks that a score exists and
    is not yet released, sets `releasedAt` / `releasedById` and appends a `ScoreChange` of kind
    `RELEASE`.
@@ -126,15 +126,18 @@ In `server/src/rules/score.ts`:
   `createdAt`, `updatedAt` (timestamptz, app clock inside the transaction, after the lock).
   - CHECKs: `score BETWEEN 0 AND 100`; `(releasedAt IS NULL) = (releasedById IS NULL)`.
 - `ScoreChange` (new): `id`, `milestoneScoreId` FK, `kind` (new enum `ScoreChangeKind`: `SET`,
-  `RELEASE`), `oldScore Int?`, `newScore Int?`, `reason text?`, `changedById` FK, `changedAt`
-  timestamptz (app clock, after the lock).
+  `RELEASE`), `oldScore Int?`, `newScore Int?`, `reason text?`, `afterRelease Boolean NOT NULL
+  DEFAULT false`, `changedById` FK, `changedAt` timestamptz (app clock, after the lock).
   - CHECKs: `kind = 'SET'` ⇒ `newScore` NOT NULL and `BETWEEN 0 AND 100`, and `oldScore` NULL or
     `BETWEEN 0 AND 100`; `kind = 'RELEASE'` ⇒ `oldScore`, `newScore` and `reason` NULL;
     `reason` length ≤ 500.
+  - **BR-12 in the database:** `afterRelease` ⇒ `kind = 'SET'` and `char_length(reason)` 3–500. A
+    `SET` written while the score was released must carry a reason, whatever the code does.
   - Index `(milestoneScoreId, changedAt)`.
-- **Enforced in code only**, under the row lock and covered by tests: a `SET` whose stored score was
-  already released has a reason of 3–500 characters (BR-12); `MilestoneScore.score` equals the
-  latest `SET`'s `newScore`; `ScoreChange` rows are never updated or deleted (no API does so).
+- **Enforced in code only**, under the row lock and covered by tests: `afterRelease` is set exactly
+  when the locked `MilestoneScore` has `releasedAt` (the database cannot see the other table, so the
+  CHECK above relies on this flag being honest); `MilestoneScore.score` equals the latest `SET`'s
+  `newScore`; `ScoreChange` rows are never updated or deleted (no API does so).
 - **Migration:** `<UTC timestamp>_milestone_score`, on `sprint3-staging` after `v0.3.0`; migration
   order = merge order as in Sprint 2.
 - **Known limit:** the tagged Lab 6 revision does not know these tables and never serves a score;
@@ -160,7 +163,7 @@ In `server/src/rules/score.ts`:
 | AC-11-4 | After release: changing to 70 without a reason, with a 2-character reason, with only spaces, or with a NUL → 400 `fields.reason`, value unchanged; with "Regraded after appeal" → 200, a `SET` entry 90 → 70 with that reason, and A1 now sees 70 with the original `releasedAt`. Reasons of 3 and 500 characters are accepted, 501 → 400. |
 | AC-11-5 | Score validation: `-1`, `101`, `85.5`, `"85"`, `null` and a missing score → 400 `fields.score`, nothing stored; `0` and `100` are accepted. Sending the stored value again → 400 `NO_CHANGE`. |
 | AC-11-6 | A1 calls `PUT` and `POST …/release` → 403 each; Supervisor 2 and an `ADMIN` call `GET`, `PUT` and `POST` on the Alpha milestone → 404 each; malformed or unknown milestone IDs → 404; no session → 401. Nothing is stored. |
-| AC-11-7 | The database rejects, when inserted directly: a `MilestoneScore` with score 101 or −1; one with `releasedAt` set and `releasedById` null; a second `MilestoneScore` for the same milestone; a `ScoreChange` `SET` with a null `newScore`; a `RELEASE` with a `newScore` or a reason. |
+| AC-11-7 | The database rejects, when inserted directly: a `MilestoneScore` with score 101 or −1; one with `releasedAt` set and `releasedById` null; a second `MilestoneScore` for the same milestone; a `ScoreChange` `SET` with a null `newScore`; a `RELEASE` with a `newScore` or a reason; a `SET` with `afterRelease` true and a null or 2-character reason; a `RELEASE` with `afterRelease` true. |
 | AC-11-8 | Races: (a) two `PUT`s with different values at the same moment → both 200, two `SET` rows whose old/new values chain, and the stored value equals the later one; (b) a release and a reason-less change at the same moment → either the change is 200 and then the release, or the release is 200 and the change 400 `fields.reason`; never a released value changed without a reason. |
 | AC-11-9 | A score can be set and released on a milestone whose deadline has passed and on one closed early (after F-08), with no submission at all. |
 | AC-11-10 | UI: the Supervisor panel shows the input, field errors under it with values kept, `NO_CHANGE`/409 in the alert, **Release score** only when a score exists and is unreleased, the confirmation dialog (Cancel sends nothing), the required reason field after release, and the history; the Student sees only "Score not released yet." or the released value; the panel has loading and error states with Retry. |
