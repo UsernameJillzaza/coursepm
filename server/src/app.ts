@@ -11,6 +11,7 @@ import { submissionsRouter } from './submissions/routes'
 import { feedbackRouter } from './feedback/routes'
 import { compareRouter } from './milestones/compare'
 import { adminRouter } from './admin/routes'
+import { scoresRouter } from './scores/routes'
 
 // Last-resort error handler (Express 5 forwards rejected async handlers here).
 // NFR-07: details go to the server log only; the client gets the standard
@@ -57,6 +58,7 @@ export function createApp() {
   app.use('/api/milestones/:milestoneId/submissions', submissionsRouter) // F-05
   app.use('/api/submissions', feedbackRouter) // F-06
   app.use('/api/milestones/:milestoneId/compare', compareRouter) // F-07
+  app.use('/api/milestones/:milestoneId/score', scoresRouter) // F-11
   app.use('/api/milestones', milestonesRouter) // F-04
   app.use('/api/admin', adminRouter) // F-09
 
