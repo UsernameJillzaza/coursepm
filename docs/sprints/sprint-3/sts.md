@@ -11,6 +11,23 @@ passed on the named commit.
 
 Sections are added per feature: F-11 by Jakkarin, F-12 by Achirawit.
 
+## F-11 Milestone scoring and release
+
+| Test | AC | Lvl | Precondition / input | Action | Expected result | Actual test (file › name) | Result |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| TEST-11-01 | AC-11-5 | U | — | `validateScoreInput` with score `0`, `100`, `-1`, `101`, `85.5`, `"85"`, `null`, missing; reason of 500 / 501 chars, with a NUL, `"   "` | 0 and 100 accepted; `fields.score` for the other six; 501 and NUL → `fields.reason`; `"   "` → no reason | — | Planned |
+| TEST-11-02 | AC-11-4, AC-11-5 | U | — | `checkScoreChange` with stored null; stored 85 unreleased + 90 and no reason; stored 85 + 85; stored 90 released + 70 with no reason, 2-char, 3-char, 500-char reason | ok; ok; `noChange`; `fields.reason` for none and 2 chars; ok for 3 and 500 | — | Planned |
+| TEST-11-03 | AC-11-2, AC-11-3 | U | — | `scoreViewFor` for `SUPERVISOR` and `STUDENT` with no row, an unreleased row and a released row with history | Supervisor: null / full / full; Student: `{ score: null }` twice, then only `value` + `releasedAt` (no history, no reasons) | — | Planned |
+| TEST-11-04 | AC-11-1 | I | Supervisor 1; an Alpha milestone with no score | PUT 85; PUT 90 without a reason; GET as Supervisor 1 | 200, 200; value 90, `releasedAt` null, history [90 ← 85, 85 ← —] with Supervisor 1 and times; `Cache-Control: no-store` | — | Planned |
+| TEST-11-05 | AC-11-2 | I | The TEST-11-04 milestone (unreleased 90); a second Alpha milestone with no score | As A1: GET the score of both; GET the milestone, the team's milestone list and the submission list; (after F-10) GET the board | `{ score: null }` ×2; the string `90` appears in no score field of any body, and no body has a `score` key | — | Planned |
+| TEST-11-06 | AC-11-3 | I | The TEST-11-04 milestone; a milestone with no score | Release as Supervisor 1; GET as A1; release again; release the no-score milestone | 200 with `releasedAt`/`releasedBy`; A1 gets `{ value: 90, releasedAt }` only; 409 `ALREADY_RELEASED`; 409 `NO_SCORE`; no extra `ScoreChange` rows from the 409s | — | Planned |
+| TEST-11-07 | AC-11-4 | I | The released TEST-11-06 score | PUT 70 with no reason, a 2-char reason, `"   "`, a NUL reason, a 501-char reason; then with "Regraded after appeal"; GET as A1 | 400 `fields.reason` ×5 with the value still 90; then 200 and a `SET` 90 → 70 with the reason; A1 sees 70 with the original `releasedAt` | — | Planned |
+| TEST-11-08 | AC-11-5, AC-11-6 | I | Supervisor 1; A1; Supervisor 2; the F-09 admin (after F-09); an Alpha milestone | PUT each invalid score of AC-11-5; PUT 0, then 100, then 100 again; A1 PUT and release; Supervisor 2 and the admin GET, PUT, release; IDs `abc`, `0`, `999999`; no cookie | 400 `fields.score` ×6; 200, 200, 400 `NO_CHANGE`; 403 ×2; 404 ×6; 404 ×3; 401; no rows from the rejected calls | — | Planned |
+| TEST-11-09 | AC-11-7 | I | Test DB | Insert directly through Prisma: score 101; score −1; `releasedAt` without `releasedById`; a second score for one milestone; a `SET` change with a null `newScore`; a `RELEASE` change with a `newScore`; one with a reason | Each rejected (CHECK or UNIQUE); no row | — | Planned |
+| TEST-11-10 | AC-11-8 | I | Supervisor 1; fresh milestones, repeated 20 times | (a) `Promise.all` of PUT 60 and PUT 65 on a milestone scored 50; (b) on a milestone scored 50, `Promise.all` of release and PUT 55 without a reason | (a) both 200; two `SET` rows chaining 50 → x → y; stored value = the later row; (b) either both 200 with the `SET` before the `RELEASE`, or release 200 and PUT 400 `fields.reason`; never a released value changed without a reason | — | Planned |
+| TEST-11-11 | AC-11-9 | I | A milestone with a past deadline and no submission (inserted directly); (after F-08) a milestone closed early | PUT 80 and release on each | 200 for every call | — | Planned |
+| TEST-UI-11 | AC-11-10 | C | Milestone page as Supervisor (no score; unreleased 85; released 90 with history) and as Student (unreleased; released); mocked 400 with `fields`, `NO_CHANGE`, 409; pending and failed score loads | Render; save an invalid score; open Release and press Cancel; render the released state; render the student views; fail the load and press Retry | Field errors under the input with values kept; `NO_CHANGE`/409 in the alert; Release only for an unreleased score; Cancel sends nothing; reason field required after release; history lines; the student sees only the message or value; loading and error states inside the panel; Retry re-requests | — | Planned |
+
 ## F-12 Supervisor summary and CSV export
 
 | Test | AC | Lvl | Precondition / input | Action | Expected result | Actual test (file › name) | Result |
