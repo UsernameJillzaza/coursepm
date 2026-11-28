@@ -256,6 +256,33 @@ describe('POST /api/milestones/:id/close (FR-12 close early)', () => {
   })
 })
 
+describe('TEST-08-19 (AC-08-8, AC-08-7, AC-05-11): F-08 combined with CHG-01 (#74)', () => {
+  it('closing a milestone whose latest revision has no feedback: a submission gets MILESTONE_CLOSED, not AWAITING_FEEDBACK', async () => {
+    const m = await milestone()
+    await revision(m, 1)
+    expect((await asSup1.post(`/api/milestones/${m.id}/close`).send({ reason: 'Ended early' })).status).toBe(200)
+    const res = await asA1.post(`/api/milestones/${m.id}/submissions`).send(work)
+    expect(res.status).toBe(409)
+    expect(res.body.error.code).toBe('MILESTONE_CLOSED')
+    expect(await prisma.submission.count({ where: { milestoneId: m.id } })).toBe(1)
+  })
+
+  it('an extension does not bypass the feedback rule: AWAITING_FEEDBACK until revision 1 has feedback, then 201', async () => {
+    const m = await milestone({ deadline: hours(-1) })
+    const r1 = await revision(m, 1, hours(-2))
+    expect((await asSup1.post(`/api/milestones/${m.id}/extensions`).send({ newDeadline: hours(24).toISOString(), reason: 'Illness' })).status).toBe(201)
+    const detail = (await asA1.get(`/api/milestones/${m.id}`)).body.milestone
+    expect(detail).toMatchObject({ extended: true, awaitingFeedback: true, status: 'OPEN' })
+    const blocked = await asA1.post(`/api/milestones/${m.id}/submissions`).send(work)
+    expect(blocked.status).toBe(409)
+    expect(blocked.body.error).toMatchObject({ code: 'AWAITING_FEEDBACK', message: 'Wait for feedback on revision 1 before submitting again.' })
+    await feedbackOn(r1.id)
+    const ok = await asA1.post(`/api/milestones/${m.id}/submissions`).send(work)
+    expect(ok.status).toBe(201)
+    expect(ok.body.submission.revision).toBe(2)
+  })
+})
+
 describe('Database CHECKs (AC-08-9)', () => {
   it('TEST-08-11: an extension that is not later, or has a 2-character reason, is rejected', async () => {
     const m = await milestone()

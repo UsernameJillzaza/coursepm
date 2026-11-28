@@ -73,7 +73,8 @@ describe('validateCloseReason (AC-08-8)', () => {
 })
 
 describe('TEST-08-14 (AC-08-8): checkCanSubmit checks closed first', () => {
-  const base = { deadline: new Date(now.getTime() + 60_000), maxRevisions: 3, revisionsUsed: 0, now }
+  // latestHasFeedback is required since CHG-01 (#74); true here so only the closed rule is tested.
+  const base = { deadline: new Date(now.getTime() + 60_000), maxRevisions: 3, revisionsUsed: 0, latestHasFeedback: true, now }
   it('returns MILESTONE_CLOSED with a future deadline', () => {
     expect(checkCanSubmit({ ...base, closedAt: now })).toEqual({ ok: false, code: 'MILESTONE_CLOSED' })
   })
@@ -84,6 +85,16 @@ describe('TEST-08-14 (AC-08-8): checkCanSubmit checks closed first', () => {
   it('keeps the Sprint 1 results when closedAt is absent or null', () => {
     expect(checkCanSubmit(base)).toEqual({ ok: true, nextRevision: 1 })
     expect(checkCanSubmit({ ...base, closedAt: null })).toEqual({ ok: true, nextRevision: 1 })
+  })
+})
+
+describe('TEST-08-19 (AC-08-8, AC-05-11): combined order closed -> deadline -> limit -> feedback (F-08 + CHG-01)', () => {
+  const waiting = { deadline: new Date(now.getTime() + 60_000), maxRevisions: 3, revisionsUsed: 1, latestHasFeedback: false, now }
+  it('a closed milestone whose latest revision has no feedback answers MILESTONE_CLOSED, not AWAITING_FEEDBACK', () => {
+    expect(checkCanSubmit({ ...waiting, closedAt: now })).toEqual({ ok: false, code: 'MILESTONE_CLOSED' })
+  })
+  it('an open milestone with the same state still waits for feedback', () => {
+    expect(checkCanSubmit({ ...waiting, closedAt: null })).toEqual({ ok: false, code: 'AWAITING_FEEDBACK', revision: 1 })
   })
 })
 
