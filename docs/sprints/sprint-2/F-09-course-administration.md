@@ -1,6 +1,6 @@
 # F-09 Course administration — feature contract
 
-Version 1.1 · 2026-11-28 (AC-09-12 for the Sprint 2/3 routes, PR #76 review; 1.0 same day) · Issue: #73 (contract); implementation: S2-2 (Issue to be created) ·
+Version 1.1 · 2026-11-28 (AC-09-12 for the Sprint 2/3 routes, PR #76 review; 1.0 same day) · Issue: #73 (contract); implementation: #78 (S2-2) ·
 Links: FR-14, BR-01, BR-02, BR-03, NFR-01, NFR-02, NFR-03, NFR-04, NFR-10, D-03, D-07 ·
 Depends on: F-01 (sessions, `isActive`), F-02 (`teamScopeWhere`), F-03 (`Team`, `TeamMember`,
 `SupervisorAssignment`)
