@@ -1,0 +1,77 @@
+# F-08 regression after merging sprint2-staging (#82 F-09) and renaming the F-08 migrations — 2026-11-28 22:44 ICT
+# Code under test: ef421d9 (merge) + the migration rename (working tree; committed next). Fresh DBs coursepm_s2b / coursepm_s2b_test: migrate deploy applied 20261128132923_admin_role, then 20261128154000_milestone_maintenance, then 20261128154001_milestone_change_field_not_null.
+# Summary: server 262 passed, 0 failed, 4 todo (TEST-09-14, not run until F-07/F-08/F-10/F-11 merge) in 22 files · client 72/72 (10 files) · E2E 4/4 (E2E-01..03, TEST-08-15) · server tsc --noEmit OK · server and client builds OK
+
+## cd server; npx vitest run
+
+ RUN  v4.1.12 D:/Claude Projects/coursepm-sprint2/server
+
+Loaded Prisma config from prisma.config.ts.
+
+Prisma schema loaded from prisma\schema.prisma.
+Datasource "db": PostgreSQL database "coursepm_s2b_test", schema "public" at "localhost:5432"
+
+PostgreSQL database coursepm_s2b_test created at localhost:5432
+
+9 migrations found in prisma/migrations
+
+Applying migration `20261114193252_users_sessions`
+Applying migration `20261114193953_teams`
+Applying migration `20261115082511_milestones`
+Applying migration `20261115091309_submissions`
+Applying migration `20261115091328_submission_team_matches_milestone`
+Applying migration `20261115094021_feedback`
+Applying migration `20261128132923_admin_role`
+Applying migration `20261128154000_milestone_maintenance`
+Applying migration `20261128154001_milestone_change_field_not_null`
+
+The following migration(s) have been applied:
+
+migrations/
+  └─ 20261114193252_users_sessions/
+    └─ migration.sql
+  └─ 20261114193953_teams/
+    └─ migration.sql
+  └─ 20261115082511_milestones/
+    └─ migration.sql
+  └─ 20261115091309_submissions/
+    └─ migration.sql
+  └─ 20261115091328_submission_team_matches_milestone/
+    └─ migration.sql
+  └─ 20261115094021_feedback/
+    └─ migration.sql
+  └─ 20261128132923_admin_role/
+    └─ migration.sql
+  └─ 20261128154000_milestone_maintenance/
+    └─ migration.sql
+  └─ 20261128154001_milestone_change_field_not_null/
+    └─ migration.sql
+
+All migrations have been successfully applied.
+
+ Test Files  22 passed (22)
+      Tests  262 passed | 4 todo (266)
+   Start at  22:43:17
+   Duration  25.03s (transform 551ms, setup 0ms, import 4.76s, tests 12.86s, environment 2ms)
+
+
+## cd client; npx vitest run
+
+ RUN  v4.1.12 D:/Claude Projects/coursepm-sprint2/client
+
+
+ Test Files  10 passed (10)
+      Tests  72 passed (72)
+   Start at  22:43:48
+   Duration  7.16s (transform 2.81s, setup 5.93s, import 5.50s, tests 14.03s, environment 25.42s)
+
+
+## npx playwright test --reporter=line
+
+Running 4 tests using 1 worker
+
+[1/4] e2e\sprint-1\e2e-01-login-teams.spec.ts:8:1 › E2E-01: wrong password, login, own team only, reload keeps the session, logout
+[2/4] e2e\sprint-1\e2e-02-03-journey.spec.ts:12:1 › E2E-02: milestone → submission (rejected link, revision 1, revision 2, limit) → feedback → persisted result
+[3/4] e2e\sprint-1\e2e-02-03-journey.spec.ts:90:1 › E2E-03: no New milestone control for a student; another team's page by URL shows "Team not found"
+[4/4] e2e\sprint-2\e2e-08-milestone-maintenance.spec.ts:20:1 › TEST-08-15: edit → extension → close as Supervisor 1; A1 sees the badges, extended deadline and history
+  4 passed (14.6s)
