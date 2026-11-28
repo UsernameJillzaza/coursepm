@@ -244,6 +244,27 @@ describe('TEST-09-08 (AC-09-6): who can be added, and unknown teams', () => {
   })
 })
 
+describe('TEST-09-08 (AC-09-6): an add racing a deactivation never stores an inactive account (PR #82 review)', () => {
+  it('while a deactivation of the student is still in its transaction, Add member waits for it and then refuses', async () => {
+    const agent = await loginAgent(admin)
+    const delta = (await createTeamAsAdmin(agent, { courseCode: 'CPE334-DEMO', name: `Team Race Add ${tag()}` })).body.team
+    const student = await createUser('STUDENT')
+    let add: Promise<request.Response> | undefined
+    // Transaction A plays the deactivation: it locks and updates the user row
+    // and stays open while the add request (B) runs. Without a lock in B, B
+    // reads the last committed row (still active) and inserts at once.
+    await prisma.$transaction(async (tx) => {
+      await tx.user.update({ where: { id: student.id }, data: { isActive: false } })
+      add = agent.post(`/api/admin/teams/${delta.id}/members`).send({ userId: student.id }).then((r) => r)
+      await new Promise((resolve) => setTimeout(resolve, 300))
+    }, { timeout: 10000 })
+    const res = await add!
+    expect(res.status).toBe(400)
+    expect(res.body.error.fields).toEqual({ userId: 'Only an active student can be added as a member.' })
+    expect(await prisma.teamMember.count({ where: { teamId: delta.id, userId: student.id } })).toBe(0)
+  })
+})
+
 describe('TEST-09-09 (AC-09-7, NFR-04): deactivation ends the session and keeps past work', () => {
   it('deactivating A2 → 401 on the old cookie, no sessions, login refused like a wrong password; work unchanged', async () => {
     const student = await createUser('STUDENT')
