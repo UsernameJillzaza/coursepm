@@ -33,22 +33,32 @@ function tokenize(text: string): string[] {
   return text.match(/\s+|\S+/g) ?? []
 }
 
-// Word diff by longest common subsequence. dp[i][j] = LCS length of
-// old[i..] and new[j..]. Walking forward, an equal token is "same" when that
-// is optimal, except that a matching whitespace token is skipped when skipping
-// costs nothing: that keeps a changed phrase together ("Final draft" rather
-// than "Final", " ", "draft"). Neighbouring parts with the same op are merged.
-// Descriptions are at most 2,000 characters (BR-08), so the quadratic table
-// (at most about 2,000 × 2,000 cells of 16 bits) stays small.
+// A kept word always outweighs every kept whitespace run together: a text of
+// at most 2,000 characters (BR-08) has fewer than 4,096 whitespace tokens.
+const WORD_WEIGHT = 4096
+
+// Word diff by a weighted longest common subsequence over words and the
+// whitespace between them. dp[i][j] = best score of old[i..] and new[j..],
+// where a matched word scores WORD_WEIGHT and matched whitespace scores 1, so
+// the kept words are always a longest common subsequence of the two word lists
+// (an unchanged word is never shown as removed and added just because the
+// spaces around it changed; PR #83 review), and whitespace only breaks ties.
+// Walking forward, an equal token is "same" when that is optimal, except that
+// matching whitespace is skipped when skipping costs nothing: that keeps a
+// changed phrase together ("Final draft" rather than "Final", " ", "draft").
+// Neighbouring parts with the same op are merged. The table has at most about
+// 2,000 × 2,000 cells of 32 bits.
 export function diffWords(oldText: string, newText: string): DiffPart[] {
   const a = tokenize(oldText)
   const b = tokenize(newText)
   const width = b.length + 1
-  const dp = new Uint16Array((a.length + 1) * width)
+  const dp = new Uint32Array((a.length + 1) * width)
   const at = (i: number, j: number) => dp[i * width + j]
+  const weight = (token: string) => (isSpace(token) ? 1 : WORD_WEIGHT)
   for (let i = a.length - 1; i >= 0; i--) {
     for (let j = b.length - 1; j >= 0; j--) {
-      dp[i * width + j] = a[i] === b[j] ? at(i + 1, j + 1) + 1 : Math.max(at(i + 1, j), at(i, j + 1))
+      const skip = Math.max(at(i + 1, j), at(i, j + 1))
+      dp[i * width + j] = a[i] === b[j] ? Math.max(at(i + 1, j + 1) + weight(a[i]), skip) : skip
     }
   }
 
@@ -63,7 +73,7 @@ export function diffWords(oldText: string, newText: string): DiffPart[] {
   let j = 0
   while (i < a.length && j < b.length) {
     const here = at(i, j)
-    if (a[i] === b[j] && here === at(i + 1, j + 1) + 1) {
+    if (a[i] === b[j] && here === at(i + 1, j + 1) + weight(a[i])) {
       if (isSpace(a[i]) && at(i, j + 1) === here) push('added', b[j++])
       else if (isSpace(a[i]) && at(i + 1, j) === here) push('removed', a[i++])
       else {
