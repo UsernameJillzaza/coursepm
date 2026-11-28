@@ -56,6 +56,6 @@ The **Result** column is filled from the release-candidate run on `daefdff` (Par
 
 ## Coverage gaps and approved changes
 
-- **Uncovered requirements:** none. Every FR, BR and NFR in SRS v0.1 maps to a feature or responsibility.
+- **Uncovered requirements:** none unmapped. Every FR, BR and NFR maps to a feature or responsibility. All Sprint 2 and 3 rows are still **Planned (not run)**, so none of them counts as verified yet.
 - **Approved changes:** none yet. Record each future change as `CHG-nn` with the date, reason and
   affected IDs.

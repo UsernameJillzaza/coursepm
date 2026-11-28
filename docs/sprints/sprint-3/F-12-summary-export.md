@@ -3,7 +3,7 @@
 Version 1.0 · 2026-11-28 · Issue: #73 (contract); implementation: Sprint 3, after 29 Nov (Issue to
 be created) · Links: FR-17, FR-18, NFR-02, NFR-07, NFR-08, NFR-10, D-03, D-05, D-06, D-09 ·
 Depends on: **F-10** (`deriveMilestoneState`, board drill-down), **F-11** (score fields in the
-export), F-08 (`originalDeadline`, `closedAt`), F-09 (only for the `ADMIN` access tests)
+export), F-08 (`originalDeadline`, `closedAt`), F-09 (`RequireRole`, `NoAccess`, and the `ADMIN` access tests)
 
 **Status:** contract only by 29 Nov (Deliverable 2 Part C). It will not be implemented before the
 Sprint 2 release.
@@ -72,7 +72,7 @@ Rule functions (pure, unit-tested) in `server/src/rules/summary.ts`:
 | `GET /api/summary` by a Student, or by any role other than `SUPERVISOR` (including `ADMIN` from F-09) | 403 `FORBIDDEN` "Only supervisors can view the summary." |
 | Supervisor with no assigned team | 200, `teams: []`, totals all 0 and `onTimeRate` null |
 | Export for a team outside the caller's scope, unknown, or a malformed ID | 404 `NOT_FOUND` "Team not found." (D-03; scope before role) |
-| Export by an `ADMIN` (after F-09) | 404, because `teamScopeWhere` gives a non-student only the teams it is assigned to supervise, and an admin has none. F-09 may change this; if it does, this row is revised. |
+| Export by an `ADMIN` (after F-09) | 404, because `teamScopeWhere` gives a non-student only the teams it is assigned to supervise, and an admin has none. (F-09's explicit ADMIN branch of `teamScopeWhere` matches no team.) |
 | Export by a Student of that team | 403 `FORBIDDEN` "Only supervisors can export a team record." |
 | Team with no milestone | 200, a CSV with the header row only |
 
