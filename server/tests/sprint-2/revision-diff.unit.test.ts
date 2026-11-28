@@ -51,9 +51,10 @@ describe('TEST-07-01 (AC-07-3): diffWords', () => {
   })
 
   it('stays exact and quick for two 2,000-character descriptions (BR-08 maximum)', () => {
-    const words = (seed: number) => Array.from({ length: 400 }, (_, i) => `w${(i * seed) % 97}`).join(' ').slice(0, 2000)
+    const words = (seed: number) => Array.from({ length: 600 }, (_, i) => `w${(i * seed) % 97}`).join(' ').slice(0, 2000)
     const a = words(7)
     const b = words(11)
+    expect([a.length, b.length]).toEqual([2000, 2000])
     const started = performance.now()
     const parts = diffWords(a, b)
     const elapsed = performance.now() - started

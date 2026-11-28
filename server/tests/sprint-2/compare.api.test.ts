@@ -44,7 +44,7 @@ beforeAll(async () => {
   const revision1 = await prisma.submission.findUniqueOrThrow({ where: { milestoneId_revision: { milestoneId: milestone.id, revision: 1 } } })
   await prisma.feedback.create({ data: { submissionId: revision1.id, supervisorId: sup1.id, body: 'Add the use cases.' } })
   // TEST-07-07: a second Alpha milestone with revisions 1–5, descriptions of 2,000 characters on 1 and 2.
-  const long = (seed: number) => Array.from({ length: 400 }, (_, i) => `w${(i * seed) % 97}`).join(' ').slice(0, 2000)
+  const long = (seed: number) => Array.from({ length: 600 }, (_, i) => `w${(i * seed) % 97}`).join(' ').slice(0, 2000)
   other = await milestoneWith(`Long ${tag()}`, [1, 2, 3, 4, 5].map((n) => ({
     title: `Long v${n}`, link: `https://example.com/long${n}`, description: n === 1 ? long(7) : n === 2 ? long(11) : `text ${n}`,
   })))
