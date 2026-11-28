@@ -1,7 +1,7 @@
 # F-08 RED run — 235b1f3 (tests only, no implementation) — 2026-11-28 19:45 ICT
 $ npx vitest run tests/sprint-2/milestone-maintenance-rules.unit.test.ts tests/sprint-2/milestone-maintenance.api.test.ts
 
- RUN  v4.1.12 D:/Claude Projects/coursepm-sprint2/server
+ RUN  v4.1.12 <repo>/server
 
 Loaded Prisma config from prisma.config.ts.
 

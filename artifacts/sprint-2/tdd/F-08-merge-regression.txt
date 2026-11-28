@@ -4,7 +4,7 @@
 
 ## cd server; npx vitest run
 
- RUN  v4.1.12 D:/Claude Projects/coursepm-sprint2/server
+ RUN  v4.1.12 <repo>/server
 
 Loaded Prisma config from prisma.config.ts.
 
@@ -57,7 +57,7 @@ All migrations have been successfully applied.
 
 ## cd client; npx vitest run
 
- RUN  v4.1.12 D:/Claude Projects/coursepm-sprint2/client
+ RUN  v4.1.12 <repo>/client
 
 
  Test Files  10 passed (10)

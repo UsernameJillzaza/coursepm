@@ -1,7 +1,7 @@
 # F-08 UI RED run — 30bdd15 (UI test only, no UI implementation) — 2026-11-28 22:16 ICT
 # Every failure is an assertion (element not found), not an import error.
 $ npx vitest run tests/sprint-2/milestone-maintenance-ui.test.tsx
- RUN  v4.1.12 D:/Claude Projects/coursepm-sprint2/client
+ RUN  v4.1.12 <repo>/client
  ❯ tests/sprint-2/milestone-maintenance-ui.test.tsx (9 tests | 9 failed) 8115ms
      × a supervisor inside the edit window sees Edit, Grant extension and Close milestone 1026ms
      × Edit is hidden outside the edit window (a submission, an extension, a passed deadline) 1005ms
