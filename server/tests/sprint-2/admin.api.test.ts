@@ -9,8 +9,8 @@ import { cleanupUsers, createUser, DEMO_PASSWORD, loginAgent, type TestUser } fr
 
 // F-09 Course administration (FR-14, BR-01, NFR-02, NFR-04), API level.
 // Sprint 2 STS TEST-09-01 … TEST-09-03, 09-05, 09-06, 09-08 … 09-10, 09-12, 09-13.
-// TEST-09-14 (AC-09-12, Sprint 2/3 routes) is listed at the end as todo until
-// F-07, F-08, F-10 and F-11 are on the branch.
+// TEST-09-14 (AC-09-12, Sprint 2/3 routes) is at the end: the F-07 block runs;
+// the F-08, F-10 and F-11 blocks stay todo until those features are on the branch.
 
 const FORBIDDEN = { error: { code: 'FORBIDDEN', message: 'Only a course administrator can do this.' } }
 const tag = () => randomBytes(4).toString('hex')
@@ -440,7 +440,20 @@ describe('the demo seed adds the admin account (F-09 Data, DoD)', () => {
 
 describe('TEST-09-14 (AC-09-12): an admin gets 404 on the Sprint 2/3 routes', () => {
   // Each block runs once its feature is on the branch (Sprint 2 STS).
-  it.todo('F-07: GET /api/milestones/:id/compare?a=1&b=2 → 404')
+  // F-07 block: enabled once F-07 (#79) and F-09 (#78) are on the same branch.
+  it('F-07: GET /api/milestones/:id/compare?a=1&b=2 → 404, no Alpha title in the body, nothing stored', async () => {
+    const title = `Admin compare ${tag()}`
+    const { milestone } = await milestoneWithReviewedRevision(title, a1)
+    await prisma.submission.create({
+      data: { milestoneId: milestone.id, teamId: alpha.id, revision: 2, title: `${title} v2`, description: 'second', link: 'https://example.com/v2', submittedById: a1.id, submittedAt: new Date() },
+    })
+    const before = { submissions: await prisma.submission.count(), feedback: await prisma.feedback.count() }
+    const res = await (await loginAgent(admin)).get(`/api/milestones/${milestone.id}/compare?a=1&b=2`)
+    expect(res.status).toBe(404)
+    expect(res.body).toEqual({ error: { code: 'NOT_FOUND', message: 'Milestone not found.' } })
+    expect(res.text).not.toContain(title)
+    expect({ submissions: await prisma.submission.count(), feedback: await prisma.feedback.count() }).toEqual(before)
+  })
   it.todo('F-08: PATCH /api/milestones/:id, POST …/extensions, POST …/close, GET …/history → 404, nothing stored')
   it.todo('F-10: GET /api/teams/:alpha/board → 404')
   it.todo('F-11: GET and PUT /api/milestones/:id/score, POST …/score/release → 404, nothing stored')
