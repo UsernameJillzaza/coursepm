@@ -1,0 +1,32 @@
+# F-08 full regression — 3e9c4d8 — 2026-11-28 22:19 ICT
+# Playwright E2E (TEST-08-15) NOT run: ports may be in use by another worktree.
+
+$ cd server; npx vitest run
+ Test Files  20 passed (20)
+      Tests  210 passed (210)
+   Duration  20.39s (transform 511ms, setup 0ms, import 4.12s, tests 10.35s, environment 1ms)
+
+$ cd server; npx tsc --noEmit
+exit 0
+
+$ cd server; npm run build
+Prisma schema loaded from prisma\schema.prisma.
+
+✔ Generated Prisma Client (7.10.1) to .\src\generated\prisma in 90ms
+
+exit 0
+
+$ cd client; npx vitest run
+ Test Files  9 passed (9)
+      Tests  53 passed (53)
+   Duration  5.71s (transform 1.10s, setup 3.61s, import 3.01s, tests 10.13s, environment 17.91s)
+
+$ cd client; npm run build
+dist/index.html                   0.40 kB │ gzip:  0.27 kB
+dist/assets/index-BbRluUcX.css  230.30 kB │ gzip: 30.70 kB
+dist/assets/index-DdnalTx8.js   287.58 kB │ gzip: 88.34 kB
+
+✓ built in 246ms
+exit 0
+
+# Summary: server 210 passed / 0 failed / 0 skipped (20 files, includes 25 F-08 tests); client 53 passed / 0 failed / 0 skipped (9 files, includes 9 TEST-UI-08 cases); server tsc and both builds exit 0. E2E not run.

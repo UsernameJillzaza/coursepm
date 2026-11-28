@@ -28,7 +28,7 @@ Node.js 24, PostgreSQL 18 running locally, Microsoft Edge (used by the Playwrigh
    ```bash
    npm --prefix server run db:deploy
    ```
-5. Load the synthetic demo data (8 accounts, 3 teams). Every demo account uses the `SEED_PASSWORD` from your `server/.env`, and the seed is safe to run again:
+5. Load the synthetic demo data (8 team accounts, 1 course administrator, 3 teams). Every demo account uses the `SEED_PASSWORD` from your `server/.env`, and the seed is safe to run again:
    ```bash
    npm --prefix server run db:seed
    ```
@@ -51,6 +51,7 @@ Node.js 24, PostgreSQL 18 running locally, Microsoft Edge (used by the Playwrigh
 | `alpha1@coursepm.test`, `alpha2@coursepm.test` | Student | Team Alpha |
 | `beta1@coursepm.test`, `beta2@coursepm.test` | Student | Team Beta |
 | `gamma1@coursepm.test`, `gamma2@coursepm.test` | Student | Team Gamma |
+| `admin@coursepm.test` | Course administrator (F-09) | none; manages teams and accounts at `/admin` |
 
 ## Tests
 | Command | What it runs |
@@ -60,3 +61,4 @@ Node.js 24, PostgreSQL 18 running locally, Microsoft Edge (used by the Playwrigh
 | `npm --prefix client run build` | Type-check and production build of the client |
 | `cd server && npx tsc --noEmit` | Type-check of the server |
 | `npm run test:e2e` | Playwright journeys in Edge against the seeded development database (starts both dev servers if they aren't running). Run `db:seed` first; each run adds a "Design review <timestamp>" milestone to Team Alpha and rewrites the screenshots in `artifacts/sprint-1/screenshots/` |
+| `npm --prefix server run perf:nfr08` | NFR-08 smoke measurement (F-10, TEST-10-07) against the seeded development database: adds a 30-milestone fixture, times 5 warm-ups + 50 requests per main list endpoint as Supervisor 2 and Beta Student 1, removes the fixture, and writes p50 / p95 / max to `artifacts/sprint-2/perf/nfr-08-<commit>.txt`. Run `db:seed` first. Not part of `npm test`, so a busy laptop cannot make the regular suite flaky |

@@ -5,16 +5,21 @@ import { useApi } from '../components/useApi'
 import SubmissionList from '../submissions/SubmissionList'
 import SubmitForm from '../submissions/SubmitForm'
 import type { Submission } from '../submissions/types'
-import { bangkokTime, type Milestone } from './types'
+import MilestoneHistory from './MilestoneHistory'
+import MilestoneMaintenance from './MilestoneMaintenance'
+import { bangkokShort, bangkokTime, type HistoryItem, type Milestone } from './types'
 
 // F-05 milestone detail (SDS §3): deadline, "Revisions used: n / max", the
 // student submit form, and the revision list with its loading / empty /
-// error states (AC-02-10), and revision-specific feedback (F-06).
+// error states (AC-02-10), and revision-specific feedback (F-06). F-08 adds
+// the Closed early / Extended badges, the supervisor maintenance controls and
+// the history.
 export default function MilestonePage() {
   const { milestoneId } = useParams()
   const { user } = useAuth()
   const detail = useApi<{ milestone: Milestone; team: { id: number; name: string } }>(`/milestones/${milestoneId}`)
   const subs = useApi<{ items: Submission[] }>(`/milestones/${milestoneId}/submissions`)
+  const history = useApi<{ items: HistoryItem[] }>(`/milestones/${milestoneId}/history`)
 
   if (detail.loading && !detail.data) return <main className="container"><Loading /></main>
   if (detail.error?.status === 404) {
@@ -34,6 +39,11 @@ export default function MilestonePage() {
     detail.reload()
     subs.reload()
   }
+  const refreshAfterChange = () => {
+    detail.reload()
+    history.reload()
+  }
+  const closeEntry = history.data?.items.find((item) => item.kind === 'CLOSE')
 
   return (
     <main className="container">
@@ -49,18 +59,36 @@ export default function MilestonePage() {
         <span className={`badge ${m.status === 'OPEN' ? 'text-bg-success' : 'text-bg-secondary'}`}>
           {m.status === 'OPEN' ? 'Open' : 'Closed'}
         </span>
+        {m.closedAt && <span className="badge text-bg-dark">Closed early</span>}
+        {m.extended && <span className="badge text-bg-info">Extended</span>}
       </div>
       <p className="text-body-secondary mb-2">
         Deadline: {bangkokTime(m.deadline)} (Bangkok) · Revisions used: {m.revisionsUsed} / {m.maxRevisions}
       </p>
+      {m.extended && m.originalDeadline && (
+        <p className="mb-2">{`Deadline ${bangkokShort(m.deadline)} (extended from ${bangkokShort(m.originalDeadline)})`}</p>
+      )}
+      {m.closedAt && (
+        <p className="mb-2">
+          {closeEntry ? `Closed early by ${closeEntry.by.name} on ${bangkokShort(m.closedAt)}` : `Closed early on ${bangkokShort(m.closedAt)}`}
+        </p>
+      )}
       {m.description && <p style={{ whiteSpace: 'pre-wrap' }}>{m.description}</p>}
+
+      {user?.role === 'SUPERVISOR' && <MilestoneMaintenance milestone={m} onChanged={refreshAfterChange} />}
 
       {user?.role === 'STUDENT' && <SubmitForm milestone={m} onSubmitted={refresh} />}
 
-      <h2 className="h6 mt-4">Submissions</h2>
+      <div className="d-flex align-items-center gap-3 mt-4 mb-2">
+        <h2 className="h6 mb-0">Submissions</h2>
+        {/* F-07: every role that sees the page may compare revisions. */}
+        <Link to={`/milestones/${m.id}/revisions`} className="small">Compare revisions</Link>
+      </div>
       {subs.loading && <Loading />}
       {subs.error && <ErrorAlert message={subs.error.message} onRetry={subs.reload} />}
       {!subs.loading && !subs.error && subs.data && <SubmissionList items={subs.data.items} onFeedbackSaved={subs.reload} />}
+
+      <MilestoneHistory items={history.data?.items ?? null} failed={Boolean(history.error)} onRetry={history.reload} />
     </main>
   )
 }

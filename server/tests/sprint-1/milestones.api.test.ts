@@ -34,7 +34,7 @@ describe('F-04 milestone API', () => {
     expect(created.status).toBe(201)
     expect(created.body.milestone).toMatchObject({
       id: expect.any(Number), teamId: alpha.id, title: 'Proposal', maxRevisions: 3,
-      createdById: supervisor.id, revisionsUsed: 0, status: 'OPEN', latestSubmittedAt: null,
+      createdById: supervisor.id, revisionsUsed: 0, status: 'OPEN', latestSubmittedAt: null, awaitingFeedback: false,
     })
     const supervisorList = await supervisorAgent.get(`/api/teams/${alpha.id}/milestones`)
     expect(supervisorList.status).toBe(200)

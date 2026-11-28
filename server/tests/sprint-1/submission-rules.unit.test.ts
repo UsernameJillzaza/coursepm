@@ -1,13 +1,14 @@
 import { checkCanSubmit, validateSubmission } from '../../src/rules/submission'
 
 // F-05 business rules as pure functions: TEST-05-03 (BR-06 deadline),
-// TEST-05-05 (BR-07 revision limit), TEST-05-07 unit part (BR-08 fields).
+// TEST-05-05 (BR-07 revision limit), TEST-05-07 unit part (BR-08 fields),
+// TEST-05-11 (BR-07 since CHG-01: feedback before resubmission, #74).
 // Written and run BEFORE src/rules/submission.ts existed (TDD evidence).
 const DEADLINE = new Date('2026-11-22T16:59:00.000Z')
 const ms = (offset: number) => new Date(DEADLINE.getTime() + offset)
 
 describe('TEST-05-03 checkCanSubmit: deadline rule (BR-06, D-05)', () => {
-  const state = (now: Date) => ({ deadline: DEADLINE, maxRevisions: 3, revisionsUsed: 0, now })
+  const state = (now: Date) => ({ deadline: DEADLINE, maxRevisions: 3, revisionsUsed: 0, latestHasFeedback: false, now })
 
   it('accepts 1 ms before the deadline', () => {
     expect(checkCanSubmit(state(ms(-1)))).toEqual({ ok: true, nextRevision: 1 })
@@ -23,7 +24,8 @@ describe('TEST-05-03 checkCanSubmit: deadline rule (BR-06, D-05)', () => {
 })
 
 describe('TEST-05-05 checkCanSubmit: revision limit (BR-07)', () => {
-  const state = (revisionsUsed: number) => ({ deadline: DEADLINE, maxRevisions: 2, revisionsUsed, now: ms(-60_000) })
+  // CHG-01: latestHasFeedback is true here so these cases test the limit alone.
+  const state = (revisionsUsed: number) => ({ deadline: DEADLINE, maxRevisions: 2, revisionsUsed, latestHasFeedback: true, now: ms(-60_000) })
 
   it('allows revision 1 and 2 when the limit is 2, numbering them with no gaps', () => {
     expect(checkCanSubmit(state(0))).toEqual({ ok: true, nextRevision: 1 })
@@ -35,10 +37,41 @@ describe('TEST-05-05 checkCanSubmit: revision limit (BR-07)', () => {
   })
 
   it('reports DEADLINE_PASSED first when both rules fail', () => {
-    expect(checkCanSubmit({ deadline: DEADLINE, maxRevisions: 1, revisionsUsed: 1, now: ms(1) })).toEqual({
+    const both = { deadline: DEADLINE, maxRevisions: 1, revisionsUsed: 1, latestHasFeedback: true, now: ms(1) }
+    expect(checkCanSubmit(both)).toEqual({
       ok: false,
       code: 'DEADLINE_PASSED',
     })
+  })
+})
+
+describe('TEST-05-11 checkCanSubmit: feedback before resubmission (BR-07 since CHG-01, #74)', () => {
+  const open = (revisionsUsed: number, latestHasFeedback: boolean, maxRevisions = 3) =>
+    ({ deadline: DEADLINE, maxRevisions, revisionsUsed, latestHasFeedback, now: ms(-60_000) })
+
+  it('revision 1 needs no feedback', () => {
+    expect(checkCanSubmit(open(0, false))).toEqual({ ok: true, nextRevision: 1 })
+  })
+
+  it('revision 2 is rejected while revision 1 has no feedback, and names revision 1', () => {
+    expect(checkCanSubmit(open(1, false))).toEqual({ ok: false, code: 'AWAITING_FEEDBACK', revision: 1 })
+  })
+
+  it('revision 2 is accepted once revision 1 has feedback (the boundary)', () => {
+    expect(checkCanSubmit(open(1, true))).toEqual({ ok: true, nextRevision: 2 })
+  })
+
+  it('only the latest revision counts: revision 3 waits for feedback on revision 2', () => {
+    expect(checkCanSubmit(open(2, false))).toEqual({ ok: false, code: 'AWAITING_FEEDBACK', revision: 2 })
+  })
+
+  it('check order: the deadline comes before the feedback rule', () => {
+    const late = { ...open(1, false), now: ms(1) }
+    expect(checkCanSubmit(late)).toEqual({ ok: false, code: 'DEADLINE_PASSED' })
+  })
+
+  it('check order: the limit comes before the feedback rule', () => {
+    expect(checkCanSubmit(open(1, false, 1))).toEqual({ ok: false, code: 'REVISION_LIMIT_REACHED' })
   })
 })
 

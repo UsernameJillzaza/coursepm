@@ -2,17 +2,29 @@ import type { FieldErrors } from '../http'
 import { hasMultiLineControl, hasSingleLineControl } from './text'
 
 // F-05 business rules as pure functions, so they are unit-tested without a
-// database (TEST-05-03, TEST-05-05, TEST-05-07). The route calls them with
-// the server clock, never a time sent by the client (BR-06).
+// database (TEST-05-03, TEST-05-05, TEST-05-07, TEST-05-11). The route calls
+// them with the server clock, never a time sent by the client (BR-06).
 
-export type SubmitState = { deadline: Date; maxRevisions: number; revisionsUsed: number; now: Date }
-export type SubmitCheck = { ok: true; nextRevision: number } | { ok: false; code: 'DEADLINE_PASSED' | 'REVISION_LIMIT_REACHED' }
+// latestHasFeedback is required on purpose (CHG-01, #74): every caller must
+// say whether the highest stored revision has feedback. closedAt is optional
+// (F-08, #77), so callers that have no closed state can leave it out.
+export type SubmitState = {
+  deadline: Date; maxRevisions: number; revisionsUsed: number; latestHasFeedback: boolean; now: Date; closedAt?: Date | null
+}
+export type SubmitCheck =
+  | { ok: true; nextRevision: number }
+  | { ok: false; code: 'MILESTONE_CLOSED' | 'DEADLINE_PASSED' | 'REVISION_LIMIT_REACHED' }
+  | { ok: false; code: 'AWAITING_FEEDBACK'; revision: number }
 
-// BR-06 deadline (inclusive, D-05), then BR-07 revision limit. Revisions are
-// numbered 1, 2, 3 … with no gaps, so the next one is always used + 1.
-export function checkCanSubmit({ deadline, maxRevisions, revisionsUsed, now }: SubmitState): SubmitCheck {
+// F-08 closed early first, then BR-06 deadline (inclusive, D-05), then BR-07
+// revision limit, then (CHG-01) BR-07 feedback before resubmission: revision
+// n + 1 needs feedback on revision n. Revisions are numbered 1, 2, 3 … with no
+// gaps, so the next one is always used + 1 and the latest one is revision `used`.
+export function checkCanSubmit({ deadline, maxRevisions, revisionsUsed, latestHasFeedback, now, closedAt }: SubmitState): SubmitCheck {
+  if (closedAt) return { ok: false, code: 'MILESTONE_CLOSED' }
   if (now.getTime() > deadline.getTime()) return { ok: false, code: 'DEADLINE_PASSED' }
   if (revisionsUsed >= maxRevisions) return { ok: false, code: 'REVISION_LIMIT_REACHED' }
+  if (revisionsUsed >= 1 && !latestHasFeedback) return { ok: false, code: 'AWAITING_FEEDBACK', revision: revisionsUsed }
   return { ok: true, nextRevision: revisionsUsed + 1 }
 }
 

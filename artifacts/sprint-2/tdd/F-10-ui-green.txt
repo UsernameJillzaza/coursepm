@@ -1,0 +1,14 @@
+# F-10 UI GREEN run — 449b426 — 2026-11-28 23:52 ICT
+$ cd client; npx vitest run tests/sprint-2/board-ui.test.tsx
+
+
+ RUN  v4.1.12 <repo>/client
+
+
+ Test Files  1 passed (1)
+      Tests  11 passed (11)
+   Start at  23:52:33
+   Duration  2.43s (transform 215ms, setup 234ms, import 337ms, tests 568ms, environment 1.14s)
+
+
+# Summary: 11 passed / 0 failed (11), the 11 TEST-UI-10 cases. The pending-state case was tightened after the RED run (commit before 449b426: it looks for the spinner inside <main>); it fails on the stub page as well.

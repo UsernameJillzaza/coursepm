@@ -1,0 +1,23 @@
+# NFR-08 measurement (TEST-10-07) — commit aab45b2 — 2026-11-28T16:53:54.232Z
+$ npm --prefix server run perf:nfr08
+Method: one in-process Express app, one logged-in Supertest agent per user (logins before timing), 5 warm-ups + 50 timed requests per endpoint per user; p95 = nearest rank (48th of 50); pass when p95 < 500 ms.
+Node v24.19.0 on win32; database: the seeded development database (DATABASE_URL).
+Dataset (whole database, demo seed + fixture): {"teams":3,"milestones":30,"submissions":27,"feedback":21,"extensions":6}; fixture: 30 milestones (10 per team).
+Records: Team Beta (id 2, 10 milestones); its milestone with the most revisions: id 16 (3 revisions).
+History endpoint (F-08): included (F-08 is merged at this commit).
+
+| User | Endpoint | p50 ms | p95 ms | max ms | Result |
+| --- | --- | --- | --- | --- | --- |
+| Dr. Supervisor Two | GET /api/teams | 3.6 | 4.9 | 6.5 | PASS |
+| Dr. Supervisor Two | GET /api/teams/:beta/milestones | 5.3 | 6.2 | 7.3 | PASS |
+| Dr. Supervisor Two | GET /api/milestones/:milestone/submissions | 4.2 | 5.3 | 5.9 | PASS |
+| Dr. Supervisor Two | GET /api/teams/:beta/board | 5.0 | 6.4 | 32.1 | PASS |
+| Dr. Supervisor Two | GET /api/milestones/:milestone/history | 3.7 | 4.8 | 6.0 | PASS |
+| Beta Student 1 | GET /api/teams | 3.4 | 4.2 | 4.7 | PASS |
+| Beta Student 1 | GET /api/teams/:beta/milestones | 4.9 | 5.6 | 6.4 | PASS |
+| Beta Student 1 | GET /api/milestones/:milestone/submissions | 4.6 | 7.4 | 8.2 | PASS |
+| Beta Student 1 | GET /api/teams/:beta/board | 4.6 | 8.2 | 9.8 | PASS |
+| Beta Student 1 | GET /api/milestones/:milestone/history | 5.9 | 11.6 | 12.7 | PASS |
+
+Teardown: fixture removed; dataset now {"teams":3,"milestones":0,"submissions":0,"feedback":0,"extensions":0}.
+Overall: PASS (p95 < 500 ms for every endpoint and user: yes).

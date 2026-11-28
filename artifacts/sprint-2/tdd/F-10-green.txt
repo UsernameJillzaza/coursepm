@@ -1,0 +1,23 @@
+# F-10 server GREEN run — b9ae13a — 2026-11-28 23:49 ICT
+$ cd server; npx vitest run tests/sprint-2/board-rules.unit.test.ts tests/sprint-2/board.api.test.ts tests/sprint-2/admin.api.test.ts
+
+
+ RUN  v4.1.12 <repo>/server
+
+Loaded Prisma config from prisma.config.ts.
+
+Prisma schema loaded from prisma\schema.prisma.
+Datasource "db": PostgreSQL database "coursepm_f10_test", schema "public" at "localhost:5432"
+
+9 migrations found in prisma/migrations
+
+
+No pending migrations to apply.
+
+ Test Files  3 passed (3)
+      Tests  44 passed | 1 todo (45)
+   Start at  23:48:55
+   Duration  7.67s (transform 361ms, setup 0ms, import 947ms, tests 3.65s, environment 0ms)
+
+
+# Summary: 44 passed / 0 failed / 1 todo (45): the 13 RED tests now pass, the 31 F-09 admin tests still pass; the todo is the F-11 block of TEST-09-14.

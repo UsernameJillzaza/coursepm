@@ -1,0 +1,471 @@
+# F-08 RED run — 235b1f3 (tests only, no implementation) — 2026-11-28 19:45 ICT
+$ npx vitest run tests/sprint-2/milestone-maintenance-rules.unit.test.ts tests/sprint-2/milestone-maintenance.api.test.ts
+
+ RUN  v4.1.12 <repo>/server
+
+Loaded Prisma config from prisma.config.ts.
+
+Prisma schema loaded from prisma\schema.prisma.
+Datasource "db": PostgreSQL database "coursepm_s2_test", schema "public" at "localhost:5432"
+
+PostgreSQL database coursepm_s2_test created at localhost:5432
+
+7 migrations found in prisma/migrations
+
+Applying migration `20261114193252_users_sessions`
+Applying migration `20261114193953_teams`
+Applying migration `20261115082511_milestones`
+Applying migration `20261115091309_submissions`
+Applying migration `20261115091328_submission_team_matches_milestone`
+Applying migration `20261115094021_feedback`
+Applying migration `20261128124227_milestone_maintenance`
+
+The following migration(s) have been applied:
+
+migrations/
+  └─ 20261114193252_users_sessions/
+    └─ migration.sql
+  └─ 20261114193953_teams/
+    └─ migration.sql
+  └─ 20261115082511_milestones/
+    └─ migration.sql
+  └─ 20261115091309_submissions/
+    └─ migration.sql
+  └─ 20261115091328_submission_team_matches_milestone/
+    └─ migration.sql
+  └─ 20261115094021_feedback/
+    └─ migration.sql
+  └─ 20261128124227_milestone_maintenance/
+    └─ migration.sql
+
+All migrations have been successfully applied.
+ ❯ tests/sprint-2/milestone-maintenance.api.test.ts (13 tests | 12 failed) 456ms
+     × TEST-08-01 (AC-08-1): edits description + deadline, writes one audit row per changed field 21ms
+     × TEST-08-02 (AC-08-2): no edit after a submission, an extension or the deadline; at exactly the deadline it is allowed 11ms
+     × TEST-08-04 (AC-08-3): field errors come together; stored values give NO_CHANGE; nothing is stored 5ms
+     × TEST-08-05: a student gets 403, another team's supervisor 404, malformed IDs 404; nothing is stored 8ms
+     × TEST-08-06 (AC-08-5): extends; a second extension chains previousDeadline and keeps originalDeadline 6ms
+     × TEST-08-08 (AC-08-6): BR-11 boundary on a future deadline; a past deadline needs a future new one 4ms
+     × TEST-08-09 (AC-08-7): late work only through an extension (feedback on revision 1 already given) 28ms
+     × TEST-08-17 (AC-08-11 b): two extensions to the same deadline at once → one 201, one 400, one row 7ms
+     × TEST-08-10 (AC-08-8): close stops submissions first; repeats get MILESTONE_CLOSED; feedback still works 11ms
+     × TEST-08-16: MilestoneChange kind rules and the closed pair are enforced 7ms
+     × TEST-08-12: EDIT, EXTENSION and CLOSE newest first for A1 and Supervisor 1; 404 for Supervisor 2 6ms
+     × TEST-08-13: an edit never succeeds as if before a submission that already happened (20 runs) 23ms
+ ❯ tests/sprint-2/milestone-maintenance-rules.unit.test.ts (12 tests | 11 failed) 13ms
+     × rejects a past deadline and a deadline without a timezone 4ms
+     × accepts a description of 2,000 characters or an empty one, rejects 2,001 and a NUL 0ms
+     × names title and maxRevisions as fields that cannot be changed 0ms
+     × gives noChange for equal values, the same instant in another offset, an empty body and unknown-only keys 0ms
+     × skips a field that was sent unchanged and keeps the one that changed 0ms
+     × rejects a past, malformed or timezone-less new deadline and accepts now + 1 ms 0ms
+     × needs a trimmed reason of 3-500 characters without control characters 0ms
+     × allows no reason, keeps a trimmed one, rejects 501 characters and a NUL 0ms
+     × returns MILESTONE_CLOSED with a future deadline 4ms
+     × returns MILESTONE_CLOSED even when the deadline passed and the limit is reached 1ms
+     × orders by time desc, then CLOSE, EXTENSION, EDIT, then id desc within a kind 0ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 23 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/sprint-2/milestone-maintenance-rules.unit.test.ts > TEST-08-03 (AC-08-3): validateMilestoneEdit > rejects a past deadline and a deadline without a timezone
+TypeError: validateMilestoneEdit is not a function
+ ❯ tests/sprint-2/milestone-maintenance-rules.unit.test.ts:12:18
+     10| describe('TEST-08-03 (AC-08-3): validateMilestoneEdit', () => {
+     11|   it('rejects a past deadline and a deadline without a timezone', () =…
+     12|     const past = validateMilestoneEdit({ deadline: '2026-11-30T00:00:0…
+       |                  ^
+     13|     expect(past).toEqual({ ok: false, fields: { deadline: expect.any(S…
+     14|     const noTz = validateMilestoneEdit({ deadline: '2026-12-09T10:00:0…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/23]⎯
+
+ FAIL  tests/sprint-2/milestone-maintenance-rules.unit.test.ts > TEST-08-03 (AC-08-3): validateMilestoneEdit > accepts a description of 2,000 characters or an empty one, rejects 2,001 and a NUL
+TypeError: validateMilestoneEdit is not a function
+ ❯ tests/sprint-2/milestone-maintenance-rules.unit.test.ts:19:12
+     17|
+     18|   it('accepts a description of 2,000 characters or an empty one, rejec…
+     19|     expect(validateMilestoneEdit({ description: 'x'.repeat(2000) }, no…
+       |            ^
+     20|     expect(validateMilestoneEdit({ description: '' }, now, stored)).to…
+     21|     expect(validateMilestoneEdit({ description: 'x'.repeat(2001) }, no…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/23]⎯
+
+ FAIL  tests/sprint-2/milestone-maintenance-rules.unit.test.ts > TEST-08-03 (AC-08-3): validateMilestoneEdit > names title and maxRevisions as fields that cannot be changed
+TypeError: validateMilestoneEdit is not a function
+ ❯ tests/sprint-2/milestone-maintenance-rules.unit.test.ts:26:17
+     24|
+     25|   it('names title and maxRevisions as fields that cannot be changed', …
+     26|     const res = validateMilestoneEdit({ title: 'New title', maxRevisio…
+       |                 ^
+     27|     expect(res).toEqual({ ok: false, fields: { title: 'Title cannot be…
+     28|   })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/23]⎯
+
+ FAIL  tests/sprint-2/milestone-maintenance-rules.unit.test.ts > TEST-08-03 (AC-08-3): validateMilestoneEdit > gives noChange for equal values, the same instant in another offset, an empty body and unknown-only keys
+TypeError: validateMilestoneEdit is not a function
+ ❯ tests/sprint-2/milestone-maintenance-rules.unit.test.ts:31:12
+     29|
+     30|   it('gives noChange for equal values, the same instant in another off…
+     31|     expect(validateMilestoneEdit({ description: 'Original text', deadl…
+       |            ^
+     32|     expect(validateMilestoneEdit({ deadline: '2026-12-05T18:00:00+07:0…
+     33|     expect(validateMilestoneEdit({}, now, stored)).toEqual({ ok: false…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/23]⎯
+
+ FAIL  tests/sprint-2/milestone-maintenance-rules.unit.test.ts > TEST-08-03 (AC-08-3): validateMilestoneEdit > skips a field that was sent unchanged and keeps the one that changed
+TypeError: validateMilestoneEdit is not a function
+ ❯ tests/sprint-2/milestone-maintenance-rules.unit.test.ts:38:17
+     36|
+     37|   it('skips a field that was sent unchanged and keeps the one that cha…
+     38|     const res = validateMilestoneEdit({ description: 'Original text', …
+       |                 ^
+     39|     expect(res).toEqual({ ok: true, changes: { deadline: new Date('202…
+     40|   })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/23]⎯
+
+ FAIL  tests/sprint-2/milestone-maintenance-rules.unit.test.ts > TEST-08-07 (AC-08-6): validateExtension > rejects a past, malformed or timezone-less new deadline and accepts now + 1 ms
+TypeError: validateExtension is not a function
+ ❯ tests/sprint-2/milestone-maintenance-rules.unit.test.ts:47:14
+     45|   it('rejects a past, malformed or timezone-less new deadline and acce…
+     46|     for (const newDeadline of ['2026-11-30T00:00:00Z', 'tomorrow', '20…
+     47|       expect(validateExtension({ newDeadline, reason: good }, now)).to…
+       |              ^
+     48|     }
+     49|     expect(validateExtension({ newDeadline: iso(now.getTime() + 1), re…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/23]⎯
+
+ FAIL  tests/sprint-2/milestone-maintenance-rules.unit.test.ts > TEST-08-07 (AC-08-6): validateExtension > needs a trimmed reason of 3-500 characters without control characters
+TypeError: validateExtension is not a function
+ ❯ tests/sprint-2/milestone-maintenance-rules.unit.test.ts:58:14
+     56|     const nd = '2026-12-09T10:00:00Z'
+     57|     for (const reason of [undefined, 'ab', '  ab  ', 'x'.repeat(501), …
+     58|       expect(validateExtension({ newDeadline: nd, reason }, now)).toEq…
+       |              ^
+     59|     }
+     60|     expect(validateExtension({ newDeadline: nd, reason: '  abc  ' }, n…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/23]⎯
+
+ FAIL  tests/sprint-2/milestone-maintenance-rules.unit.test.ts > validateCloseReason (AC-08-8) > allows no reason, keeps a trimmed one, rejects 501 characters and a NUL
+TypeError: validateCloseReason is not a function
+ ❯ tests/sprint-2/milestone-maintenance-rules.unit.test.ts:67:12
+     65| describe('validateCloseReason (AC-08-8)', () => {
+     66|   it('allows no reason, keeps a trimmed one, rejects 501 characters an…
+     67|     expect(validateCloseReason({})).toEqual({ ok: true, reason: null })
+       |            ^
+     68|     expect(validateCloseReason({ reason: '   ' })).toEqual({ ok: true,…
+     69|     expect(validateCloseReason({ reason: ' Done early ' })).toEqual({ …
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/23]⎯
+
+ FAIL  tests/sprint-2/milestone-maintenance-rules.unit.test.ts > TEST-08-14 (AC-08-8): checkCanSubmit checks closed first > returns MILESTONE_CLOSED with a future deadline
+AssertionError: expected { ok: true, nextRevision: 1 } to deeply equal { ok: false, code: 'MILESTONE_CLOSED' }
+
+- Expected
++ Received
+
+  {
+-   "code": "MILESTONE_CLOSED",
+-   "ok": false,
++   "nextRevision": 1,
++   "ok": true,
+  }
+
+ ❯ tests/sprint-2/milestone-maintenance-rules.unit.test.ts:78:56
+     76|   const base = { deadline: new Date(now.getTime() + 60_000), maxRevisi…
+     77|   it('returns MILESTONE_CLOSED with a future deadline', () => {
+     78|     expect(checkCanSubmit({ ...base, closedAt: now })).toEqual({ ok: f…
+       |                                                        ^
+     79|   })
+     80|   it('returns MILESTONE_CLOSED even when the deadline passed and the l…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/23]⎯
+
+ FAIL  tests/sprint-2/milestone-maintenance-rules.unit.test.ts > TEST-08-14 (AC-08-8): checkCanSubmit checks closed first > returns MILESTONE_CLOSED even when the deadline passed and the limit is reached
+AssertionError: expected { ok: false, code: 'DEADLINE_PASSED' } to deeply equal { ok: false, code: 'MILESTONE_CLOSED' }
+
+- Expected
++ Received
+
+  {
+-   "code": "MILESTONE_CLOSED",
++   "code": "DEADLINE_PASSED",
+    "ok": false,
+  }
+
+ ❯ tests/sprint-2/milestone-maintenance-rules.unit.test.ts:82:56
+     80|   it('returns MILESTONE_CLOSED even when the deadline passed and the l…
+     81|     const late = { ...base, deadline: new Date(now.getTime() - 60_000)…
+     82|     expect(checkCanSubmit({ ...late, closedAt: now })).toEqual({ ok: f…
+       |                                                        ^
+     83|   })
+     84|   it('keeps the Sprint 1 results when closedAt is absent or null', () …
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/23]⎯
+
+ FAIL  tests/sprint-2/milestone-maintenance-rules.unit.test.ts > TEST-08-18 (AC-08-10): mergeHistory order > orders by time desc, then CLOSE, EXTENSION, EDIT, then id desc within a kind
+TypeError: mergeHistory is not a function
+ ❯ tests/sprint-2/milestone-maintenance-rules.unit.test.ts:95:19
+     93|     const old = new Date('2026-11-30T05:00:00Z')
+     94|     const by = { id: 1, name: 'S' }
+     95|     const items = mergeHistory(
+       |                   ^
+     96|       [
+     97|         { id: 10, kind: 'EDIT', field: 'description', oldValue: 'a', n…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/23]⎯
+
+ FAIL  tests/sprint-2/milestone-maintenance.api.test.ts > PATCH /api/milestones/:id (FR-12 edit) > TEST-08-01 (AC-08-1): edits description + deadline, writes one audit row per changed field
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ tests/sprint-2/milestone-maintenance.api.test.ts:71:24
+     69|     const newDeadline = new Date(m.deadline.getTime() + 3 * 86_400_000)
+     70|     const res = await asSup1.patch(`/api/milestones/${m.id}`).send({ d…
+     71|     expect(res.status).toBe(200)
+       |                        ^
+     72|     expect(res.body.milestone).toMatchObject({ id: m.id, description: …
+     73|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/23]⎯
+
+ FAIL  tests/sprint-2/milestone-maintenance.api.test.ts > PATCH /api/milestones/:id (FR-12 edit) > TEST-08-02 (AC-08-2): no edit after a submission, an extension or the deadline; at exactly the deadline it is allowed
+AssertionError: expected 404 to be 201 // Object.is equality
+
+- Expected
++ Received
+
+- 201
++ 404
+
+ ❯ tests/sprint-2/milestone-maintenance.api.test.ts:92:152
+     90|     await revision(withSub, 1)
+     91|     const withExt = await milestone()
+     92|     expect((await asSup1.post(`/api/milestones/${withExt.id}/extension…
+       |                                                                                                                                                        ^
+     93|     const past = await milestone({ deadline: hours(-1) })
+     94|     const cases: [number, string][] = [[withSub.id, 'MILESTONE_HAS_SUB…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/23]⎯
+
+ FAIL  tests/sprint-2/milestone-maintenance.api.test.ts > PATCH /api/milestones/:id (FR-12 edit) > TEST-08-04 (AC-08-3): field errors come together; stored values give NO_CHANGE; nothing is stored
+AssertionError: expected 404 to be 400 // Object.is equality
+
+- Expected
++ Received
+
+- 400
++ 404
+
+ ❯ tests/sprint-2/milestone-maintenance.api.test.ts:121:24
+    119|     const m = await milestone()
+    120|     const bad = await asSup1.patch(`/api/milestones/${m.id}`).send({ d…
+    121|     expect(bad.status).toBe(400)
+       |                        ^
+    122|     expect(bad.body.error.code).toBe('VALIDATION_ERROR')
+    123|     expect(Object.keys(bad.body.error.fields).sort()).toEqual(['deadli…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/23]⎯
+
+ FAIL  tests/sprint-2/milestone-maintenance.api.test.ts > Access (AC-08-4) > TEST-08-05: a student gets 403, another team's supervisor 404, malformed IDs 404; nothing is stored
+AssertionError: expected 404 to be 403 // Object.is equality
+
+- Expected
++ Received
+
+- 403
++ 404
+
+ ❯ tests/sprint-2/milestone-maintenance.api.test.ts:140:26
+    138|     ]
+    139|     for (const res of await Promise.all(calls(asA1, String(m.id)))) {
+    140|       expect(res.status).toBe(403)
+       |                          ^
+    141|       expect(res.body.error.code).toBe('FORBIDDEN')
+    142|     }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[15/23]⎯
+
+ FAIL  tests/sprint-2/milestone-maintenance.api.test.ts > POST /api/milestones/:id/extensions (FR-13, BR-11) > TEST-08-06 (AC-08-5): extends; a second extension chains previousDeadline and keeps originalDeadline
+AssertionError: expected 404 to be 201 // Object.is equality
+
+- Expected
++ Received
+
+- 201
++ 404
+
+ ❯ tests/sprint-2/milestone-maintenance.api.test.ts:157:24
+    155|     const d2 = new Date(m.deadline.getTime() + 2 * 86_400_000)
+    156|     const res = await asSup1.post(`/api/milestones/${m.id}/extensions`…
+    157|     expect(res.status).toBe(201)
+       |                        ^
+    158|     expect(Object.keys(res.body.extension).sort()).toEqual(['grantedAt…
+    159|     expect(res.body.extension).toMatchObject({
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[16/23]⎯
+
+ FAIL  tests/sprint-2/milestone-maintenance.api.test.ts > POST /api/milestones/:id/extensions (FR-13, BR-11) > TEST-08-08 (AC-08-6): BR-11 boundary on a future deadline; a past deadline needs a future new one
+AssertionError: expected 404 to be 400 // Object.is equality
+
+- Expected
++ Received
+
+- 400
++ 404
+
+ ❯ tests/sprint-2/milestone-maintenance.api.test.ts:180:26
+    178|     for (const at of [m.deadline, new Date(m.deadline.getTime() - 1)])…
+    179|       const res = await ext(m.id, at)
+    180|       expect(res.status).toBe(400)
+       |                          ^
+    181|       expect(Object.keys(res.body.error.fields)).toEqual(['newDeadline…
+    182|     }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[17/23]⎯
+
+ FAIL  tests/sprint-2/milestone-maintenance.api.test.ts > POST /api/milestones/:id/extensions (FR-13, BR-11) > TEST-08-09 (AC-08-7): late work only through an extension (feedback on revision 1 already given)
+AssertionError: expected 404 to be 201 // Object.is equality
+
+- Expected
++ Received
+
+- 201
++ 404
+
+ ❯ tests/sprint-2/milestone-maintenance.api.test.ts:201:144
+    199|     expect(first.status).toBe(409)
+    200|     expect(first.body.error.code).toBe('DEADLINE_PASSED')
+    201|     expect((await asSup1.post(`/api/milestones/${m.id}/extensions`).se…
+       |                                                                                                                                                ^
+    202|     const second = await asA1.post(`/api/milestones/${m.id}/submission…
+    203|     expect(second.status).toBe(201)
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[18/23]⎯
+
+ FAIL  tests/sprint-2/milestone-maintenance.api.test.ts > POST /api/milestones/:id/extensions (FR-13, BR-11) > TEST-08-17 (AC-08-11 b): two extensions to the same deadline at once → one 201, one 400, one row
+AssertionError: expected [ 404, 404 ] to deeply equal [ 201, 400 ]
+
+- Expected
++ Received
+
+  [
+-   201,
+-   400,
++   404,
++   404,
+  ]
+
+ ❯ tests/sprint-2/milestone-maintenance.api.test.ts:211:49
+    209|     const target = new Date(m.deadline.getTime() + 86_400_000).toISOSt…
+    210|     const results = await Promise.all([1, 2].map(() => asSup1.post(`/a…
+    211|     expect(results.map((r) => r.status).sort()).toEqual([201, 400])
+       |                                                 ^
+    212|     expect(results.find((r) => r.status === 400)!.body.error.fields).t…
+    213|     expect(await extensions(m.id)).toBe(1)
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[19/23]⎯
+
+ FAIL  tests/sprint-2/milestone-maintenance.api.test.ts > POST /api/milestones/:id/close (FR-12 close early) > TEST-08-10 (AC-08-8): close stops submissions first; repeats get MILESTONE_CLOSED; feedback still works
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ tests/sprint-2/milestone-maintenance.api.test.ts:223:27
+    221|     const r1 = await revision(m, 1)
+    222|     const closed = await asSup1.post(`/api/milestones/${m.id}/close`).…
+    223|     expect(closed.status).toBe(200)
+       |                           ^
+    224|     expect(closed.body.milestone.status).toBe('CLOSED')
+    225|     expect(closed.body.milestone.closedAt).not.toBeNull()
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[20/23]⎯
+
+ FAIL  tests/sprint-2/milestone-maintenance.api.test.ts > Database CHECKs (AC-08-9) > TEST-08-16: MilestoneChange kind rules and the closed pair are enforced
+AssertionError: promise resolved "{ id: 1, milestoneId: 12, …(7) }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "changedAt": 2026-11-28T12:45:05.860Z,
++   "changedById": 3,
++   "field": null,
++   "id": 1,
++   "kind": "EDIT",
++   "milestoneId": 12,
++   "newValue": "b",
++   "oldValue": "a",
++   "reason": null,
+  }
+
+ ❯ tests/sprint-2/milestone-maintenance.api.test.ts:280:103
+    278|       { kind: 'CLOSE' as const, reason: 'x'.repeat(501) },
+    279|     ]
+    280|     for (const data of bad) await expect(prisma.milestoneChange.create…
+       |                                                                                                       ^
+    281|     expect(await changes(m.id)).toBe(0)
+    282|     await expect(prisma.milestone.update({ where: { id: m.id }, data: …
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[21/23]⎯
+
+ FAIL  tests/sprint-2/milestone-maintenance.api.test.ts > GET /api/milestones/:id/history (AC-08-10) > TEST-08-12: EDIT, EXTENSION and CLOSE newest first for A1 and Supervisor 1; 404 for Supervisor 2
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ tests/sprint-2/milestone-maintenance.api.test.ts:289:100
+    287|   it('TEST-08-12: EDIT, EXTENSION and CLOSE newest first for A1 and Su…
+    288|     const m = await milestone()
+    289|     expect((await asSup1.patch(`/api/milestones/${m.id}`).send({ descr…
+       |                                                                                                    ^
+    290|     const newDeadline = hours(96)
+    291|     expect((await asSup1.post(`/api/milestones/${m.id}/extensions`).se…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[22/23]⎯
+
+ FAIL  tests/sprint-2/milestone-maintenance.api.test.ts > Race: edit vs submission (AC-08-11 a) > TEST-08-13: an edit never succeeds as if before a submission that already happened (20 runs)
+AssertionError: expected 404 to be 409 // Object.is equality
+
+- Expected
++ Received
+
+- 409
++ 404
+
+ ❯ tests/sprint-2/milestone-maintenance.api.test.ts:320:29
+    318|         if (submit.status === 201) expect(row.changedAt.getTime()).toB…
+    319|       } else {
+    320|         expect(edit.status).toBe(409)
+       |                             ^
+    321|         expect(edit.body.error.code).toBe('MILESTONE_HAS_SUBMISSIONS')
+    322|         expect(subs).toHaveLength(1)
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[23/23]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  23 failed | 2 passed (25)
+   Start at  19:45:01
+   Duration  4.40s (transform 248ms, setup 0ms, import 549ms, tests 468ms, environment 0ms)
+

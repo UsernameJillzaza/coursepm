@@ -1,0 +1,8 @@
+# F-08 UI GREEN run — 48e079d — 2026-11-28 22:19 ICT
+$ npx vitest run tests/sprint-2/milestone-maintenance-ui.test.tsx
+ RUN  v4.1.12 <repo>/client
+ Test Files  1 passed (1)
+      Tests  9 passed (9)
+   Duration  4.15s (transform 179ms, setup 284ms, import 307ms, tests 1.93s, environment 1.43s)
+
+# Result: 9 passed, 0 failed, 0 skipped (RED on 30bdd15 was 9 failed).

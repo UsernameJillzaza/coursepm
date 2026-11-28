@@ -1,0 +1,38 @@
+# F-10 full regression — 401ba6a — 2026-11-28 23:56 ICT
+
+$ cd server; npx vitest run
+ Test Files  26 passed (26)
+      Tests  343 passed | 1 todo (344)
+   Duration  28.28s (transform 669ms, setup 0ms, import 5.32s, tests 15.95s, environment 2ms)
+
+$ cd server; npx tsc --noEmit
+exit 0
+
+$ cd server; npm run build
+✔ Generated Prisma Client (7.10.1) to .\src\generated\prisma in 85ms
+exit 0
+
+$ cd client; npx vitest run
+ Test Files  12 passed (12)
+      Tests  99 passed (99)
+   Duration  6.41s (transform 2.67s, setup 5.60s, import 6.23s, tests 16.26s, environment 25.86s)
+
+$ cd client; npm run build
+dist/index.html                   0.40 kB │ gzip:  0.27 kB
+dist/assets/index-BbRluUcX.css  230.30 kB │ gzip: 30.70 kB
+dist/assets/index-DYMIfJ6r.js   308.82 kB │ gzip: 92.62 kB
+✓ built in 222ms
+exit 0
+
+$ npx playwright test   (ports 3000/5173 checked free first; both dev servers started by Playwright on the coursepm_f10 development database)
+  ok 1 e2e\sprint-1\e2e-01-login-teams.spec.ts:8:1 › E2E-01: wrong password, login, own team only, reload keeps the session, logout (2.1s)
+  ok 2 e2e\sprint-1\e2e-02-03-journey.spec.ts:14:1 › E2E-02: milestone → submission (rejected link, revision 1, wait) → feedback → revision 2, limit → persisted result (4.6s)
+  ok 3 e2e\sprint-1\e2e-02-03-journey.spec.ts:99:1 › E2E-03: no New milestone control for a student; another team's page by URL shows "Team not found" (1.3s)
+  ok 4 e2e\sprint-2\e2e-07-compare-revisions.spec.ts:17:1 › TEST-07-08: submit → feedback → submit, then compare revisions 1 and 2 and reload (3.9s)
+  ok 5 e2e\sprint-2\e2e-08-milestone-maintenance.spec.ts:20:1 › TEST-08-15: edit → extension → close as Supervisor 1; A1 sees the badges, extended deadline and history (3.6s)
+  ok 6 e2e\sprint-2\e2e-10-progress-board.spec.ts:19:1 › TEST-10-08: a submission shows under Submitted, feedback under Feedback given after a reload (4.3s)
+  6 passed (23.5s)
+
+# After the run: git restore artifacts/sprint-1/screenshots/ artifacts/sprint-2/screenshots/ and the stray new files (05b-waiting-for-feedback.png, S2-07-*.png) deleted; only the new 10-0*.png F-10 screenshots are kept.
+
+# Summary: server 343 passed / 0 failed / 0 skipped / 1 todo (26 files; the todo is the F-11 block of TEST-09-14); client 99 passed / 0 failed / 0 skipped (12 files, includes 11 TEST-UI-10 cases); server tsc and both builds exit 0; Playwright 6 passed / 0 failed / 0 skipped (E2E-01, E2E-02, E2E-03, TEST-07-08, TEST-08-15, TEST-10-08).

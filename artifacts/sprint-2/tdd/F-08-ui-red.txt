@@ -1,0 +1,48 @@
+# F-08 UI RED run — 30bdd15 (UI test only, no UI implementation) — 2026-11-28 22:16 ICT
+# Every failure is an assertion (element not found), not an import error.
+$ npx vitest run tests/sprint-2/milestone-maintenance-ui.test.tsx
+ RUN  v4.1.12 <repo>/client
+ ❯ tests/sprint-2/milestone-maintenance-ui.test.tsx (9 tests | 9 failed) 8115ms
+     × a supervisor inside the edit window sees Edit, Grant extension and Close milestone 1026ms
+     × Edit is hidden outside the edit window (a submission, an extension, a passed deadline) 1005ms
+     × after an early close no control is shown, and the header names who closed it and when 1008ms
+     × a student sees no controls, but sees the Closed early and Extended badges, the extended deadline and the history 1007ms
+     × the team list shows the Closed early and Extended badges 23ms
+     × an edit 400 shows each message under its field and keeps the typed values 1016ms
+     × an unchanged edit sends the stored values and shows NO_CHANGE in the alert; a 409 also goes to the alert 1002ms
+     × an extension 400 shows each message under its field and keeps the typed values; a 409 shows the alert 1015ms
+     × Close asks for confirmation; Cancel sends nothing; confirming sends the optional reason 1010ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 9 ⎯⎯⎯⎯⎯⎯⎯
+ FAIL  tests/sprint-2/milestone-maintenance-ui.test.tsx > TEST-UI-08 (AC-08-12): which controls are shown > a supervisor inside the edit window sees Edit, Grant extension and Close milestone
+TestingLibraryElementError: Unable to find role="button" and name "Edit"
+ ❯ tests/sprint-2/milestone-maintenance-ui.test.tsx:64:25
+ FAIL  tests/sprint-2/milestone-maintenance-ui.test.tsx > TEST-UI-08 (AC-08-12): which controls are shown > Edit is hidden outside the edit window (a submission, an extension, a passed deadline)
+TestingLibraryElementError: Unable to find role="button" and name "Grant extension"
+ ❯ tests/sprint-2/milestone-maintenance-ui.test.tsx:73:27
+ FAIL  tests/sprint-2/milestone-maintenance-ui.test.tsx > TEST-UI-08 (AC-08-12): which controls are shown > after an early close no control is shown, and the header names who closed it and when
+TestingLibraryElementError: Unable to find an element with the text: Closed early by Dr. Supervisor One on 28 Nov 18:00. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+ ❯ tests/sprint-2/milestone-maintenance-ui.test.tsx:84:25
+ FAIL  tests/sprint-2/milestone-maintenance-ui.test.tsx > TEST-UI-08 (AC-08-12): which controls are shown > a student sees no controls, but sees the Closed early and Extended badges, the extended deadline and the history
+TestingLibraryElementError: Unable to find an element with the text: Deadline 12 Dec 18:00 (extended from 10 Dec 18:00). This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+ ❯ tests/sprint-2/milestone-maintenance-ui.test.tsx:91:25
+ FAIL  tests/sprint-2/milestone-maintenance-ui.test.tsx > TEST-UI-08 (AC-08-12): which controls are shown > the team list shows the Closed early and Extended badges
+TestingLibraryElementError: Unable to find an element with the text: Closed early. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ tests/sprint-2/milestone-maintenance-ui.test.tsx:109:25
+ FAIL  tests/sprint-2/milestone-maintenance-ui.test.tsx > TEST-UI-08 (AC-08-12): forms and errors > an edit 400 shows each message under its field and keeps the typed values
+TestingLibraryElementError: Unable to find role="button" and name "Edit"
+ ❯ tests/sprint-2/milestone-maintenance-ui.test.tsx:123:40
+ FAIL  tests/sprint-2/milestone-maintenance-ui.test.tsx > TEST-UI-08 (AC-08-12): forms and errors > an unchanged edit sends the stored values and shows NO_CHANGE in the alert; a 409 also goes to the alert
+TestingLibraryElementError: Unable to find role="button" and name "Edit"
+ ❯ tests/sprint-2/milestone-maintenance-ui.test.tsx:145:40
+ FAIL  tests/sprint-2/milestone-maintenance-ui.test.tsx > TEST-UI-08 (AC-08-12): forms and errors > an extension 400 shows each message under its field and keeps the typed values; a 409 shows the alert
+TestingLibraryElementError: Unable to find role="button" and name "Grant extension"
+ ❯ tests/sprint-2/milestone-maintenance-ui.test.tsx:168:40
+ FAIL  tests/sprint-2/milestone-maintenance-ui.test.tsx > TEST-UI-08 (AC-08-12): forms and errors > Close asks for confirmation; Cancel sends nothing; confirming sends the optional reason
+TestingLibraryElementError: Unable to find role="button" and name "Close milestone"
+ ❯ tests/sprint-2/milestone-maintenance-ui.test.tsx:193:40
+ Test Files  1 failed (1)
+      Tests  9 failed (9)
+   Duration  10.19s (transform 167ms, setup 312ms, import 307ms, tests 8.11s, environment 1.27s)
+
+# Result: 9 failed, 0 passed, 0 skipped.

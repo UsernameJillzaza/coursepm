@@ -5,7 +5,7 @@ import type { Team } from './types'
 import MilestoneList from '../milestones/MilestoneList'
 
 // F-03 team detail: name, course, members, supervisors. The milestone list
-// is added here by F-04 (Issue #6).
+// is added here by F-04 (Issue #6); the Progress board link by F-10.
 export default function TeamDetailPage() {
   const { teamId } = useParams()
   const { data, error, loading, reload } = useApi<{ team: Team }>(`/teams/${teamId}`)
@@ -31,7 +31,11 @@ export default function TeamDetailPage() {
           <li className="breadcrumb-item active" aria-current="page">{team.name}</li>
         </ol>
       </nav>
-      <h1 className="h4 mb-0">{team.name}</h1>
+      <div className="d-flex justify-content-between align-items-start gap-2">
+        <h1 className="h4 mb-0">{team.name}</h1>
+        {/* F-10: everyone in scope may open the read-only board. */}
+        <Link className="btn btn-outline-primary btn-sm" to={`/teams/${team.id}/board`}>Progress board</Link>
+      </div>
       <p className="text-body-secondary">{team.courseCode}</p>
       <div className="row g-4">
         <section className="col-md-4">

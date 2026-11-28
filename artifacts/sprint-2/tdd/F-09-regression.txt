@@ -1,0 +1,19 @@
+Issue #78 (F-09) full regression before the PR
+Code commit under test: 09ee599 (all F-09 code and tests committed; only docs/README edits uncommitted)
+Commands: npm run test:server ; npm run test:client ; npm --prefix client run build ; npm --prefix server run build
+Date: 2026-11-28 20:42 (ICT)
+
+--- server ---
+7 migrations found in prisma/migrations
+ Test Files  20 passed (20)
+      Tests  236 passed | 4 todo (240)
+
+--- client ---
+ Test Files  9 passed (9)
+      Tests  63 passed (63)
+
+--- client build ---
+✓ built in 337ms
+
+--- server build ---
+server build OK (prisma generate && tsc)

@@ -7,13 +7,18 @@ import type { AuthUser } from '../auth/middleware'
 // one place. Students reach teams they belong to; supervisors reach teams
 // they are assigned to. Anything else is treated as not found (D-03).
 // Milestone and submission loaders follow the same rule as the team loader.
+// F-09: an ADMIN manages teams and accounts through /api/admin but never sees
+// team work, so for an ADMIN the filter matches no team at all (an explicit
+// rule, not the accident of never being assigned). Every team-owned route then
+// answers 404, exactly as for an out-of-scope supervisor (AC-09-9, AC-09-12).
 export function teamScopeWhere(user: AuthUser): Prisma.TeamWhereInput {
+  if (user.role === 'ADMIN') return { id: { in: [] } }
   return user.role === 'STUDENT'
     ? { members: { some: { userId: user.id } } }
     : { supervisors: { some: { userId: user.id } } }
 }
 
-const teamView = {
+export const teamView = {
   id: true,
   name: true,
   courseCode: true,

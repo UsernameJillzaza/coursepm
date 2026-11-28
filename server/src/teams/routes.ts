@@ -3,6 +3,7 @@ import { listTeamsForUser, loadTeamForUser } from '../access/scope'
 import { requireAuth } from '../auth/middleware'
 import { parseId, sendError } from '../http'
 import { createTeamMilestone, listTeamMilestones } from '../milestones/routes'
+import { getTeamBoard } from './board'
 
 // F-03 API (FR-03). Every route needs a session (NFR-01) and reads through
 // the F-02 scope helpers.
@@ -24,3 +25,4 @@ teamsRouter.get('/:teamId', async (req, res) => {
 
 teamsRouter.get('/:teamId/milestones', listTeamMilestones)
 teamsRouter.post('/:teamId/milestones', createTeamMilestone)
+teamsRouter.get('/:teamId/board', getTeamBoard) // F-10

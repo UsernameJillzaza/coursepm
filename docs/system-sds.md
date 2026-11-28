@@ -1,6 +1,6 @@
 # CoursePM — System-Level Software Design Specification (SDS)
 
-Version 0.1 · 2026-11-15 · implements [srs.md](srs.md) v0.1.
+Version 0.3 · 2026-11-28 (F-09 implemented, Issue #78) · 0.2 2026-11-28 (CHG-01) · implements [srs.md](srs.md) v0.2 · 0.1 2026-11-15.
 
 ## 1. Architecture and stack
 
@@ -36,18 +36,19 @@ the **scope loader runs first**: it fetches the record *together with* the calle
 assignment and answers 404 when the record is missing **or** outside the caller's scope. Only then is
 the **role checked for the operation** (403), so an outsider never learns that a record exists (D-03).
 Routes without a target record (for example `GET /api/teams`, which is filtered by scope) need no
-separate role check. Validation (400) and the rule checks (deadline, revision limit; 409) are small pure
+separate role check. Validation (400) and the rule checks (deadline, revision limit, and since CHG-01 feedback on the previous revision; 409) are small pure
 functions in `server/src/rules/`, so they are unit-testable. The handler writes inside a Prisma
 transaction.
 
 **Concurrent submissions (NFR-05).** Two requests can read the same number of revisions and both try
 revision *n + 1*. The insert runs in a transaction that re-reads the milestone and the current revision
-count and re-applies **both** rules (deadline and revision limit) with the server clock. `UNIQUE
+count, plus whether the latest revision has feedback, and re-applies **all three** rules (deadline, revision limit,
+feedback before resubmission since CHG-01) with the server clock. `UNIQUE
 (milestoneId, revision)` makes the losing insert fail; the server then **retries the whole transaction
 (up to 3 attempts)**, so the loser gets the next free revision if capacity remains, or `409
-REVISION_LIMIT_REACHED` / `409 DEADLINE_PASSED` if the fresh state no longer allows it. If all
+REVISION_LIMIT_REACHED` / `409 DEADLINE_PASSED` / `409 AWAITING_FEEDBACK` if the fresh state no longer allows it. If all
 attempts collide, the client receives `409 CONFLICT` ("try again"). Covered by TEST-05-08 (two at once
-with capacity → revisions 1 and 2) and a limit-1 variant (two at once → one 201, one 409).
+→ one new revision and one `AWAITING_FEEDBACK`, since CHG-01) and a limit-1 variant (two at once → one 201, one 409).
 
 **Communication.** The client and API share one origin in development through the Vite proxy (`/api`
 → `localhost:3000`), so the cookie stays first-party. In production it is **planned** (Lab 5, §6) that Express also serves the built client from the same
@@ -67,25 +68,29 @@ erDiagram
   User ||--o{ Submission : submits
   Submission ||--o| Feedback : "has (≤1)"
   User ||--o{ Feedback : writes
+  Milestone ||--o{ MilestoneChange : "audited by (F-08)"
+  Milestone ||--o{ DeadlineExtension : "extended by (F-08)"
 ```
 
 | Entity | Key fields | Constraints / ownership |
 | --- | --- | --- |
-| `User` | id, email, name, role (`STUDENT`\|`SUPERVISOR`; `ADMIN` added in Sprint 2), passwordHash, isActive, createdAt | email unique, lowercase. One role per user (BR-01). |
+| `User` | id, email, name, role (`STUDENT`\|`SUPERVISOR`\|`ADMIN`; `ADMIN` added by F-09, migration `20261128132923_admin_role`, additive only), passwordHash, isActive, createdAt | email unique, lowercase. One role per user (BR-01). |
 | `Session` | id (SHA-256 of token), userId, expiresAt, createdAt | FK → User, cascade delete. |
 | `Team` | id, name, courseCode, createdAt | (courseCode, name) unique. |
-| `TeamMember` | teamId, userId | PK (teamId, userId); only `STUDENT` users are added (enforced by the seed, not the DB; see below). |
-| `SupervisorAssignment` | teamId, userId | PK (teamId, userId); only `SUPERVISOR` users are added (enforced by the seed, not the DB; see below). |
-| `Milestone` | id, teamId, title, description, deadline (UTC), maxRevisions (1–5), createdById, createdAt | FK → Team and the creator. A CHECK constraint keeps maxRevisions within 1–5. **UNIQUE (id, teamId)** so submissions can reference the pair. |
+| `TeamMember` | teamId, userId | PK (teamId, userId); only active `STUDENT` users are added (enforced by the application: the seed and, since F-09, `checkAssignable` in `/api/admin`; no DB CHECK; see below). |
+| `SupervisorAssignment` | teamId, userId | PK (teamId, userId); only active `SUPERVISOR` users are added (enforced by the application: the seed and, since F-09, `checkAssignable` in `/api/admin`; no DB CHECK; see below). |
+| `Milestone` | id, teamId, title, description, deadline (UTC), maxRevisions (1–5), createdById, createdAt, closedAt?, closedById? (F-08) | FK → Team and the creator. A CHECK constraint keeps maxRevisions within 1–5. **UNIQUE (id, teamId)** so submissions can reference the pair. F-08: `deadline` is the effective deadline (the latest extension's `newDeadline`); CHECK `(closedAt IS NULL) = (closedById IS NULL)`, FK closedById → User. |
 | `Submission` | id, milestoneId, teamId, revision, title, description, link, submittedById, submittedAt | **UNIQUE (milestoneId, revision)** for NFR-05. teamId is copied from the milestone so scope checks are a single join, and a **composite FK (milestoneId, teamId) → Milestone (id, teamId)** makes the database reject a submission whose teamId differs from its milestone's team, so authorization can never use the wrong team. Never updated or deleted (BR-07). |
 | `Feedback` | id, submissionId (unique), supervisorId, body, createdAt | **UNIQUE (submissionId)** for BR-10; FK → Submission keeps the feedback/revision link. |
+| `MilestoneChange` (F-08) | id, milestoneId, kind (`EDIT`\|`CLOSE`), field?, oldValue?, newValue?, reason?, changedById, changedAt | FK → Milestone and the supervisor. CHECK: `EDIT` ⇒ field IS NOT NULL and in (`description`, `deadline`), oldValue and newValue NOT NULL, reason NULL; `CLOSE` ⇒ field, oldValue, newValue NULL; reason ≤ 500 characters. Index (milestoneId, changedAt). Never updated or deleted. Migrations `20261128154000_milestone_maintenance` and `20261128154001_milestone_change_field_not_null` (adds the explicit `field IS NOT NULL`). |
+| `DeadlineExtension` (F-08) | id, milestoneId, previousDeadline, newDeadline, reason, grantedById, grantedAt | FK → Milestone and the supervisor. CHECK **newDeadline > previousDeadline** (BR-11) and reason 3–500 characters. Index (milestoneId, grantedAt). Never updated or deleted. |
 
-**Integrity: database-enforced vs application-enforced.** Enforced by the database: unique e-mail, unique (courseCode, name), membership/assignment primary keys, UNIQUE (milestoneId, revision), the composite FK that ties a submission to its milestone's team, UNIQUE (submissionId) on Feedback, and the maxRevisions CHECK. **Enforced by the application only (accepted for Sprint 1):** that e-mails are stored lowercase (the database enforces uniqueness only; login and the account helper normalise every e-mail); that team members are `STUDENT` users and assigned supervisors are `SUPERVISOR` users (only the seed writes these tables until F-09 adds admin screens with the same checks); that `Milestone.createdById` is an assigned supervisor, `Submission.submittedById` a member and `Feedback.supervisorId` an assigned supervisor (each set from the signed-in user after the scope and role checks, never from the request); and that submissions are never updated or deleted (BR-07: no API route can, and teams/milestones, whose deletion would cascade, are never deleted through the API either).
+**Integrity: database-enforced vs application-enforced.** Enforced by the database: unique e-mail, unique (courseCode, name), membership/assignment primary keys, UNIQUE (milestoneId, revision), the composite FK that ties a submission to its milestone's team, UNIQUE (submissionId) on Feedback, the maxRevisions CHECK, and (F-08) the closed-pair, extension and audit-row CHECKs above. **Enforced by the application only (accepted for Sprint 1, and kept in Sprint 2):** that e-mails are stored lowercase (the database enforces uniqueness only; login and the account helper normalise every e-mail); that team members are `STUDENT` users and assigned supervisors are `SUPERVISOR` users (written only by the seed and, since F-09, by the `/api/admin` member and supervisor routes; those routes call `checkAssignable` inside a transaction that locks the user row (`SELECT … FOR UPDATE`), so only active `STUDENT` / `SUPERVISOR` users are added, never an `ADMIN`, and an add racing a deactivation cannot store an inactive account; no database CHECK can see the user's role from these tables; TEST-09-07, TEST-09-08); that `Milestone.createdById` is an assigned supervisor, `Submission.submittedById` a member and `Feedback.supervisorId` an assigned supervisor (each set from the signed-in user after the scope and role checks, never from the request); and that submissions are never updated or deleted (BR-07: no API route can, and teams/milestones, whose deletion would cascade, are never deleted through the API either). F-08 adds, enforced in code under the milestone row lock (`SELECT … FOR UPDATE`) and covered by tests: `Milestone.deadline` equals the latest extension's `newDeadline`, each extension's `previousDeadline` equals the deadline before it, no submission is accepted after a close, and `MilestoneChange` / `DeadlineExtension` rows are never updated or deleted.
 
 **Setup.** `npx prisma migrate dev` builds the schema from versioned migrations.
 `npx prisma db seed` runs `src/seed/demo.ts`, which is idempotent (users upserted by e-mail, teams by
 their unique key **(courseCode, name)**, memberships and assignments by their composite primary keys; re-running it also resets the demo accounts' names, roles and passwords to the seed values and re-activates them) and
-creates: 2 supervisors, 6 students, and 3 teams (Team Alpha supervised by Supervisor 1; Team Beta and
+creates: 2 supervisors, 6 students, 1 course administrator (`admin@coursepm.test`, F-09, in no team), and 3 teams (Team Alpha supervised by Supervisor 1; Team Beta and
 Team Gamma supervised by Supervisor 2). Demo passwords come from `SEED_PASSWORD` in `.env` and are
 never written in the repository.
 
@@ -101,6 +106,9 @@ seed creates the complete set above in one repeatable command.
 | `/teams` | My teams (cards with member names) | Student, Supervisor |
 | `/teams/:teamId` | Team detail: members, milestone list with status badges; **New milestone** button | Student, Supervisor (button for Supervisor only) |
 | `/teams/:teamId/milestones/new` | Create milestone form, shown after the team loads (**Team not found** for an out-of-scope team) | Supervisor |
+| `/milestones/:milestoneId/revisions` | Compare revisions (F-07): the revision list with a checkbox per row and, for two checked, a side-by-side comparison kept in `?a=&b=` | Student, Supervisor |
+| `/teams/:teamId/board` | Progress board (F-10): five read-only columns Not submitted · Submitted · Feedback given · Overdue · Closed (`BOARD_COLUMNS`) with counts and cards linking to `/milestones/:id`; a column title filters to `?state=`, **Show all** clears it; opened from the **Progress board** link on the team page | Student, Supervisor |
+| `/admin` | Course administration (F-09): Teams (New team form, Add member / Add supervisor) and Accounts (role filter, Deactivate with confirmation). Other roles see `NoAccess` | Admin |
 | `/milestones/:milestoneId` | Milestone detail: deadline (Bangkok time) with an Open/Closed badge, revisions used / limit, submit form (Student, while open), revision list with feedback, feedback form (Supervisor) | Student, Supervisor |
 
 **Shared behavior (R-02).** A top bar shows the user's name and role and a **Log out** button. A
@@ -127,7 +135,7 @@ field, and keeps the typed values on error. Every list has a loading spinner, an
 | 401 | `INVALID_CREDENTIALS` | Login with a wrong password, an unknown e-mail, an inactive account, or a control character in the e-mail or password (one generic message). |
 | 403 | `FORBIDDEN` | The record is in scope but the role may not perform the operation (a student creating a milestone or recording feedback). |
 | 404 | `NOT_FOUND` | The record does not exist **or** is outside the user's scope (D-03); also any unknown `/api/*` path. |
-| 409 | `DEADLINE_PASSED`, `REVISION_LIMIT_REACHED`, `FEEDBACK_EXISTS` | A business rule rejects the state change (BR-06, BR-07, BR-10). |
+| 409 | `DEADLINE_PASSED`, `REVISION_LIMIT_REACHED`, `AWAITING_FEEDBACK` (CHG-01), `FEEDBACK_EXISTS` | A business rule rejects the state change (BR-06, BR-07, BR-10). |
 | 409 | `CONFLICT` | A concurrent submission kept winning the same revision number through every retry (§1, NFR-05); the client may simply try again. |
 | 413 | `PAYLOAD_TOO_LARGE` | The JSON body is over the 100 kB limit. |
 | 500 | `INTERNAL_ERROR` | Unexpected; generic message, details only in the server log. |
@@ -150,30 +158,35 @@ PostgreSQL cannot store a NUL byte in text).
 | `GET /api/teams` · `GET /api/teams/:teamId` | F-03 |
 | `GET /api/teams/:teamId/milestones` · `POST /api/teams/:teamId/milestones` · `GET /api/milestones/:milestoneId` | F-04 |
 | `GET /api/milestones/:milestoneId/submissions` · `POST /api/milestones/:milestoneId/submissions` | F-05 |
+| `PATCH /api/milestones/:milestoneId` · `POST /api/milestones/:milestoneId/extensions` · `POST /api/milestones/:milestoneId/close` · `GET /api/milestones/:milestoneId/history` | F-08 |
 | `POST /api/submissions/:submissionId/feedback` | F-06 |
+| `GET /api/milestones/:milestoneId/compare?a=&b=` | F-07; read-only, scope 404 → query 400 → revision 404 |
+| `GET /api/teams/:teamId/board?state=` | F-10; read-only, scope 404 → query 400 (`fields.state`), `Cache-Control: no-store`. Each milestone's `state` is derived per request, never stored, in the precedence CLOSED (`closedAt` set) → FEEDBACK_GIVEN (latest revision has feedback) → SUBMITTED (latest revision has none, the same condition as `awaitingFeedback`) → OVERDUE (no revision, `now > deadline`) → NOT_SUBMITTED (no revision, `now ≤ deadline`, D-05); `deadline` is the effective one after F-08 extensions. `counts` always cover the whole team |
+| `GET /api/admin/users` · `GET /api/admin/teams` · `POST /api/admin/teams` · `POST /api/admin/teams/:teamId/members` · `POST /api/admin/teams/:teamId/supervisors` · `POST /api/admin/users/:userId/deactivate` | F-09; `ADMIN` only (403 `FORBIDDEN` otherwise), checked before the path ID because these routes reveal no team work |
 
 ## 5. Roles, permissions and authentication
 
 **Role / permission matrix.** "Own team" = a team the student belongs to; "assigned team" = a team the
 supervisor is assigned to. ✗ outside scope → 404; ✗ wrong role on an accessible record → 403. The
-**Administrator** column is the planned Sprint 2 design (F-09, FR-14); it is not implemented in Sprint 1,
-where teams and accounts come from the seed (D-04).
+**Administrator** column is F-09 (FR-14, contract revised 2026-11-28 in PR #76, implemented in Issue #78): an
+administrator manages teams and accounts but never sees team work, because `teamScopeWhere` matches no
+team for `ADMIN`. In Sprint 1 teams and accounts came only from the seed (D-04).
 
 | Operation | Student | Supervisor | Administrator (Sprint 2) | Unauthenticated |
 | --- | --- | --- | --- | --- |
 | Log in | ✓ | ✓ | ✓ | ✓ |
 | View own identity (`GET /api/auth/me`) | ✓ | ✓ | ✓ | 401 |
 | Log out (`POST /api/auth/logout`) | ✓ (204, session deleted) | ✓ (204, session deleted) | ✓ (204, session deleted) | 204 (nothing to delete; idempotent) |
-| List teams | own teams only | assigned teams only | all teams | 401 |
-| View team + members | own team | assigned team | any team | 401 |
-| List / view milestones | own team | assigned team | any team (read-only) | 401 |
-| Create milestone | 403 | assigned team only | 403 (supervisors own milestones) | 401 |
-| Submit / resubmit | own team, before the deadline, within the limit | 403 | 403 | 401 |
-| View submissions | own team | assigned team | any team (read-only) | 401 |
-| Record feedback | 403 | assigned team only, one per revision | 403 | 401 |
-| View feedback | own team | assigned team | any team (read-only) | 401 |
-| Create teams, assign students/supervisors | 403 | 403 | ✓ | 401 |
-| Deactivate / reactivate an account | 403 | 403 | ✓ (not their own account) | 401 |
+| List teams | own teams only | assigned teams only | none on `GET /api/teams` (empty list); all teams with members on `GET /api/admin/teams` | 401 |
+| View team + members | own team | assigned team | 404 on `GET /api/teams/:id`; members only through `/api/admin/teams` | 401 |
+| List / view milestones | own team | assigned team | 404 (no team in scope) | 401 |
+| Create milestone | 403 | assigned team only | 404 (no team in scope) | 401 |
+| Submit / resubmit | own team, before the deadline, within the limit, after feedback on the previous revision (CHG-01) | 403 | 404 (no team in scope) | 401 |
+| View submissions | own team | assigned team | 404 | 401 |
+| Record feedback | 403 | assigned team only, one per revision | 404 | 401 |
+| View feedback | own team | assigned team | 404 | 401 |
+| Create teams, assign students/supervisors | 403 | 403 | ✓ (active students as members, active supervisors as supervisors; never an `ADMIN`) | 401 |
+| Deactivate an account | 403 | 403 | ✓ Student or Supervisor accounts only (not an `ADMIN`, so not their own); re-activation is not in Sprint 2 | 401 |
 
 **Account deactivation (`isActive`).** Sprint 1 already enforces it: an inactive account cannot log in
 (the same 401 `INVALID_CREDENTIALS` as a wrong password, so it reveals nothing), and every request

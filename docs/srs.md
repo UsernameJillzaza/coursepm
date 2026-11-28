@@ -4,7 +4,7 @@
 | --- | --- |
 | Product | CoursePM (Course Project Management System), CPE334 theme 6 |
 | Team | TH-042_P6: `<Student A name, ID>` · `<Student B name, ID>` |
-| Version | 0.1, Sprint 1 baseline, 2026-11-15 |
+| Version | 0.2, 2026-11-28: CHG-01 changes FR-07 and BR-07 (see §8); 0.1 Sprint 1 baseline, 2026-11-15 |
 | Status | Draft for team review |
 
 ## 1. Stakeholder problem and context
@@ -24,9 +24,9 @@ written feedback on a specific submitted revision.
 
 | Actor | Responsibilities | Sprint |
 | --- | --- | --- |
-| **Student** (team member) | Sign in; view own team(s) and their milestones; submit and resubmit milestone work before the deadline; read feedback on own team's submissions. | 1 |
+| **Student** (team member) | Sign in; view own team(s) and their milestones; submit milestone work before the deadline and resubmit after feedback on the previous revision (CHG-01); read feedback on own team's submissions. | 1 |
 | **Supervisor** | Sign in; view assigned teams; create milestones (title, description, deadline, revision limit) for an assigned team; read that team's submissions; record feedback on a submitted revision. | 1 |
-| **Course Administrator** | Create teams, assign students and supervisors, deactivate accounts. Done by the seed script in Sprint 1. | 2 |
+| **Course Administrator** | Create teams, assign students and supervisors, deactivate accounts. Done by the seed script in Sprint 1; implemented as the `ADMIN` role and the `/admin` page by F-09 in Sprint 2 (Issue #78). | 2 |
 | System | Enforces authentication, role permissions, record scope, deadlines and revision limits; stores timestamps. | 1 |
 
 ## 3. Scope and exclusions
@@ -50,7 +50,7 @@ the university registration system; real student data (only synthetic demo data 
 | FR-04 | A Supervisor creates a milestone for an assigned team with a title, description, deadline and maximum number of revisions. | 1 |
 | FR-05 | Users list the milestones of a team they may access, ordered by deadline, with each milestone's submission status. | 1 |
 | FR-06 | A Student submits work for a milestone of their team as a title, description and link. | 1 |
-| FR-07 | A Student resubmits work for the same milestone before the deadline; each resubmission is stored as a new revision and earlier revisions are kept unchanged. | 1 |
+| FR-07 | A Student resubmits work for the same milestone before the deadline, **after the supervisor has recorded feedback on the previous revision** (CHG-01); each resubmission is stored as a new revision and earlier revisions are kept unchanged. | 1 |
 | FR-08 | Users view a milestone's submissions (latest revision first) with their submitter and submission time. | 1 |
 | FR-09 | A Supervisor records written feedback on a specific submission revision of an assigned team. | 1 |
 | FR-10 | Team members and assigned supervisors view feedback together with the revision it refers to. | 1 |
@@ -67,13 +67,13 @@ the university registration system; real student data (only synthetic demo data 
 
 | ID | Rule | Sprint |
 | --- | --- | --- |
-| BR-01 | Every account has exactly one role: `STUDENT` or `SUPERVISOR` (`ADMIN` added in Sprint 2). | 1 |
+| BR-01 | Every account has exactly one role: `STUDENT`, `SUPERVISOR` or `ADMIN` (`ADMIN` implemented by F-09 in Sprint 2, Issue #78). | 1 |
 | BR-02 | A Student may access only teams they are a member of, and those teams' milestones, submissions and feedback. | 1 |
 | BR-03 | A Supervisor may access only teams they are assigned to, and those teams' milestones, submissions and feedback. | 1 |
 | BR-04 | Only a Supervisor assigned to the team may create a milestone for it. Students can never create milestones. | 1 |
 | BR-05 | A milestone needs a title of 3–120 characters, a description of at most 2,000 characters, a deadline that is in the future when it is created, and a revision limit of 1–5 (default 3). | 1 |
 | BR-06 | **Deadline rule.** A submission is accepted only while the current server time is at or before the milestone deadline. Later submissions are rejected and nothing is stored. The server time is used, never a time sent by the client. | 1 |
-| BR-07 | **Revision rule.** A team's revisions for one milestone are numbered 1, 2, 3 … with no gaps. A team may not exceed the milestone's revision limit; the extra submission is rejected and nothing is stored. Stored revisions are never edited or deleted. | 1 |
+| BR-07 | **Revision rule.** A team's revisions for one milestone are numbered 1, 2, 3 … with no gaps. A team may not exceed the milestone's revision limit; the extra submission is rejected and nothing is stored. **Since CHG-01, revision n + 1 is accepted only when revision n has feedback; otherwise it is rejected and nothing is stored.** Stored revisions are never edited or deleted. | 1 |
 | BR-08 | A submission needs a title of 3–120 characters, a description of at most 2,000 characters, and an absolute `http` or `https` link of at most 2,048 characters. | 1 |
 | BR-09 | Only a Supervisor assigned to the team may record feedback. Students can never record feedback. | 1 |
 | BR-10 | Feedback belongs to exactly one submission revision. Each revision has at most one feedback record in Sprint 1; feedback text is 1–4,000 characters. | 1 |
@@ -107,5 +107,13 @@ the university registration system; real student data (only synthetic demo data 
 | D-06 | Late submission is never accepted in Sprint 1. Extensions (FR-13) are how late work is allowed, from Sprint 2. | Decided by the team |
 | D-07 | A student may belong to several teams (for example two courses), so membership is many-to-many. | Decided by the team |
 | D-08 | Any team member may submit for the team; the submitter is recorded on each revision. | Decided by the team |
-| Q-01 | Should students see feedback the moment it is saved, or only after release (like scores)? | Sprint 1: immediately. Ask the TA before Sprint 3 scoring. |
+| D-09 | Because a milestone belongs to one team, FR-12 and FR-13 are kept as separate audited actions (refines BR-11 and D-06). An **FR-12 edit** corrects the description or deadline and is allowed only while the deadline has not passed, there is no extension and there is no submission. **Close early** stops submissions. An **FR-13 extension** needs a reason, can only move the deadline later (BR-11), and is possible before or after the deadline. The original deadline stays visible, so late work allowed by D-06 traces to an extension. Contract: [sprints/sprint-2/F-08-milestone-maintenance.md](sprints/sprint-2/F-08-milestone-maintenance.md). | Decided by the team (2026-11-28, PR #72 review) |
+| D-10 | Answers Q-01. Feedback stays visible to the team as soon as it is saved (the Sprint 1 behaviour); only the **score** is held back until the supervisor releases it (BR-12). Feedback is formative, so the team needs it before the next revision; the score is the summative judgement. Contract: [sprints/sprint-3/F-11-scoring-release.md](sprints/sprint-3/F-11-scoring-release.md). | Decided by the team (2026-11-28, Issue #73); the TA was not asked |
+| Q-01 | Should students see feedback the moment it is saved, or only after release (like scores)? | Sprint 1: immediately. **Resolved by D-10** (2026-11-28): feedback stays immediate; only scores wait for release. |
 | Q-02 | Is a revision limit per milestone acceptable to the stakeholder, or should it be course-wide? | Per milestone (more flexible). Confirm with the TA. |
+
+## 8. Change log
+
+| Change | Date | Old | New | Reason | Affected IDs |
+| --- | --- | --- | --- | --- | --- |
+| CHG-01 (Lab 7) | 2026-11-28 | A team may submit revision n + 1 at any time before the deadline, up to the limit. | Revision n + 1 needs feedback on revision n; otherwise 409 `AWAITING_FEEDBACK`. | Stops "silent resubmission" (D-01): each revision answers the previous feedback. | FR-07, BR-07; F-04, F-05, F-06; AC-05-2, AC-05-6, AC-05-8, AC-05-11 … AC-05-13. Details: [labs/lab-07/change-request.md](labs/lab-07/change-request.md) |

@@ -7,6 +7,9 @@ import { cleanupUsers, createUser, loginAgent, type TestUser } from '../helpers/
 // F-05 submissions through the API and the real database: STS TEST-05-01,
 // -02, -04, -06, -07 (API part), -08, -09 (feedback part arrives with F-06,
 // #8), -10, plus the submission parts of TEST-02-01, -02 and -03.
+// CHG-01 (#74, F-05 v1.2): revision n + 1 needs feedback on revision n, so
+// tests that store a second revision give feedback first (TEST-05-02, -06, -08,
+// -09), and TEST-05-12 / -13 cover the new rule.
 let a1: TestUser, a2: TestUser, b1: TestUser, sup1: TestUser, sup2: TestUser
 let alpha: { id: number }, beta: { id: number }
 
@@ -33,6 +36,12 @@ const milestone = (over: { deadline?: Date; maxRevisions?: number; teamId?: numb
 const count = (milestoneId: number) => prisma.submission.count({ where: { milestoneId } })
 const post = async (user: TestUser, milestoneId: number, body = work()) =>
   (await loginAgent(user)).post(`/api/milestones/${milestoneId}/submissions`).send(body)
+// The assigned supervisor records feedback through the F-06 API (CHG-01 unlock).
+const giveFeedback = async (submissionId: number) => {
+  const res = await (await loginAgent(sup1)).post(`/api/submissions/${submissionId}/feedback`).send({ body: 'Reviewed.' })
+  expect(res.status).toBe(201)
+}
+const detail = async (milestoneId: number) => (await (await loginAgent(a1)).get(`/api/milestones/${milestoneId}`)).body.milestone
 
 beforeAll(async () => {
   ;[a1, a2, b1, sup1, sup2] = await Promise.all([
@@ -49,6 +58,7 @@ afterAll(async () => {
   // Foreign keys are RESTRICT (submissions are never deleted by the app), so the
   // test data is removed child-first.
   const teamIds = [alpha.id, beta.id]
+  await prisma.feedback.deleteMany({ where: { submission: { teamId: { in: teamIds } } } })
   await prisma.submission.deleteMany({ where: { teamId: { in: teamIds } } })
   await prisma.milestone.deleteMany({ where: { teamId: { in: teamIds } } })
   await cleanupTeams()
@@ -79,6 +89,7 @@ describe('POST /api/milestones/:id/submissions', () => {
   it('TEST-05-02 (AC-05-2): a resubmission is revision 2 and revision 1 is unchanged', async () => {
     const m = await milestone()
     const first = await post(a1, m.id)
+    await giveFeedback(first.body.submission.id)
     const stored1 = await prisma.submission.findUniqueOrThrow({ where: { id: first.body.submission.id } })
     const second = await post(a2, m.id, work({ title: 'Proposal v2', link: 'https://example.com/v2' }))
     expect(second.status).toBe(201)
@@ -96,8 +107,11 @@ describe('POST /api/milestones/:id/submissions', () => {
 
   it('TEST-05-06 (AC-05-4): at the revision limit → 409 REVISION_LIMIT_REACHED; the count stays at the limit', async () => {
     const m = await milestone({ maxRevisions: 2 })
+    const first = await post(a1, m.id)
+    expect(first.status).toBe(201)
+    await giveFeedback(first.body.submission.id)
     expect((await post(a1, m.id)).status).toBe(201)
-    expect((await post(a1, m.id)).status).toBe(201)
+    // Revision 2 has no feedback: the limit is still reported, because it is checked first (AC-05-12).
     const third = await post(a1, m.id)
     expect(third.status).toBe(409)
     expect(third.body.error.code).toBe('REVISION_LIMIT_REACHED')
@@ -115,15 +129,27 @@ describe('POST /api/milestones/:id/submissions', () => {
     expect(await count(m.id)).toBe(0)
   })
 
-  it('TEST-05-08 (AC-05-6): two simultaneous submissions become revisions 1 and 2, never duplicates', async () => {
+  it('TEST-05-08 (AC-05-6): two simultaneous submissions store exactly one new revision and get one AWAITING_FEEDBACK, never duplicates', async () => {
     const m = await milestone({ maxRevisions: 3 })
     const [x, y] = await Promise.all([loginAgent(a1), loginAgent(a2)])
-    const results = await Promise.all([
+    const race = () => Promise.all([
       x.post(`/api/milestones/${m.id}/submissions`).send(work({ title: 'From A1' })),
       y.post(`/api/milestones/${m.id}/submissions`).send(work({ title: 'From A2' })),
     ])
-    expect(results.map((r) => r.status).sort()).toEqual([201, 201])
-    expect((await prisma.submission.findMany({ where: { milestoneId: m.id } })).map((s) => s.revision).sort()).toEqual([1, 2])
+    const revisions = async () => (await prisma.submission.findMany({ where: { milestoneId: m.id } })).map((s) => s.revision).sort()
+
+    // (a) no revisions yet → one revision 1, the loser waits for feedback on it.
+    const first = await race()
+    expect(first.map((r) => r.status).sort()).toEqual([201, 409])
+    expect(first.find((r) => r.status === 409)!.body.error.code).toBe('AWAITING_FEEDBACK')
+    expect(await revisions()).toEqual([1])
+
+    // (b) revision 1 has feedback → one revision 2, the loser waits again.
+    await giveFeedback(first.find((r) => r.status === 201)!.body.submission.id)
+    const second = await race()
+    expect(second.map((r) => r.status).sort()).toEqual([201, 409])
+    expect(second.find((r) => r.status === 409)!.body.error.code).toBe('AWAITING_FEEDBACK')
+    expect(await revisions()).toEqual([1, 2])
   })
 
   it('TEST-05-10 (AC-05-9): limit 1, two at once → exactly one 201 revision 1 and one 409 REVISION_LIMIT_REACHED', async () => {
@@ -155,6 +181,49 @@ describe('POST /api/milestones/:id/submissions', () => {
     expect(await count(closed.id)).toBe(0)
   })
 
+  it('TEST-05-12 (AC-05-11, AC-05-13): revision 2 waits for feedback on revision 1; only the latest revision counts', async () => {
+    const m = await milestone({ maxRevisions: 3 })
+    const first = await post(a1, m.id)
+    expect(first.status).toBe(201)
+    expect(await detail(m.id)).toMatchObject({ revisionsUsed: 1, awaitingFeedback: true })
+
+    const blocked = await post(a2, m.id, work({ title: 'Too early' }))
+    expect(blocked.status).toBe(409)
+    expect(blocked.body.error).toMatchObject({ code: 'AWAITING_FEEDBACK', message: 'Wait for feedback on revision 1 before submitting again.' })
+    expect(await count(m.id)).toBe(1)
+
+    await giveFeedback(first.body.submission.id)
+    expect(await detail(m.id)).toMatchObject({ revisionsUsed: 1, awaitingFeedback: false })
+    const second = await post(a2, m.id, work({ title: 'Proposal v2' }))
+    expect(second.status).toBe(201)
+    expect(second.body.submission.revision).toBe(2)
+    expect(await detail(m.id)).toMatchObject({ revisionsUsed: 2, awaitingFeedback: true })
+
+    // Feedback on revision 1 does not unlock revision 3.
+    const third = await post(a1, m.id, work({ title: 'Proposal v3' }))
+    expect(third.status).toBe(409)
+    expect(third.body.error).toMatchObject({ code: 'AWAITING_FEEDBACK', message: 'Wait for feedback on revision 2 before submitting again.' })
+    expect(await count(m.id)).toBe(2)
+  })
+
+  it('TEST-05-13 (AC-05-12): with revision 1 unreviewed, a passed deadline still gives DEADLINE_PASSED and an invalid body still gives 400', async () => {
+    const late = await milestone({ deadline: hours(-1) })
+    await prisma.submission.create({
+      data: { milestoneId: late.id, teamId: alpha.id, revision: 1, title: 'On time', description: '', link: 'https://example.com/1', submittedById: a1.id, submittedAt: hours(-2) },
+    })
+    const afterDeadline = await post(a1, late.id)
+    expect(afterDeadline.status).toBe(409)
+    expect(afterDeadline.body.error.code).toBe('DEADLINE_PASSED')
+
+    const open = await milestone()
+    expect((await post(a1, open.id)).status).toBe(201)
+    const invalid = await post(a1, open.id, work({ link: 'not a url' }))
+    expect(invalid.status).toBe(400)
+    expect(invalid.body.error.code).toBe('VALIDATION_ERROR')
+    expect(await count(late.id)).toBe(1)
+    expect(await count(open.id)).toBe(1)
+  })
+
   it('a supervisor of the team cannot submit → 403 (scope first, then role); a student of another team → 404', async () => {
     const m = await milestone()
     const sup = await post(sup1, m.id)
@@ -168,7 +237,8 @@ describe('POST /api/milestones/:id/submissions', () => {
 describe('GET /api/milestones/:id/submissions', () => {
   it('TEST-05-09 (AC-05-7), F-05 part: newest revision first, each with its submitter and a feedback slot (null until F-06)', async () => {
     const m = await milestone()
-    await post(a1, m.id, work({ title: 'Rev one' }))
+    const one = await post(a1, m.id, work({ title: 'Rev one' }))
+    await giveFeedback(one.body.submission.id)
     await post(a1, m.id, work({ title: 'Rev two' }))
     const res = await (await loginAgent(sup1)).get(`/api/milestones/${m.id}/submissions`)
     expect(res.status).toBe(200)
@@ -193,9 +263,9 @@ describe('GET /api/milestones/:id/submissions', () => {
     const m = await milestone({ maxRevisions: 3 })
     const created = await post(a1, m.id)
     const detail = await (await loginAgent(a2)).get(`/api/milestones/${m.id}`)
-    expect(detail.body.milestone).toMatchObject({ revisionsUsed: 1, maxRevisions: 3, latestSubmittedAt: created.body.submission.submittedAt })
+    expect(detail.body.milestone).toMatchObject({ revisionsUsed: 1, maxRevisions: 3, latestSubmittedAt: created.body.submission.submittedAt, awaitingFeedback: true })
     const list = await (await loginAgent(a2)).get(`/api/teams/${alpha.id}/milestones`)
-    expect(list.body.items.find((x: { id: number }) => x.id === m.id)).toMatchObject({ revisionsUsed: 1 })
+    expect(list.body.items.find((x: { id: number }) => x.id === m.id)).toMatchObject({ revisionsUsed: 1, awaitingFeedback: true })
   })
 
   it('TEST-02-01 submission part (AC-02-1): submission routes need a session', async () => {

@@ -1,15 +1,17 @@
 import { expect, test } from '@playwright/test'
 import { bangkokInput, login, logout, shot } from '../helpers'
 
-// E2E-02 (AC-04-1, AC-05-1, AC-05-7, AC-06-1, AC-06-4): the complete Sprint 1
-// journey through UI → API → database, then retrieval of the saved result
-// after a reload. Rule rejections along the way are Part F evidence (04–08).
+// E2E-02 (AC-04-1, AC-05-1, AC-05-2, AC-05-7, AC-05-11, AC-06-1, AC-06-4): the
+// complete journey through UI → API → database, then retrieval of the saved
+// result after a reload. Rule rejections along the way are Part F evidence
+// (04–08). CHG-01 (#74): revision 2 needs feedback on revision 1, so the
+// journey is revision 1 → "Waiting for feedback" → feedback → revision 2 → limit.
 // E2E-03 (AC-03-5, AC-04-7): a student sees no New milestone control and
 // cannot open another team's page by URL (09).
 // Each run uses a unique milestone title because it writes to the seeded
 // development database.
 
-test('E2E-02: milestone → submission (rejected link, revision 1, revision 2, limit) → feedback → persisted result', async ({ page }) => {
+test('E2E-02: milestone → submission (rejected link, revision 1, wait) → feedback → revision 2, limit → persisted result', async ({ page }) => {
   const title = `Design review ${Date.now()}`
 
   // 1. Supervisor 1 creates a milestone for Team Alpha; a past deadline is rejected first.
@@ -31,7 +33,7 @@ test('E2E-02: milestone → submission (rejected link, revision 1, revision 2, l
   await expect(page.getByRole('link', { name: title })).toBeVisible()
   await logout(page)
 
-  // 2. Student A1 opens it, a javascript: link is rejected, then submits and resubmits to the limit.
+  // 2. Student A1 opens it, a javascript: link is rejected, then submits revision 1 and must wait.
   await login(page, 'alpha1@coursepm.test')
   await page.getByRole('link', { name: 'Team Alpha' }).click()
   await expect(page.getByRole('link', { name: 'New milestone' })).toHaveCount(0)
@@ -49,14 +51,10 @@ test('E2E-02: milestone → submission (rejected link, revision 1, revision 2, l
   await page.getByRole('button', { name: /submit work/i }).click()
   await expect(page.getByRole('article', { name: 'Revision 1' })).toContainText('Design doc draft')
   await expect(page.getByText(/Revisions used: 1 \/ 2/)).toBeVisible()
-
-  await page.getByLabel('Title').fill('Design doc final')
-  await page.getByLabel('Link to the work (http/https)').fill('https://github.com/example/design/pull/2')
-  await page.getByRole('button', { name: /submit work/i }).click()
-  await expect(page.getByRole('article', { name: 'Revision 2' })).toContainText('Design doc final')
-  await expect(page.getByText('All 2 revisions used.')).toBeVisible()
+  // CHG-01: no feedback on revision 1 yet, so the form is replaced.
+  await expect(page.getByText('Waiting for feedback on revision 1.')).toBeVisible()
   await expect(page.getByRole('button', { name: /submit work/i })).toHaveCount(0)
-  await shot(page, '06-revision-limit-reached')
+  await shot(page, '05b-waiting-for-feedback')
   const milestoneUrl = page.url()
   await logout(page)
 
@@ -68,10 +66,21 @@ test('E2E-02: milestone → submission (rejected link, revision 1, revision 2, l
   await rev1.getByRole('button', { name: 'Save feedback' }).click()
   // Saving reloads the list (spinner, then new data): wait for the settled
   // result, the saved text and no form left on revision 1, before checking it.
-  await expect(page.getByRole('button', { name: 'Save feedback' })).toHaveCount(1) // revision 2's form only
   await expect(page.getByRole('article', { name: 'Revision 1' })).toContainText('Good draft. Add the sequence diagram for login.')
-  await expect(page.getByRole('article', { name: 'Revision 1' }).getByRole('button', { name: 'Save feedback' })).toHaveCount(0)
+  await expect(page.getByRole('button', { name: 'Save feedback' })).toHaveCount(0)
   await shot(page, '07-supervisor-feedback-saved')
+  await logout(page)
+
+  // 3b. A1 submits revision 2, which uses up the limit of 2.
+  await login(page, 'alpha1@coursepm.test')
+  await page.goto(milestoneUrl)
+  await page.getByLabel('Title').fill('Design doc final')
+  await page.getByLabel('Link to the work (http/https)').fill('https://github.com/example/design/pull/2')
+  await page.getByRole('button', { name: /submit work/i }).click()
+  await expect(page.getByRole('article', { name: 'Revision 2' })).toContainText('Design doc final')
+  await expect(page.getByText('All 2 revisions used.')).toBeVisible()
+  await expect(page.getByRole('button', { name: /submit work/i })).toHaveCount(0)
+  await shot(page, '06-revision-limit-reached')
   await logout(page)
 
   // 4. Student A2 retrieves the persisted result after a reload: both revisions,
