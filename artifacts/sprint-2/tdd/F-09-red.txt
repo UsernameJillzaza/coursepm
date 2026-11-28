@@ -3,6 +3,7 @@ Code under test: def1397 (ADMIN enum migration only; no rules/admin.ts, no /api/
 Command: cd server && npx vitest run tests/sprint-2
 Date: 2026-11-28 20:32 (ICT)
 Expected: the unit file fails to import rules/admin.ts; the API tests fail on assertions (404 from the unknown-route handler instead of 200/201/400/403/409). TEST-09-12 already passes, because an ADMIN currently falls into the supervisor branch of teamScopeWhere and matches no team by accident; F-09 makes that an explicit rule.
+Note (added 2026-11-28, PR #82 review): this run is on commit def1397 plus the then-uncommitted test files, which were committed unchanged as 4bc1d6e. The unit file fails with an import error ("Cannot find module ../../src/rules/admin"), not an assertion failure, because rules/admin.ts did not exist yet; the API cases fail on assertions. Run on the same machine as the GREEN run (the path below is this workstation's checkout).
 
  FAIL  tests/sprint-2/admin-rules.unit.test.ts [ tests/sprint-2/admin-rules.unit.test.ts ]
 Error: Cannot find module '../../src/rules/admin' imported from C:/Users/BTCOM/Desktop/ticktokit_cloud_shield/coursepm/server/tests/sprint-2/admin-rules.unit.test.ts
