@@ -14,6 +14,7 @@ const student = { id: 3, name: 'Alpha Student 1', email: 'alpha1@coursepm.test',
 const milestone = {
   id: 10, teamId: 1, title: 'SRS', description: '', deadline: '2026-12-20T16:59:00.000Z', maxRevisions: 3,
   createdById: 1, createdAt: '2026-11-20T00:00:00.000Z', revisionsUsed: 3, status: 'OPEN', latestSubmittedAt: null,
+  awaitingFeedback: true, // CHG-01 (#74): revision 3 has no feedback yet
 }
 const detail = { milestone, team: { id: 1, name: 'Team Alpha' } }
 const sup = { id: 1, name: 'Dr. Supervisor One' }

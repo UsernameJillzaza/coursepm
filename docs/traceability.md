@@ -28,17 +28,17 @@ The **Result** column is filled from the release-candidate run on `daefdff` (Par
 | BR-05 | F-04 | 1 | AC-04-4 | TEST-04-04, TEST-04-05, TEST-L6-63-01, TEST-L6-63-02 | Pass (4/4 tests) |
 | FR-05 | F-04 | 1 | AC-04-5 | TEST-04-06 | Pass (1/1 tests) |
 | FR-06 | F-05 | 1 | AC-05-1 | TEST-05-01, E2E-02 | Pass (2/2 tests) |
-| FR-07 | F-05 | 1 (changed by CHG-01) | AC-05-2, AC-05-11 | TEST-05-02, TEST-05-12, E2E-02 | Revised by CHG-01: not run yet |
-| FR-08 | F-05, F-04 | 1 | AC-05-7, AC-05-13 | TEST-05-09, TEST-05-12, TEST-UI-02, E2E-02 | Revised by CHG-01: not run yet |
+| FR-07 | F-05 | 1 (changed by CHG-01) | AC-05-2, AC-05-11 | TEST-05-02, TEST-05-12, E2E-02 | Pass (3/3 tests) on `7efaf4e` |
+| FR-08 | F-05, F-04 | 1 | AC-05-7, AC-05-13 | TEST-05-09, TEST-05-12, TEST-UI-02, E2E-02 | Pass (4/4 tests) on `7efaf4e` |
 | BR-06 | F-05 | 1 | AC-05-3 | TEST-05-03, TEST-05-04 | Pass (2/2 tests) |
-| BR-07 | F-05, F-06 | 1 (changed by CHG-01) | AC-05-4, AC-05-11, AC-05-12 | TEST-05-05, TEST-05-06, TEST-05-11, TEST-05-12, TEST-05-13 | Revised by CHG-01: not run yet |
+| BR-07 | F-05, F-06 | 1 (changed by CHG-01) | AC-05-4, AC-05-11, AC-05-12 | TEST-05-05, TEST-05-06, TEST-05-11, TEST-05-12, TEST-05-13 | Pass (5/5 tests) on `7efaf4e` |
 | BR-08 | F-05 | 1 | AC-05-5 | TEST-05-07, TEST-L6-59-01, TEST-L6-59-02, TEST-L6-63-01, TEST-L6-63-02 | Pass (5/5 tests) |
-| NFR-05 | F-05 | 1 | AC-05-6 (revised by CHG-01), AC-05-9 | TEST-05-08, TEST-05-10 | Revised by CHG-01: not run yet |
+| NFR-05 | F-05 | 1 | AC-05-6 (revised by CHG-01), AC-05-9 | TEST-05-08, TEST-05-10 | Pass (2/2 tests) on `7efaf4e` |
 | FR-09 | F-06 | 1 | AC-06-1 | TEST-06-01, E2E-02 | Pass (2/2 tests) |
 | FR-10 | F-06 | 1 | AC-06-4 | TEST-06-04, E2E-02 | Pass (2/2 tests) |
 | BR-09 | F-06 | 1 | AC-06-2, AC-06-3 | TEST-06-02, TEST-06-03 | Pass (2/2 tests) |
 | BR-10 | F-06 | 1 | AC-06-5 | TEST-06-05, TEST-06-06, TEST-L6-63-01, TEST-L6-63-02 | Pass (4/4 tests) |
-| NFR-10 | R-02 | 1 | AC-R02-1, AC-01-10, AC-02-10, AC-04-6, AC-05-8 (revised by CHG-01), AC-05-13, AC-05-10, AC-06-6 | TEST-R02-01, TEST-UI-05, TEST-UI-04, TEST-UI-01, TEST-UI-02, TEST-UI-07, TEST-UI-06, TEST-L6-60-03 | Revised by CHG-01: TEST-UI-02 not run yet; others Pass (7/7 tests) |
+| NFR-10 | R-02 | 1 | AC-R02-1, AC-01-10, AC-02-10, AC-04-6, AC-05-8 (revised by CHG-01), AC-05-13, AC-05-10, AC-06-6 | TEST-R02-01, TEST-UI-05, TEST-UI-04, TEST-UI-01, TEST-UI-02, TEST-UI-07, TEST-UI-06, TEST-L6-60-03 | Pass (8/8 tests); TEST-UI-02 re-run on `7efaf4e` |
 | FR-11 | F-07 | 2 | AC-07-1 … AC-07-9 | TEST-07-01 … TEST-07-08, TEST-UI-07H | Pass on `e30dc3a` (8/9 tests; TEST-07-08 E2E not run yet) |
 | FR-12 | F-08 | 2 | AC-08-1, AC-08-2, AC-08-3, AC-08-8, AC-08-10, AC-08-11, AC-08-12 | TEST-08-01 … TEST-08-04, TEST-08-10, TEST-08-12, TEST-08-13, TEST-08-14, TEST-08-15, TEST-08-18, TEST-UI-08 | Planned (not run) |
 | FR-13, BR-11 | F-08 (D-06, D-09) | 2 | AC-08-5, AC-08-6, AC-08-7, AC-08-9, AC-08-11 | TEST-08-06 … TEST-08-09, TEST-08-11, TEST-08-15, TEST-08-16, TEST-08-17 | Planned (not run) |
