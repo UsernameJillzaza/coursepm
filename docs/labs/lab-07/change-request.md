@@ -11,7 +11,7 @@ Version 1.0 · 2026-11-28 · Issue: #74 · Status: **proposed, waiting for team 
 | Affected features | F-05 (changed rule), F-04 (milestone response gains one derived field), F-06 (feedback now unlocks the next revision; no code change), F-10 Sprint 2 (state meaning, no code change) |
 | Accepted Sprint 1 baseline (old behavior) | `v0.2.1` = `main` `a342ed5`, Cloud Run `coursepm-00008-j5m` — the release Team GG EZ accepted in Lab 6 (`UAT-20261125-GGEZ-R2`) |
 | Pre-change implementation | `sprint2-staging` `36787ae` (PR #72, documents only — the F-05 code is byte-identical to `a342ed5`) |
-| Approval | No instructor/TA approval is required (course announcement "Lab 7 Spec Sheet Change", 2026-11-28). The team approves: Jakkarin (`jakkarin-promsee`) comments "Approved for Lab 7" on Issue #74, dated by GitHub. |
+| Approval | No instructor/TA approval is required (course announcement "Lab 7 Spec Sheet Change", posted in the course Facebook group on 2026-11-24 at 20:49 ICT; screenshot in the Lab 7 PDF appendix). The team approves: Jakkarin (`jakkarin-promsee`) comments "Approved for Lab 7" on Issue #74, dated by GitHub. |
 
 ## 1. Old rule and new rule
 
