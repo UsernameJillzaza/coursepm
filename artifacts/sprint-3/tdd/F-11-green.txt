@@ -1,0 +1,45 @@
+Issue #81 (F-11) server GREEN run
+Commit under test: 6b688ca (clean tree)
+Command: cd server && npx vitest run tests/sprint-3 --reporter=verbose
+Date: 2026-11-28 23:49 (ICT)
+
+✓ tests/sprint-3/score.api.test.ts > TEST-11-04 (AC-11-1): set and change before release > PUT 85, PUT 90 without a reason, GET → value 90, not released, history 90 ← 85 ← —, no-store 282ms
+✓ tests/sprint-3/score.api.test.ts > TEST-11-05 (AC-11-2): an unreleased score is in no student response > A1 gets { score: null } for an unreleased and an unscored milestone, and no other response carries the value 248ms
+✓ tests/sprint-3/score.api.test.ts > TEST-11-06 (AC-11-3): release > release → releasedAt and releasedBy; A1 sees only value + releasedAt; again → 409 ALREADY_RELEASED; no score → 409 NO_SCORE 344ms
+✓ tests/sprint-3/score.api.test.ts > TEST-11-07 (AC-11-4): a released score changes only with a reason > no / 2-char / spaces / NUL / 501-char reason → 400 fields.reason; a real reason → 200; A1 sees the new value with the original releasedAt 529ms
+✓ tests/sprint-3/score.api.test.ts > TEST-11-07 (AC-11-4): a released score changes only with a reason > reasons of exactly 3 and 500 characters are accepted after release 242ms
+✓ tests/sprint-3/score.api.test.ts > TEST-11-07 (AC-11-4): a released score changes only with a reason > the released reason message is the documented one 226ms
+✓ tests/sprint-3/score.api.test.ts > TEST-11-08 (AC-11-5, AC-11-6): validation, roles and scope > invalid scores → 400 fields.score; 0 and 100 accepted; the stored value again → 400 NO_CHANGE 640ms
+✓ tests/sprint-3/score.api.test.ts > TEST-11-08 (AC-11-5, AC-11-6): validation, roles and scope > a student of the team → 403 on PUT and release; nothing stored 151ms
+✓ tests/sprint-3/score.api.test.ts > TEST-11-08 (AC-11-5, AC-11-6): validation, roles and scope > Supervisor 2, B1 and an ADMIN get 404 on GET, PUT and release; bad IDs → 404; no session → 401 1067ms
+✓ tests/sprint-3/score.api.test.ts > TEST-11-09 (AC-11-7): the database enforces the score rules > rejects bad MilestoneScore rows 41ms
+✓ tests/sprint-3/score.api.test.ts > TEST-11-09 (AC-11-7): the database enforces the score rules > rejects bad ScoreChange rows, including BR-12 (afterRelease needs a SET with a 3–500 character reason) 641ms
+✓ tests/sprint-3/score.api.test.ts > TEST-11-10 (AC-11-8): races > (a) two PUTs at once, 20 times: both 200, two chained SET rows, stored value = the later row 3622ms
+✓ tests/sprint-3/score.api.test.ts > TEST-11-10 (AC-11-8): races > (b) a release and a reason-less change at once, 20 times: never a released value changed without a reason 3293ms
+✓ tests/sprint-3/score.api.test.ts > TEST-11-11 (AC-11-9): any milestone state can be scored > a milestone past its deadline with no submission, and one closed early: PUT 80 and release → 200 300ms
+✓ tests/sprint-3/score-rules.unit.test.ts > TEST-11-01 (AC-11-5): validateScoreInput > accepts the whole number 0 2ms
+✓ tests/sprint-3/score-rules.unit.test.ts > TEST-11-01 (AC-11-5): validateScoreInput > accepts the whole number 100 0ms
+✓ tests/sprint-3/score-rules.unit.test.ts > TEST-11-01 (AC-11-5): validateScoreInput > accepts the whole number 85 0ms
+✓ tests/sprint-3/score-rules.unit.test.ts > TEST-11-01 (AC-11-5): validateScoreInput > rejects a score that is -1 0ms
+✓ tests/sprint-3/score-rules.unit.test.ts > TEST-11-01 (AC-11-5): validateScoreInput > rejects a score that is 101 0ms
+✓ tests/sprint-3/score-rules.unit.test.ts > TEST-11-01 (AC-11-5): validateScoreInput > rejects a score that is 85.5 0ms
+✓ tests/sprint-3/score-rules.unit.test.ts > TEST-11-01 (AC-11-5): validateScoreInput > rejects a score that is the string "85" 0ms
+✓ tests/sprint-3/score-rules.unit.test.ts > TEST-11-01 (AC-11-5): validateScoreInput > rejects a score that is null 0ms
+✓ tests/sprint-3/score-rules.unit.test.ts > TEST-11-01 (AC-11-5): validateScoreInput > rejects a score that is missing 0ms
+✓ tests/sprint-3/score-rules.unit.test.ts > TEST-11-01 (AC-11-5): validateScoreInput > rejects a score that is NaN 0ms
+✓ tests/sprint-3/score-rules.unit.test.ts > TEST-11-01 (AC-11-5): validateScoreInput > rejects a score that is true 0ms
+✓ tests/sprint-3/score-rules.unit.test.ts > TEST-11-01 (AC-11-5): validateScoreInput > a body that is not an object has no score 0ms
+✓ tests/sprint-3/score-rules.unit.test.ts > TEST-11-01 (AC-11-5): validateScoreInput > trims the reason; 500 characters are accepted, 501 are not 0ms
+✓ tests/sprint-3/score-rules.unit.test.ts > TEST-11-01 (AC-11-5): validateScoreInput > a reason with a NUL or another control character is rejected; tab and line breaks are allowed 0ms
+✓ tests/sprint-3/score-rules.unit.test.ts > TEST-11-01 (AC-11-5): validateScoreInput > an empty or all-space reason counts as no reason, and a non-string reason is rejected 0ms
+✓ tests/sprint-3/score-rules.unit.test.ts > TEST-11-01 (AC-11-5): validateScoreInput > reports both fields at once 0ms
+✓ tests/sprint-3/score-rules.unit.test.ts > TEST-11-02 (AC-11-4, AC-11-5): checkScoreChange > the first score needs no reason 0ms
+✓ tests/sprint-3/score-rules.unit.test.ts > TEST-11-02 (AC-11-4, AC-11-5): checkScoreChange > before release a change needs no reason 0ms
+✓ tests/sprint-3/score-rules.unit.test.ts > TEST-11-02 (AC-11-4, AC-11-5): checkScoreChange > the stored value again is NO_CHANGE, with or without a reason, released or not 0ms
+✓ tests/sprint-3/score-rules.unit.test.ts > TEST-11-02 (AC-11-4, AC-11-5): checkScoreChange > after release: no reason or a 2-character reason → fields.reason; 3 and 500 characters → ok 0ms
+✓ tests/sprint-3/score-rules.unit.test.ts > TEST-11-03 (AC-11-2, AC-11-3): scoreViewFor > the supervisor sees null without a score, and the full view otherwise, history newest first 0ms
+✓ tests/sprint-3/score-rules.unit.test.ts > TEST-11-03 (AC-11-2, AC-11-3): scoreViewFor > history ties at the same instant are ordered by id, newest first 0ms
+✓ tests/sprint-3/score-rules.unit.test.ts > TEST-11-03 (AC-11-2, AC-11-3): scoreViewFor > a student sees null without a score and before release, and only value + releasedAt after 0ms
+Test Files  2 passed (2)
+Tests  37 passed (37)
+Duration  16.46s (transform 405ms, setup 0ms, import 795ms, tests 12.03s, environment 0ms)
