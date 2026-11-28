@@ -1,0 +1,15 @@
+# F-08 E2E (whole Playwright suite) — a8f0d33 — 2026-11-28 22:23 ICT
+# Dev DB coursepm_s2 (migrated + seeded); dev servers started by Playwright's webServer on 3000/5173.
+$ npx playwright test
+
+Running 4 tests using 1 worker
+
+  ok 1 e2e\sprint-1\e2e-01-login-teams.spec.ts:8:1 › E2E-01: wrong password, login, own team only, reload keeps the session, logout (2.9s)
+  ok 2 e2e\sprint-1\e2e-02-03-journey.spec.ts:12:1 › E2E-02: milestone → submission (rejected link, revision 1, revision 2, limit) → feedback → persisted result (4.3s)
+  ok 3 e2e\sprint-1\e2e-02-03-journey.spec.ts:90:1 › E2E-03: no New milestone control for a student; another team's page by URL shows "Team not found" (1.5s)
+  ok 4 e2e\sprint-2\e2e-08-milestone-maintenance.spec.ts:20:1 › TEST-08-15: edit → extension → close as Supervisor 1; A1 sees the badges, extended deadline and history (4.9s)
+
+  4 passed (18.6s)
+exit 0
+
+# Summary: 4 passed / 0 failed / 0 skipped (E2E-01, E2E-02, E2E-03, TEST-08-15). Screenshots: artifacts/sprint-2/screenshots/08-0[1-6]-*.png. Sprint 1 screenshots restored with git restore after the run.
