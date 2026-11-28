@@ -8,8 +8,9 @@ import TeamDetailPage from './teams/TeamDetailPage'
 import TeamsPage from './teams/TeamsPage'
 import MilestonePage from './milestones/MilestonePage'
 import NewMilestonePage from './milestones/NewMilestonePage'
+import RevisionsPage from './milestones/RevisionsPage'
 
-// SDS §3 route map. F-04 adds the milestone routes.
+// SDS §3 route map. F-04 adds the milestone routes; F-07 adds /milestones/:id/revisions.
 export default function App() {
   return (
     <AuthProvider>
@@ -45,6 +46,14 @@ export default function App() {
           element={
             <RequireAuth>
               <MilestonePage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/milestones/:milestoneId/revisions"
+          element={
+            <RequireAuth>
+              <RevisionsPage />
             </RequireAuth>
           }
         />
