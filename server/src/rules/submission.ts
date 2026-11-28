@@ -5,12 +5,17 @@ import { hasMultiLineControl, hasSingleLineControl } from './text'
 // database (TEST-05-03, TEST-05-05, TEST-05-07). The route calls them with
 // the server clock, never a time sent by the client (BR-06).
 
-export type SubmitState = { deadline: Date; maxRevisions: number; revisionsUsed: number; now: Date }
-export type SubmitCheck = { ok: true; nextRevision: number } | { ok: false; code: 'DEADLINE_PASSED' | 'REVISION_LIMIT_REACHED' }
+// closedAt is optional so the Sprint 1 callers and tests stay unchanged (F-08).
+export type SubmitState = { deadline: Date; maxRevisions: number; revisionsUsed: number; now: Date; closedAt?: Date | null }
+export type SubmitCheck =
+  | { ok: true; nextRevision: number }
+  | { ok: false; code: 'MILESTONE_CLOSED' | 'DEADLINE_PASSED' | 'REVISION_LIMIT_REACHED' }
 
-// BR-06 deadline (inclusive, D-05), then BR-07 revision limit. Revisions are
-// numbered 1, 2, 3 … with no gaps, so the next one is always used + 1.
-export function checkCanSubmit({ deadline, maxRevisions, revisionsUsed, now }: SubmitState): SubmitCheck {
+// F-08 closed early first, then BR-06 deadline (inclusive, D-05), then BR-07
+// revision limit. Revisions are numbered 1, 2, 3 … with no gaps, so the next
+// one is always used + 1.
+export function checkCanSubmit({ deadline, maxRevisions, revisionsUsed, now, closedAt }: SubmitState): SubmitCheck {
+  if (closedAt) return { ok: false, code: 'MILESTONE_CLOSED' }
   if (now.getTime() > deadline.getTime()) return { ok: false, code: 'DEADLINE_PASSED' }
   if (revisionsUsed >= maxRevisions) return { ok: false, code: 'REVISION_LIMIT_REACHED' }
   return { ok: true, nextRevision: revisionsUsed + 1 }

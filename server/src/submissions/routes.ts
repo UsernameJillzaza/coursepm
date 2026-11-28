@@ -5,6 +5,7 @@ import { requireAuth } from '../auth/middleware'
 import { AppError, parseId, sendError } from '../http'
 import { checkCanSubmit, validateSubmission, type SubmissionInput } from '../rules/submission'
 import { feedbackWithSupervisor, toFeedbackDto } from '../feedback/dto'
+import { lockMilestone } from '../milestones/lock'
 
 // F-05 submission API (FR-06 … FR-08, BR-06 … BR-08, NFR-05).
 // Mounted at /api/milestones/:milestoneId/submissions.
@@ -12,6 +13,7 @@ export const submissionsRouter = Router({ mergeParams: true })
 submissionsRouter.use(requireAuth)
 
 const RULE_MESSAGES = {
+  MILESTONE_CLOSED: 'This milestone has been closed by the supervisor.',
   DEADLINE_PASSED: 'The deadline for this milestone has passed.',
   REVISION_LIMIT_REACHED: 'Your team has used all revisions for this milestone.',
 } as const
@@ -46,15 +48,18 @@ function isUniqueViolation(err: unknown): boolean {
   return (err as { code?: string })?.code === 'P2002'
 }
 
-// One attempt: read the current state, apply both rules with the SERVER clock,
-// insert revision = nextRevision. If another request stored the same revision
-// first, UNIQUE(milestoneId, revision) makes this insert fail (NFR-05).
+// One attempt: lock the milestone row first (F-08: the same lock as edit,
+// extension and close, so they cannot interleave with a submission), read the
+// current state, apply the rules with the SERVER clock, insert revision =
+// nextRevision. If another request stored the same revision first,
+// UNIQUE(milestoneId, revision) makes this insert fail (NFR-05); the retry is
+// a new transaction and takes the lock again.
 async function trySubmit(milestoneId: number, teamId: number, userId: number, value: SubmissionInput) {
   return prisma.$transaction(async (tx) => {
-    const m = await tx.milestone.findUniqueOrThrow({ where: { id: milestoneId } })
+    const m = await lockMilestone(tx, milestoneId)
     const revisionsUsed = await tx.submission.count({ where: { milestoneId } })
     const now = new Date()
-    const check = checkCanSubmit({ deadline: m.deadline, maxRevisions: m.maxRevisions, revisionsUsed, now })
+    const check = checkCanSubmit({ deadline: m.deadline, maxRevisions: m.maxRevisions, revisionsUsed, now, closedAt: m.closedAt })
     if (!check.ok) throw new AppError(409, check.code, RULE_MESSAGES[check.code])
     return tx.submission.create({
       data: { ...value, milestoneId, teamId, revision: check.nextRevision, submittedById: userId, submittedAt: now },
