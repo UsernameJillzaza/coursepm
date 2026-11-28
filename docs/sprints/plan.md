@@ -1,11 +1,11 @@
 # CoursePM — Three-sprint plan
 
-Version 0.1 · 2026-11-15. Feature IDs refer to [../features.md](../features.md).
+Version 0.2 · 2026-11-28 (release tags revised, Issue #73; `v0.2.x` was used by Lab 6). Version 0.1 · 2026-11-15. Feature IDs refer to [../features.md](../features.md).
 
 | Sprint | Dates | Goal | Features | Depends on | Completion outcome / checkpoint |
 | --- | --- | --- | --- | --- | --- |
 | **1** | 3 – 15 Nov 2026 | A small working domain slice with real authentication, permissions and persistence: a supervisor sets a milestone, a team submits (within the deadline and revision rules), and the supervisor gives feedback. | R-01 scaffold, R-02, F-01, F-02, F-03, F-04, F-05, F-06 | — | Release `v0.1.0` on `main`; **Deliverable 1, 15 Nov**. Lab 5 then containerizes and deploys this release (remaining R-01 work). |
-| **2** | 16 – 29 Nov 2026 | Expand the core under engineering contracts: history, milestone maintenance, administration, progress. | F-07, F-08, F-09, F-10, R-01 upkeep | F-04, F-05, F-06 | Release `v0.2.x` deployed; **Deliverable 2, 29 Nov** (Sprint 2 complete). |
+| **2** | 16 – 29 Nov 2026 | Expand the core under engineering contracts: history, milestone maintenance, administration, progress. | F-07, F-08, F-09, F-10, R-01 upkeep | F-04, F-05, F-06 | Release `v0.3.0` (the accepted Sprint 2 release) deployed; **Deliverable 2, 29 Nov** (Sprint 2 complete), submitted as candidate `v0.4.0-rc.1` with implemented Sprint 3 work. |
 | **3** | 30 Nov – 13 Dec 2026 | Remaining features, integration and hardening. | F-11, F-12, regression + UAT fixes | F-06, F-10 | Progress shown at 29 Nov; final release `v1.0.0` by **13 Dec**. |
 
 ## Why Sprint 1 is scoped like this

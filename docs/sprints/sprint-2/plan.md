@@ -103,7 +103,7 @@ Same rules as Sprint 1: PR body starts with `Closes #n`, reviewer = the other st
 | Sun 29, 16:00–22:30 | evidence, traceability, Deliverable 2 PDF; Lab 6 PDF; Lab 7 PDF |
 | Sun 29, 22:30–23:59 | buffer and upload |
 
-**Checkpoint Sun 29, 12:00:** if F-07 or F-10 has not merged, record `CHG-01` (for example, F-07
+**Checkpoint Sun 29, 12:00** (moved to 08:00 in the review): if F-07 or F-10 has not merged, ask the TA and, if approved, record the next free `CHG-nn` (for example, F-07
 history list without the side-by-side view) and disclose it in the completion table. The brief
 forbids silently moving work to Sprint 3, not disclosing a reduced scope.
 
