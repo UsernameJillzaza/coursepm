@@ -1,6 +1,6 @@
 # F-07 Revision history and comparison — feature contract
 
-Version 1.1 · 2026-11-28 (page renamed to `/revisions`, PR #76 review; 1.0 same day) · Issue: #73 (contract); implementation: S2-3 (Issue to be created) ·
+Version 1.2 · 2026-11-28 (UI handling of "Revision not found.", Issue #79; 1.1 page renamed to `/revisions`, PR #76 review; 1.0 same day) · Issue: #73 (contract); implementation: #79 (S2-3) ·
 Links: FR-11, FR-07, FR-08, FR-10, BR-02, BR-03, NFR-02, NFR-10, D-03, D-08 ·
 Depends on: F-05 (revisions), F-06 (feedback per revision)
 
@@ -72,9 +72,11 @@ In `server/src/rules/revisionDiff.ts`:
     from 768 px wide and stacks them (older first) below that, with no horizontal page scroll.
   - Changed fields carry a `Changed` badge; unchanged ones an `Unchanged` badge. Links are clickable
     on both sides (`rel="noopener noreferrer"`, as in F-05).
-  - A 404 from either request shows the same "Milestone not found" page as the milestone route; a
-    400 from a hand-edited URL shows "Choose two different revisions to compare." with the list
-    still usable.
+  - A "Milestone not found." 404 from either request shows the same "Milestone not found" page as
+    the milestone route. A 400 from a hand-edited URL shows "Choose two different revisions to
+    compare.", and a "Revision not found." 404 (a revision number not in this milestone, also only
+    from a hand-edited URL) shows that message; in both cases the list stays usable. (v1.2: v1.1
+    sent every 404 to the not-found page, which hid a usable list behind a typo in the URL.)
 
 ## API
 

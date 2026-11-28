@@ -102,6 +102,7 @@ seed creates the complete set above in one repeatable command.
 | `/teams` | My teams (cards with member names) | Student, Supervisor |
 | `/teams/:teamId` | Team detail: members, milestone list with status badges; **New milestone** button | Student, Supervisor (button for Supervisor only) |
 | `/teams/:teamId/milestones/new` | Create milestone form, shown after the team loads (**Team not found** for an out-of-scope team) | Supervisor |
+| `/milestones/:milestoneId/revisions` | Compare revisions (F-07): the revision list with a checkbox per row and, for two checked, a side-by-side comparison kept in `?a=&b=` | Student, Supervisor |
 | `/milestones/:milestoneId` | Milestone detail: deadline (Bangkok time) with an Open/Closed badge, revisions used / limit, submit form (Student, while open), revision list with feedback, feedback form (Supervisor) | Student, Supervisor |
 
 **Shared behavior (R-02).** A top bar shows the user's name and role and a **Log out** button. A
@@ -152,6 +153,7 @@ PostgreSQL cannot store a NUL byte in text).
 | `GET /api/teams/:teamId/milestones` · `POST /api/teams/:teamId/milestones` · `GET /api/milestones/:milestoneId` | F-04 |
 | `GET /api/milestones/:milestoneId/submissions` · `POST /api/milestones/:milestoneId/submissions` | F-05 |
 | `POST /api/submissions/:submissionId/feedback` | F-06 |
+| `GET /api/milestones/:milestoneId/compare?a=&b=` | F-07; read-only, scope 404 → query 400 → revision 404 |
 
 ## 5. Roles, permissions and authentication
 
