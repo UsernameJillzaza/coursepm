@@ -12,6 +12,20 @@ commit.
 Sections are added per feature as each contract is written: F-07 and F-09 by Jakkarin, F-08 and F-10
 by Achirawit.
 
+## F-07 Revision history and comparison
+
+| Test | AC | Lvl | Precondition / input | Action | Expected result | Actual test (file › name) | Result |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| TEST-07-01 | AC-07-3 | U | — | `diffWords` on: equal texts; `Draft of the SRS` → `Final draft of the SRS v2`; empty → text; text → empty; texts differing only in spacing; Thai text with spaces | Parts merged by `op`; `same`+`removed` = old and `same`+`added` = new for every pair; the documented parts for the SRS pair; equal texts give one `same` part | — | Planned |
+| TEST-07-02 | AC-07-4 | U | — | `parseRevisionPair` with `{a:'1',b:'3'}`, `{a:'3',b:'1'}`, missing `a`, missing `b`, `a='0'`, `'abc'`, `'01'`, `'1e0'`, `'2147483648'`, `a=b='2'` | older 1 / newer 3 for both orders; `fields.a` or `fields.b` for every invalid input, `fields.b` "Choose two different revisions." for equal | — | Planned |
+| TEST-07-03 | AC-07-1, AC-07-2 | I | Alpha milestone with revisions 1–3 inserted with known values; feedback on revision 1 | GET `compare?a=1&b=3` as A1 and as Supervisor 1; GET `compare?a=3&b=1` as A1 | 200 ×3; `older` = revision 1 with its feedback, `newer` = revision 3 with `feedback: null`, F-05 item shape; the reversed query returns the same body | — | Planned |
+| TEST-07-04 | AC-07-3 | I | As TEST-07-03, with revision 1 and 3 titles equal, links different, descriptions as in AC-07-3 | GET `compare?a=1&b=3` | `title.changed` false, `link.changed` true, `description.changed` true and the documented parts | — | Planned |
+| TEST-07-05 | AC-07-4 | I | The TEST-07-03 milestone | GET with each invalid query of AC-07-4 | 400 `VALIDATION_ERROR` naming `a` or `b` each time | — | Planned |
+| TEST-07-06 | AC-07-5 | I | The TEST-07-03 milestone; Supervisor 2; B1 | GET `compare?a=1&b=3` as Supervisor 2 and as B1; as Supervisor 1 on milestone IDs `999999`, `abc`, `0`; without a cookie | 404 "Milestone not found." ×5, no Alpha title in any body; 401 | — | Planned |
+| TEST-07-07 | AC-07-6, AC-07-9 | I | The TEST-07-03 milestone; a second Alpha milestone with revisions 1–5; counts of submissions and feedback recorded; both descriptions 2,000 characters | GET `compare?a=1&b=9`; GET `compare?a=1&b=5` on the first milestone; GET `compare?a=1&b=2` with the 2,000-character descriptions, timed; recount | 404 "Revision not found." ×2 (revision 5 exists only in the second milestone); 200 for the long pair, time noted in the log; counts and `submittedAt` unchanged | — | Planned |
+| TEST-07-08 | AC-07-1, AC-07-8 | E | Seeded A1 and Supervisor 1; a milestone with a unique title created by the test, A1 submits twice with different descriptions | Supervisor 1 gives feedback on revision 1; A1 opens History & compare, checks revision 2 then 1, presses Compare, reloads | Older (1) on the left with its feedback; `Changed` on the description; the URL `?a=1&b=2` survives the reload; screenshots in `artifacts/sprint-2/screenshots/` | — | Planned |
+| TEST-UI-07H | AC-07-7, AC-07-8 | C | History page with mocked list responses (0, 1 and 3 revisions), pending and failed responses; a mocked comparison; a mocked 400 and 404 | Render; check revisions 3 then 1; try to check a third; press Compare; render at 375 px; render the 400 and 404 cases | Loading / empty / error states and the one-revision message; Compare disabled until two are checked; the third checkbox disabled; older left; `Changed`/`Unchanged` badges, removed struck through, added highlighted; stacked columns with no horizontal scroll; the 400 message with the list usable; the 404 "Milestone not found" page | — | Planned |
+
 ## F-08 Milestone maintenance and deadline extension
 
 | Test | AC | Lvl | Precondition / input | Action | Expected result | Actual test (file › name) | Result |
