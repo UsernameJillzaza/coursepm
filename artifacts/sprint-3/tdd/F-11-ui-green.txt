@@ -1,0 +1,12 @@
+Issue #81 (F-11) client GREEN run (TEST-UI-11) and client regression
+Commit under test: 3b94df1 (clean tree)
+Commands: cd client && npx vitest run tests/sprint-3 ; npx vitest run
+Date: 2026-11-28 23:54 (ICT)
+
+--- tests/sprint-3 ---
+ Test Files  1 passed (1)
+      Tests  11 passed (11)
+
+--- full client suite ---
+ Test Files  12 passed (12)
+      Tests  99 passed (99)

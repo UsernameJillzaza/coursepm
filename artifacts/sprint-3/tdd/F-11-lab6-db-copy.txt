@@ -1,0 +1,38 @@
+Issue #81 / F-11 DoD: every Sprint 2-3 migration up to F-11 on a copy of the Lab 6 database, then the a342ed5 code
+Date: 2026-11-28 23:57 (ICT)
+Code: Lab 6 = a342ed5 (v0.2.1, behind Cloud Run tag lab6-v021) in a detached worktree with its own npm ci and Prisma client; new = feature/81-scoring at 3b94df1 (admin_role, both F-08 migrations, milestone_score).
+Database: a new local PostgreSQL 18 database coursepm_lab6copy, built by the a342ed5 migrations and seed plus a milestone and revision created through the a342ed5 API; dropped afterwards. Cloud SQL was not touched.
+Same throwaway script and method as F-09-lab6-db-copy.txt (Issue #78); demo password generated per run and never printed; Node deprecation warnings removed.
+
+Step 1: build the Lab 6 state with the a342ed5 code (6 migrations + its seed)
+6 migrations found in prisma/migrations
+Applying migration `20261114193252_users_sessions`
+Applying migration `20261114193953_teams`
+Applying migration `20261115082511_milestones`
+Applying migration `20261115091309_submissions`
+Applying migration `20261115091328_submission_team_matches_milestone`
+Applying migration `20261115094021_feedback`
+All migrations have been successfully applied.
+a342ed5 seed: done
+Lab 6 data: milestone 201 (id 1), revision 1 201
+
+Step 2: apply the F-09, F-08 and F-11 migrations and the seed with the feature/81-scoring code (as the release job would)
+10 migrations found in prisma/migrations
+Applying migration `20261128132923_admin_role`
+Applying migration `20261128154000_milestone_maintenance`
+Applying migration `20261128154001_milestone_change_field_not_null`
+Applying migration `20261128164522_milestone_score`
+  └─ 20261128132923_admin_role/
+All migrations have been successfully applied.
+F-09 seed: done (admin, F-08 and F-11 migrations)
+Role enum values now: STUDENT,SUPERVISOR,ADMIN
+
+Step 3: run the a342ed5 code (Prisma client generated without ADMIN) against the migrated copy
+GET /api/health → 200
+GET /api/ready → 200 {"status":"ready","db":"connected"}
+alpha1@coursepm.test: login 200 role STUDENT; GET /api/teams 200 (1 team(s)); milestone list 200, contains the Lab 6 milestone: true; its submissions 200, 1 revision(s)
+supervisor1@coursepm.test: login 200 role SUPERVISOR; GET /api/teams 200 (1 team(s)); milestone list 200, contains the Lab 6 milestone: true; its submissions 200, 1 revision(s)
+admin@coursepm.test through a342ed5 (documented known limit): login 500 INTERNAL_ERROR
+after the admin attempt, beta1 login still 200
+
+Result: PASS. The F-11 migration (two new tables, one new enum) leaves the a342ed5 code working for students and supervisors, including the data created before the migrations. The admin login through a342ed5 is the documented F-09 known limit.

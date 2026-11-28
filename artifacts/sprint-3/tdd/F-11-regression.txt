@@ -1,0 +1,20 @@
+Issue #81 (F-11) full regression before the PR
+Code commit under test: 3b94df1 (all F-11 code and tests committed; only docs edits uncommitted)
+Commands: npm run test:server ; npm run test:client ; npm --prefix client run build ; npm --prefix server run build
+Date: 2026-11-28 23:55 (ICT)
+Not run: Playwright E2E (it writes demo records and rewrites the Sprint 1 screenshots); to run in the S3-0 release run.
+
+--- server ---
+10 migrations found in prisma/migrations
+ Test Files  26 passed (26)
+      Tests  368 passed | 1 todo (369)
+
+--- client ---
+ Test Files  12 passed (12)
+      Tests  99 passed (99)
+
+--- client build ---
+✓ built in 581ms
+
+--- server build ---
+server build OK (prisma generate && tsc)

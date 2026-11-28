@@ -1,6 +1,6 @@
 # F-11 Milestone scoring and release — feature contract
 
-Version 1.1 · 2026-11-28 (BR-12 reason rule also in the database, PR #76 review; 1.0 same day) · Issue: #73 (contract); implementation: S3-1 (Issue to be created), the
+Version 1.2 · 2026-11-28 (implementation notes, Issue #81; 1.1 BR-12 reason rule also in the database, PR #76 review; 1.0 same day) · Issue: #73 (contract); implementation: #81 (S3-1), the
 Sprint 3 rule implemented for Deliverable 2 · Links: FR-16, BR-12, BR-02, BR-03, BR-09, NFR-02,
 NFR-10, D-03, D-05, **D-10** (answers Q-01) · Depends on: F-06 (assigned-supervisor rule), F-04
 (milestone) · Used by: F-12 (`score`, `score_released` export columns)
@@ -138,8 +138,11 @@ In `server/src/rules/score.ts`:
   when the locked `MilestoneScore` has `releasedAt` (the database cannot see the other table, so the
   CHECK above relies on this flag being honest); `MilestoneScore.score` equals the latest `SET`'s
   `newScore`; `ScoreChange` rows are never updated or deleted (no API does so).
-- **Migration:** `<UTC timestamp>_milestone_score`, on `sprint3-staging` after `v0.3.0`; migration
-  order = merge order as in Sprint 2.
+- **Migration:** `20261128164522_milestone_score` (after F-08's `20261128154001`), on `sprint3-staging`
+  after `v0.3.0`; migration order = merge order as in Sprint 2. `MilestoneScore.releasedById` is
+  `ON DELETE RESTRICT`, so the release pair can never be half-cleared.
+- **Implementation note (v1.2):** while the score loads, the panel shows "Loading score…" text rather
+  than a second shared spinner, so the Sprint 1 revision-list loading test keeps finding exactly one.
 - **Known limit:** the tagged Lab 6 revision does not know these tables and never serves a score;
   nothing there changes.
 
@@ -177,10 +180,11 @@ expected results. Each RED test is committed before its implementation. Logs go 
 ## Definition of Done
 
 The Sprint 1 [definition-of-done.md](../sprint-1/definition-of-done.md) applies, plus:
-- [ ] D-10 is in `srs.md` and Q-01 points to it.
-- [ ] The migration is additive only (two new tables and one new enum); the Lab 6 tagged revision
-      still passes its health check and milestone list after `prisma migrate deploy`.
-- [ ] Every CHECK listed under Data is in the migration SQL and covered by AC-11-7.
+- [x] D-10 is in `srs.md` and Q-01 points to it.
+- [x] The migration is additive only (two new tables and one new enum); the Lab 6 tagged revision
+      still passes its health check and milestone list after `prisma migrate deploy`. Evidence:
+      `artifacts/sprint-3/tdd/F-11-lab6-db-copy.txt` (local copy; all migrations through F-11).
+- [x] Every CHECK listed under Data is in the migration SQL and covered by AC-11-7.
 - [ ] Every AC-11-n has a passing test in the STS, with file › name and the tested commit. The
       traceability rows are filled in. TEST-04-*, TEST-05-*, TEST-06-* (and TEST-08-*, TEST-10-* once
       merged) pass unchanged.

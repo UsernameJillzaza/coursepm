@@ -70,6 +70,8 @@ erDiagram
   User ||--o{ Feedback : writes
   Milestone ||--o{ MilestoneChange : "audited by (F-08)"
   Milestone ||--o{ DeadlineExtension : "extended by (F-08)"
+  Milestone ||--o| MilestoneScore : "scored (F-11, ≤1)"
+  MilestoneScore ||--o{ ScoreChange : "history (F-11)"
 ```
 
 | Entity | Key fields | Constraints / ownership |
@@ -84,6 +86,8 @@ erDiagram
 | `Feedback` | id, submissionId (unique), supervisorId, body, createdAt | **UNIQUE (submissionId)** for BR-10; FK → Submission keeps the feedback/revision link. |
 | `MilestoneChange` (F-08) | id, milestoneId, kind (`EDIT`\|`CLOSE`), field?, oldValue?, newValue?, reason?, changedById, changedAt | FK → Milestone and the supervisor. CHECK: `EDIT` ⇒ field IS NOT NULL and in (`description`, `deadline`), oldValue and newValue NOT NULL, reason NULL; `CLOSE` ⇒ field, oldValue, newValue NULL; reason ≤ 500 characters. Index (milestoneId, changedAt). Never updated or deleted. Migrations `20261128154000_milestone_maintenance` and `20261128154001_milestone_change_field_not_null` (adds the explicit `field IS NOT NULL`). |
 | `DeadlineExtension` (F-08) | id, milestoneId, previousDeadline, newDeadline, reason, grantedById, grantedAt | FK → Milestone and the supervisor. CHECK **newDeadline > previousDeadline** (BR-11) and reason 3–500 characters. Index (milestoneId, grantedAt). Never updated or deleted. |
+| `MilestoneScore` (F-11) | id, milestoneId (unique), score, releasedAt?, releasedById?, createdAt, updatedAt | FK → Milestone and the releasing supervisor (RESTRICT). CHECK **score 0–100** and **(releasedAt IS NULL) = (releasedById IS NULL)**; one score per milestone. Served only by `/api/milestones/:id/score`, never in another DTO (D-10). |
+| `ScoreChange` (F-11) | id, milestoneScoreId, kind (`SET`\|`RELEASE`), oldScore?, newScore?, reason?, afterRelease, changedById, changedAt | CHECK: `SET` ⇒ newScore NOT NULL 0–100, oldScore NULL or 0–100; `RELEASE` ⇒ no values and no reason; reason ≤ 500; **BR-12: afterRelease ⇒ a `SET` with a 3–500 character reason**. afterRelease is set from the locked row (application rule, tested). Never updated or deleted. Migration `20261128164522_milestone_score`. |
 
 **Integrity: database-enforced vs application-enforced.** Enforced by the database: unique e-mail, unique (courseCode, name), membership/assignment primary keys, UNIQUE (milestoneId, revision), the composite FK that ties a submission to its milestone's team, UNIQUE (submissionId) on Feedback, the maxRevisions CHECK, and (F-08) the closed-pair, extension and audit-row CHECKs above. **Enforced by the application only (accepted for Sprint 1, and kept in Sprint 2):** that e-mails are stored lowercase (the database enforces uniqueness only; login and the account helper normalise every e-mail); that team members are `STUDENT` users and assigned supervisors are `SUPERVISOR` users (written only by the seed and, since F-09, by the `/api/admin` member and supervisor routes; those routes call `checkAssignable` inside a transaction that locks the user row (`SELECT … FOR UPDATE`), so only active `STUDENT` / `SUPERVISOR` users are added, never an `ADMIN`, and an add racing a deactivation cannot store an inactive account; no database CHECK can see the user's role from these tables; TEST-09-07, TEST-09-08); that `Milestone.createdById` is an assigned supervisor, `Submission.submittedById` a member and `Feedback.supervisorId` an assigned supervisor (each set from the signed-in user after the scope and role checks, never from the request); and that submissions are never updated or deleted (BR-07: no API route can, and teams/milestones, whose deletion would cascade, are never deleted through the API either). F-08 adds, enforced in code under the milestone row lock (`SELECT … FOR UPDATE`) and covered by tests: `Milestone.deadline` equals the latest extension's `newDeadline`, each extension's `previousDeadline` equals the deadline before it, no submission is accepted after a close, and `MilestoneChange` / `DeadlineExtension` rows are never updated or deleted.
 
@@ -160,6 +164,7 @@ PostgreSQL cannot store a NUL byte in text).
 | `PATCH /api/milestones/:milestoneId` · `POST /api/milestones/:milestoneId/extensions` · `POST /api/milestones/:milestoneId/close` · `GET /api/milestones/:milestoneId/history` | F-08 |
 | `POST /api/submissions/:submissionId/feedback` | F-06 |
 | `GET /api/milestones/:milestoneId/compare?a=&b=` | F-07; read-only, scope 404 → query 400 → revision 404 |
+| `GET /api/milestones/:milestoneId/score` · `PUT …/score` · `POST …/score/release` | F-11; scope 404 → role 403 (writes) → shape 400 → milestone row lock → state 409 → relative 400; `Cache-Control: no-store`; a student gets `{ score: null }` until release |
 | `GET /api/admin/users` · `GET /api/admin/teams` · `POST /api/admin/teams` · `POST /api/admin/teams/:teamId/members` · `POST /api/admin/teams/:teamId/supervisors` · `POST /api/admin/users/:userId/deactivate` | F-09; `ADMIN` only (403 `FORBIDDEN` otherwise), checked before the path ID because these routes reveal no team work |
 
 ## 5. Roles, permissions and authentication
