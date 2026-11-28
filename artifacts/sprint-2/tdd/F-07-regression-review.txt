@@ -1,0 +1,20 @@
+PR #83 review: full regression after the review fixes (Issue #79)
+Code commit under test: e30dc3a (minimality tests bff81df, diffWords fix c3f11f6, UI tests ee45575, UI fix e30dc3a; the remaining changes are docs and logs)
+Commands: npm run test:server ; npm run test:client ; npm --prefix client run build ; npm --prefix server run build
+Date: 2026-11-28 22:09 (ICT)
+Not run: Playwright E2E (TEST-07-08).
+
+--- server ---
+6 migrations found in prisma/migrations
+ Test Files  20 passed (20)
+      Tests  239 passed (239)
+
+--- client ---
+ Test Files  9 passed (9)
+      Tests  59 passed (59)
+
+--- client build ---
+✓ built in 420ms
+
+--- server build ---
+server build OK (prisma generate && tsc)

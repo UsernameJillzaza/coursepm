@@ -1,0 +1,20 @@
+Issue #79 (F-07) full regression before the PR
+Code commit under test: 48f956a (all F-07 code committed; the E2E spec 1a20acf and the docs edits do not change the app)
+Commands: npm run test:server ; npm run test:client ; npm --prefix client run build ; npm --prefix server run build
+Date: 2026-11-28 21:11 (ICT)
+Not run: Playwright E2E (TEST-07-08), because it writes demo records to the database the dev server uses.
+
+--- server ---
+6 migrations found in prisma/migrations
+ Test Files  20 passed (20)
+      Tests  231 passed (231)
+
+--- client ---
+ Test Files  9 passed (9)
+      Tests  57 passed (57)
+
+--- client build ---
+✓ built in 461ms
+
+--- server build ---
+server build OK (prisma generate && tsc)

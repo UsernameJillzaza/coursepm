@@ -20,7 +20,7 @@ function ruleMessage(check: Exclude<SubmitCheck, { ok: true }>): string {
   }
 }
 
-const submittedBy = { submittedBy: { select: { id: true, name: true } } } as const
+export const submittedBy = { submittedBy: { select: { id: true, name: true } } } as const
 
 type SubmissionRow = {
   id: number
@@ -33,8 +33,8 @@ type SubmissionRow = {
 }
 
 // The F-05 contract's submission shape. The list also includes feedback from
-// the revision's own one-to-one relation (F-06).
-function toSubmissionDto(s: SubmissionRow) {
+// the revision's own one-to-one relation (F-06). F-07's compare reuses it.
+export function toSubmissionDto(s: SubmissionRow) {
   return {
     id: s.id,
     revision: s.revision,

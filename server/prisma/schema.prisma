@@ -10,10 +10,13 @@ datasource db {
   provider = "postgresql"
 }
 
-// F-01 / BR-01: exactly one role per account. ADMIN arrives in Sprint 2 (F-09).
+// F-01 / BR-01: exactly one role per account. F-09 (Sprint 2) adds ADMIN,
+// the Course Administrator, who manages teams and accounts but never sees
+// team work (teamScopeWhere matches no team for an ADMIN).
 enum Role {
   STUDENT
   SUPERVISOR
+  ADMIN
 }
 
 model User {

@@ -1,13 +1,18 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react'
 import { api, SESSION_LOST_EVENT } from '../api'
 
-export type Role = 'STUDENT' | 'SUPERVISOR'
+export type Role = 'STUDENT' | 'SUPERVISOR' | 'ADMIN'
 export type User = { id: number; name: string; email: string; role: Role }
+
+// F-09: where each role starts. An ADMIN has no teams, so it starts on /admin.
+export function homePath(user: Pick<User, 'role'> | null): string {
+  return user?.role === 'ADMIN' ? '/admin' : '/teams'
+}
 
 type AuthState = {
   user: User | null
   loading: boolean
-  login: (email: string, password: string) => Promise<void>
+  login: (email: string, password: string) => Promise<User>
   logout: () => Promise<void>
 }
 
@@ -37,6 +42,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = useCallback(async (email: string, password: string) => {
     const r = await api<{ user: User }>('/auth/login', { method: 'POST', body: { email, password } })
     setUser(r.user)
+    return r.user
   }, [])
 
   const logout = useCallback(async () => {

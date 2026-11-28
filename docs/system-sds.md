@@ -1,6 +1,6 @@
 # CoursePM — System-Level Software Design Specification (SDS)
 
-Version 0.2 · 2026-11-28 (CHG-01) · implements [srs.md](srs.md) v0.2 · 0.1 2026-11-15.
+Version 0.3 · 2026-11-28 (F-09 implemented, Issue #78) · 0.2 2026-11-28 (CHG-01) · implements [srs.md](srs.md) v0.2 · 0.1 2026-11-15.
 
 ## 1. Architecture and stack
 
@@ -72,21 +72,21 @@ erDiagram
 
 | Entity | Key fields | Constraints / ownership |
 | --- | --- | --- |
-| `User` | id, email, name, role (`STUDENT`\|`SUPERVISOR`; `ADMIN` added in Sprint 2), passwordHash, isActive, createdAt | email unique, lowercase. One role per user (BR-01). |
+| `User` | id, email, name, role (`STUDENT`\|`SUPERVISOR`\|`ADMIN`; `ADMIN` added by F-09, migration `20261128132923_admin_role`, additive only), passwordHash, isActive, createdAt | email unique, lowercase. One role per user (BR-01). |
 | `Session` | id (SHA-256 of token), userId, expiresAt, createdAt | FK → User, cascade delete. |
 | `Team` | id, name, courseCode, createdAt | (courseCode, name) unique. |
-| `TeamMember` | teamId, userId | PK (teamId, userId); only `STUDENT` users are added (enforced by the seed, not the DB; see below). |
-| `SupervisorAssignment` | teamId, userId | PK (teamId, userId); only `SUPERVISOR` users are added (enforced by the seed, not the DB; see below). |
+| `TeamMember` | teamId, userId | PK (teamId, userId); only active `STUDENT` users are added (enforced by the application: the seed and, since F-09, `checkAssignable` in `/api/admin`; no DB CHECK; see below). |
+| `SupervisorAssignment` | teamId, userId | PK (teamId, userId); only active `SUPERVISOR` users are added (enforced by the application: the seed and, since F-09, `checkAssignable` in `/api/admin`; no DB CHECK; see below). |
 | `Milestone` | id, teamId, title, description, deadline (UTC), maxRevisions (1–5), createdById, createdAt | FK → Team and the creator. A CHECK constraint keeps maxRevisions within 1–5. **UNIQUE (id, teamId)** so submissions can reference the pair. |
 | `Submission` | id, milestoneId, teamId, revision, title, description, link, submittedById, submittedAt | **UNIQUE (milestoneId, revision)** for NFR-05. teamId is copied from the milestone so scope checks are a single join, and a **composite FK (milestoneId, teamId) → Milestone (id, teamId)** makes the database reject a submission whose teamId differs from its milestone's team, so authorization can never use the wrong team. Never updated or deleted (BR-07). |
 | `Feedback` | id, submissionId (unique), supervisorId, body, createdAt | **UNIQUE (submissionId)** for BR-10; FK → Submission keeps the feedback/revision link. |
 
-**Integrity: database-enforced vs application-enforced.** Enforced by the database: unique e-mail, unique (courseCode, name), membership/assignment primary keys, UNIQUE (milestoneId, revision), the composite FK that ties a submission to its milestone's team, UNIQUE (submissionId) on Feedback, and the maxRevisions CHECK. **Enforced by the application only (accepted for Sprint 1):** that e-mails are stored lowercase (the database enforces uniqueness only; login and the account helper normalise every e-mail); that team members are `STUDENT` users and assigned supervisors are `SUPERVISOR` users (only the seed writes these tables until F-09 adds admin screens with the same checks); that `Milestone.createdById` is an assigned supervisor, `Submission.submittedById` a member and `Feedback.supervisorId` an assigned supervisor (each set from the signed-in user after the scope and role checks, never from the request); and that submissions are never updated or deleted (BR-07: no API route can, and teams/milestones, whose deletion would cascade, are never deleted through the API either).
+**Integrity: database-enforced vs application-enforced.** Enforced by the database: unique e-mail, unique (courseCode, name), membership/assignment primary keys, UNIQUE (milestoneId, revision), the composite FK that ties a submission to its milestone's team, UNIQUE (submissionId) on Feedback, and the maxRevisions CHECK. **Enforced by the application only (accepted for Sprint 1, and kept in Sprint 2):** that e-mails are stored lowercase (the database enforces uniqueness only; login and the account helper normalise every e-mail); that team members are `STUDENT` users and assigned supervisors are `SUPERVISOR` users (written only by the seed and, since F-09, by the `/api/admin` member and supervisor routes; those routes call `checkAssignable` inside a transaction that locks the user row (`SELECT … FOR UPDATE`), so only active `STUDENT` / `SUPERVISOR` users are added, never an `ADMIN`, and an add racing a deactivation cannot store an inactive account; no database CHECK can see the user's role from these tables; TEST-09-07, TEST-09-08); that `Milestone.createdById` is an assigned supervisor, `Submission.submittedById` a member and `Feedback.supervisorId` an assigned supervisor (each set from the signed-in user after the scope and role checks, never from the request); and that submissions are never updated or deleted (BR-07: no API route can, and teams/milestones, whose deletion would cascade, are never deleted through the API either).
 
 **Setup.** `npx prisma migrate dev` builds the schema from versioned migrations.
 `npx prisma db seed` runs `src/seed/demo.ts`, which is idempotent (users upserted by e-mail, teams by
 their unique key **(courseCode, name)**, memberships and assignments by their composite primary keys; re-running it also resets the demo accounts' names, roles and passwords to the seed values and re-activates them) and
-creates: 2 supervisors, 6 students, and 3 teams (Team Alpha supervised by Supervisor 1; Team Beta and
+creates: 2 supervisors, 6 students, 1 course administrator (`admin@coursepm.test`, F-09, in no team), and 3 teams (Team Alpha supervised by Supervisor 1; Team Beta and
 Team Gamma supervised by Supervisor 2). Demo passwords come from `SEED_PASSWORD` in `.env` and are
 never written in the repository.
 
@@ -102,6 +102,8 @@ seed creates the complete set above in one repeatable command.
 | `/teams` | My teams (cards with member names) | Student, Supervisor |
 | `/teams/:teamId` | Team detail: members, milestone list with status badges; **New milestone** button | Student, Supervisor (button for Supervisor only) |
 | `/teams/:teamId/milestones/new` | Create milestone form, shown after the team loads (**Team not found** for an out-of-scope team) | Supervisor |
+| `/milestones/:milestoneId/revisions` | Compare revisions (F-07): the revision list with a checkbox per row and, for two checked, a side-by-side comparison kept in `?a=&b=` | Student, Supervisor |
+| `/admin` | Course administration (F-09): Teams (New team form, Add member / Add supervisor) and Accounts (role filter, Deactivate with confirmation). Other roles see `NoAccess` | Admin |
 | `/milestones/:milestoneId` | Milestone detail: deadline (Bangkok time) with an Open/Closed badge, revisions used / limit, submit form (Student, while open), revision list with feedback, feedback form (Supervisor) | Student, Supervisor |
 
 **Shared behavior (R-02).** A top bar shows the user's name and role and a **Log out** button. A
@@ -152,14 +154,16 @@ PostgreSQL cannot store a NUL byte in text).
 | `GET /api/teams/:teamId/milestones` · `POST /api/teams/:teamId/milestones` · `GET /api/milestones/:milestoneId` | F-04 |
 | `GET /api/milestones/:milestoneId/submissions` · `POST /api/milestones/:milestoneId/submissions` | F-05 |
 | `POST /api/submissions/:submissionId/feedback` | F-06 |
+| `GET /api/milestones/:milestoneId/compare?a=&b=` | F-07; read-only, scope 404 → query 400 → revision 404 |
+| `GET /api/admin/users` · `GET /api/admin/teams` · `POST /api/admin/teams` · `POST /api/admin/teams/:teamId/members` · `POST /api/admin/teams/:teamId/supervisors` · `POST /api/admin/users/:userId/deactivate` | F-09; `ADMIN` only (403 `FORBIDDEN` otherwise), checked before the path ID because these routes reveal no team work |
 
 ## 5. Roles, permissions and authentication
 
 **Role / permission matrix.** "Own team" = a team the student belongs to; "assigned team" = a team the
 supervisor is assigned to. ✗ outside scope → 404; ✗ wrong role on an accessible record → 403. The
-**Administrator** column is the Sprint 2 design in the F-09 contract (FR-14, revised 2026-11-28 in PR #76): an
+**Administrator** column is F-09 (FR-14, contract revised 2026-11-28 in PR #76, implemented in Issue #78): an
 administrator manages teams and accounts but never sees team work, because `teamScopeWhere` matches no
-team for `ADMIN`. It is not implemented in Sprint 1, where teams and accounts come from the seed (D-04).
+team for `ADMIN`. In Sprint 1 teams and accounts came only from the seed (D-04).
 
 | Operation | Student | Supervisor | Administrator (Sprint 2) | Unauthenticated |
 | --- | --- | --- | --- | --- |

@@ -1,15 +1,19 @@
-import { Navigate, Route, Routes } from 'react-router-dom'
+import { Route, Routes } from 'react-router-dom'
 import { AuthProvider } from './auth/AuthContext'
 import LoginPage from './auth/LoginPage'
 import RequireAuth from './auth/RequireAuth'
+import RequireRole from './auth/RequireRole'
+import AdminPage from './admin/AdminPage'
+import HomeRedirect from './auth/HomeRedirect'
 import ReleaseFooter from './components/ReleaseFooter'
 import TopBar from './components/TopBar'
 import TeamDetailPage from './teams/TeamDetailPage'
 import TeamsPage from './teams/TeamsPage'
 import MilestonePage from './milestones/MilestonePage'
 import NewMilestonePage from './milestones/NewMilestonePage'
+import RevisionsPage from './milestones/RevisionsPage'
 
-// SDS §3 route map. F-04 adds the milestone routes.
+// SDS §3 route map. F-04 adds the milestone routes; F-07 adds /milestones/:id/revisions; F-09 adds /admin.
 export default function App() {
   return (
     <AuthProvider>
@@ -48,7 +52,25 @@ export default function App() {
             </RequireAuth>
           }
         />
-        <Route path="*" element={<Navigate to="/teams" replace />} />
+        <Route
+          path="/milestones/:milestoneId/revisions"
+          element={
+            <RequireAuth>
+              <RevisionsPage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/admin"
+          element={
+            <RequireAuth>
+              <RequireRole role="ADMIN">
+                <AdminPage />
+              </RequireRole>
+            </RequireAuth>
+          }
+        />
+        <Route path="*" element={<HomeRedirect />} />
       </Routes>
       <ReleaseFooter />
     </AuthProvider>
