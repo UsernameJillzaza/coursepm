@@ -2,6 +2,7 @@ import { randomBytes } from 'node:crypto'
 import request from 'supertest'
 import app from '../../src/app'
 import { prisma } from '../../src/db'
+import { teamScopeWhere } from '../../src/access/scope'
 import { DEMO_ADMIN, upsertAccount } from '../../src/seed/demo'
 import { cleanupTeams, createTeam } from '../helpers/teams'
 import { cleanupUsers, createUser, DEMO_PASSWORD, loginAgent, type TestUser } from '../helpers/users'
@@ -340,6 +341,25 @@ describe('TEST-09-12 (AC-09-9): an admin never reaches team work on the Sprint 1
     }
     expect(submission.id).toBeGreaterThan(0)
     expect({ milestones: await prisma.milestone.count(), submissions: await prisma.submission.count(), feedback: await prisma.feedback.count() }).toEqual(before)
+  })
+})
+
+describe('TEST-09-12 (AC-09-9): the ADMIN scope branch is a rule, not a data accident', () => {
+  it('teamScopeWhere gives an ADMIN a filter that matches no team', () => {
+    expect(teamScopeWhere({ id: admin.id, name: admin.name, email: admin.email, role: 'ADMIN' })).toEqual({ id: { in: [] } })
+  })
+
+  it('even an ADMIN wrongly inserted as a supervisor (bypassing the API) sees no team and gets 404', async () => {
+    const strayAdmin = await createUser('ADMIN')
+    await prisma.supervisorAssignment.create({ data: { teamId: alpha.id, userId: strayAdmin.id } })
+    try {
+      const agent = await loginAgent(strayAdmin)
+      expect((await agent.get('/api/teams')).body).toEqual({ items: [] })
+      expect((await agent.get(`/api/teams/${alpha.id}`)).status).toBe(404)
+      expect((await agent.get(`/api/teams/${alpha.id}/milestones`)).status).toBe(404)
+    } finally {
+      await prisma.supervisorAssignment.delete({ where: { teamId_userId: { teamId: alpha.id, userId: strayAdmin.id } } })
+    }
   })
 })
 
