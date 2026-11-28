@@ -143,7 +143,9 @@ describe('TEST-UI-10 (AC-10-8): board page', () => {
         ? Promise.resolve(new Response(JSON.stringify({ user: student }), { status: 200 }))
         : new Promise<Response>(() => {})))
     renderAt('/teams/1/board')
-    expect(await screen.findByRole('status', { name: 'Loading' })).toBeInTheDocument()
+    // The session check shows its own spinner first; wait for the page's one, inside <main>.
+    const main = await screen.findByRole('main')
+    expect(within(main).getByRole('status', { name: 'Loading' })).toBeInTheDocument()
     expect(screen.queryByRole('region', { name: 'Overdue' })).not.toBeInTheDocument()
   })
 
