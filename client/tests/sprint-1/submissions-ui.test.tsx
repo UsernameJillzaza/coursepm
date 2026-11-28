@@ -6,7 +6,9 @@ import { fail, fakeApi, ok } from '../helpers/fakeApi'
 
 // F-05 UI: the milestone page with the submit form and the revision list.
 // STS TEST-UI-02 (AC-05-8), TEST-UI-07 (AC-05-10), the submission-list part
-// of TEST-UI-04 (AC-02-10), plus AC-05-1 / AC-05-7 behaviour.
+// of TEST-UI-04 (AC-02-10), plus AC-05-1 / AC-05-7 behaviour. CHG-01 (#74):
+// the milestone carries awaitingFeedback, and the form waits for feedback
+// (TEST-UI-02, AC-05-13).
 const student = { id: 3, name: 'Alpha Student 1', email: 'alpha1@coursepm.test', role: 'STUDENT' }
 const supervisor = { id: 1, name: 'Dr. Supervisor One', email: 'supervisor1@coursepm.test', role: 'SUPERVISOR' }
 const team = { id: 1, name: 'Team Alpha' }
@@ -22,6 +24,7 @@ const milestone = (over: Record<string, unknown> = {}) => ({
   status: 'OPEN',
   revisionsUsed: 0,
   latestSubmittedAt: null,
+  awaitingFeedback: false,
   ...over,
 })
 const submission = (revision: number, title: string) => ({
@@ -78,7 +81,7 @@ describe('F-05 submit form', () => {
     let submitted = false
     fakeApi({
       'GET /api/auth/me': ok({ user: student }),
-      'GET /api/milestones/10': () => ok({ milestone: milestone({ revisionsUsed: submitted ? 1 : 0 }), team })(),
+      'GET /api/milestones/10': () => ok({ milestone: milestone({ revisionsUsed: submitted ? 1 : 0, awaitingFeedback: submitted }), team })(),
       'GET /api/milestones/10/submissions': () => ok({ items: submitted ? [submission(1, 'Our proposal')] : [] })(),
       'POST /api/milestones/10/submissions': (init) => {
         expect(JSON.parse(String(init?.body))).toEqual({ title: 'Our proposal', description: 'Draft', link: 'https://example.com/r1' })
@@ -94,6 +97,9 @@ describe('F-05 submit form', () => {
     await userEvent.click(screen.getByRole('button', { name: /submit work/i }))
     expect(await screen.findByText('Our proposal')).toBeInTheDocument()
     expect(await screen.findByText(/Revisions used: 1 \/ 3/)).toBeInTheDocument()
+    // CHG-01: the new revision has no feedback yet, so the form waits.
+    expect(await screen.findByText('Waiting for feedback on revision 1.')).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /submit work/i })).not.toBeInTheDocument()
   })
 
   it('TEST-UI-02 (AC-05-8): after the deadline the form is replaced by an explanation', async () => {
@@ -115,6 +121,17 @@ describe('F-05 submit form', () => {
     })
     renderAt('/milestones/10')
     expect(await screen.findByText('All 3 revisions used.')).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /submit work/i })).not.toBeInTheDocument()
+  })
+
+  it('TEST-UI-02 (AC-05-8, AC-05-13): while the latest revision awaits feedback the form is replaced by an explanation', async () => {
+    fakeApi({
+      'GET /api/auth/me': ok({ user: student }),
+      'GET /api/milestones/10': ok({ milestone: milestone({ revisionsUsed: 2, awaitingFeedback: true }), team }),
+      'GET /api/milestones/10/submissions': ok({ items: [submission(2, 'b'), submission(1, 'a')] }),
+    })
+    renderAt('/milestones/10')
+    expect(await screen.findByText('Waiting for feedback on revision 2.')).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: /submit work/i })).not.toBeInTheDocument()
   })
 
