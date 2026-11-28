@@ -1,6 +1,7 @@
 import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { MemoryRouter, useLocation } from 'react-router-dom'
+import { act } from 'react'
+import { MemoryRouter, useLocation, useNavigate, type NavigateFunction } from 'react-router-dom'
 import App from '../../src/App'
 import { fail, fakeApi, ok, type Route } from '../helpers/fakeApi'
 
@@ -51,15 +52,18 @@ function routes(items: unknown[], overrides: Record<string, Route> = {}) {
 }
 
 let currentUrl = ''
+let navigate: NavigateFunction = () => undefined
 function LocationSpy() {
   const location = useLocation()
+  navigate = useNavigate()
   currentUrl = location.pathname + location.search
   return null
 }
 
-function renderAt(path: string) {
+function renderAt(path: string | string[]) {
+  const entries = Array.isArray(path) ? path : [path]
   return render(
-    <MemoryRouter initialEntries={[path]}>
+    <MemoryRouter initialEntries={entries} initialIndex={entries.length - 1}>
       <App />
       <LocationSpy />
     </MemoryRouter>,
@@ -236,5 +240,27 @@ describe('TEST-UI-07H (AC-07-7, AC-07-8): the revisions page', () => {
     renderAt('/milestones/10/revisions')
     expect(await screen.findByRole('heading', { name: 'Milestone not found' })).toBeInTheDocument()
     expect(screen.queryByRole('checkbox')).not.toBeInTheDocument()
+  })
+  it('a URL with only one of a / b explains it and requests no comparison (PR #83 review)', async () => {
+    const calls = fakeApi(routes(three))
+    renderAt('/milestones/10/revisions?a=1')
+    expect(await screen.findByRole('alert')).toHaveTextContent('Choose two different revisions to compare.')
+    expect(calls.filter((c) => c.includes('/compare'))).toEqual([])
+    expect(box(3)).toBeEnabled()
+  })
+
+  it('going Back to the page without ?a=&b= clears the comparison and the selection (PR #83 review)', async () => {
+    fakeApi(routes(three))
+    renderAt(['/milestones/10/revisions', '/milestones/10/revisions?a=1&b=3'])
+    await screen.findByRole('region', { name: 'Comparison' })
+    expect(box(1)).toBeChecked()
+    await act(async () => {
+      await navigate(-1)
+    })
+    expect(currentUrl).toBe('/milestones/10/revisions')
+    expect(screen.queryByRole('region', { name: 'Comparison' })).not.toBeInTheDocument()
+    expect(box(1)).not.toBeChecked()
+    expect(box(3)).not.toBeChecked()
+    expect(compareButton()).toBeDisabled()
   })
 })
