@@ -1,6 +1,6 @@
 # F-06 Feedback on a revision — feature contract
 
-Version 1.0 · 2026-11-15 · Issue: #2 (contract); implementation: #8 · Links: FR-09, FR-10, BR-09, BR-10
+Version 1.1 · 2026-11-28 (CHG-01 note) · 1.0 2026-11-15 · Issue: #2 (contract); implementation: #8 · Links: FR-09, FR-10, BR-09, BR-10, BR-07
 
 ## Behavior and workflow
 1. An assigned Supervisor opens a milestone and, under a revision without feedback, writes feedback and
@@ -12,6 +12,9 @@ Version 1.0 · 2026-11-15 · Issue: #2 (contract); implementation: #8 · Links: 
 3. Feedback is returned inside each submission of the F-05 list, so it always appears next to **the
    revision it refers to** (the submission/feedback association is preserved). A later resubmission
    doesn't move it.
+4. *(CHG-01)* Feedback on the **latest** revision is what allows the team to submit the next revision
+   (BR-07, F-05 AC-05-11). Nothing in F-06 changes: the feedback endpoint, its rules and its responses
+   stay as they are; F-05 reads whether the feedback row exists.
 
 ## UI
 Each revision card shows its feedback (supervisor name, time, text) or, for supervisors only, a textarea

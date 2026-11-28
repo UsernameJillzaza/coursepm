@@ -1,6 +1,6 @@
 # F-04 Milestone creation and list — feature contract
 
-Version 1.0 · 2026-11-15 · Issue: #2 (contract); implementation: #6 · Links: FR-04, FR-05, BR-04, BR-05, D-05
+Version 1.1 · 2026-11-28 (CHG-01 adds `awaitingFeedback` to the milestone response) · 1.0 2026-11-15 · Issue: #2 (contract); implementation: #6 · Links: FR-04, FR-05, BR-04, BR-05, D-05
 
 ## Behavior and workflow
 1. The Supervisor opens an assigned team and clicks **New milestone**.
@@ -9,7 +9,9 @@ Version 1.0 · 2026-11-15 · Issue: #2 (contract); implementation: #6 · Links: 
 3. The server checks scope (404), then role (403), then `validateMilestone()` (400), and stores the
    milestone with `createdById`.
 4. Everyone in scope lists the team's milestones ordered by deadline ascending, each with
-   `revisionsUsed`, `status` (`OPEN` while `now ≤ deadline`, otherwise `CLOSED`) and `latestSubmittedAt`.
+   `revisionsUsed`, `status` (`OPEN` while `now ≤ deadline`, otherwise `CLOSED`), `latestSubmittedAt` and
+   (since CHG-01) `awaitingFeedback`: `true` when at least one revision exists and the latest one has no
+   feedback. It is computed on the server so the client never re-implements BR-07.
 
 **Validation (BR-05)** — `server/src/rules/milestone.ts`, `validateMilestone(input, now)`:
 title trimmed 3–120 characters; description ≤ 2,000 characters; deadline a valid date **after** `now`;
@@ -26,9 +28,9 @@ and any other load error shows the standard alert with **Retry** (Lab 6, Issue #
 ## API
 | Method & path | Request | Success | Errors |
 | --- | --- | --- | --- |
-| `POST /api/teams/:teamId/milestones` | `{ title, description, deadline, maxRevisions? }` | 201 `{ milestone }` | 400, 401, 403, 404 |
-| `GET /api/teams/:teamId/milestones` | — | 200 `{ items: [milestone + revisionsUsed, status, latestSubmittedAt] }` | 401, 404 |
-| `GET /api/milestones/:milestoneId` | — | 200 `{ milestone, team: {id,name} }` | 401, 404 |
+| `POST /api/teams/:teamId/milestones` | `{ title, description, deadline, maxRevisions? }` | 201 `{ milestone }` (same derived fields; `awaitingFeedback: false`, CHG-01) | 400, 401, 403, 404 |
+| `GET /api/teams/:teamId/milestones` | — | 200 `{ items: [milestone + revisionsUsed, status, latestSubmittedAt, awaitingFeedback] }` | 401, 404 |
+| `GET /api/milestones/:milestoneId` | — | 200 `{ milestone (same derived fields as the list), team: {id,name} }` | 401, 404 |
 
 ## Data
 `Milestone` (teamId FK, title, description, deadline timestamptz, maxRevisions int with CHECK 1–5,
