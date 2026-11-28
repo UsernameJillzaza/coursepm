@@ -61,7 +61,9 @@ Rule functions (pure, unit-tested) in `server/src/rules/summary.ts`:
    in the standard alert, so the user never sees a raw JSON page.
 2. The server checks session (401), then scope (404), then role (403), builds the CSV and returns it.
 3. The file has **one row per submission revision**. A milestone with no revision gets one row with
-   the submission, feedback and score columns empty. Rows are ordered by milestone deadline, then
+   the submission and feedback columns empty. `score` / `score_released` follow the first-row rule
+   (columns 19–20), so a score set on such a milestone (F-11 AC-11-9, e.g. closed early or scored 0
+   for missing work) still appears. Rows are ordered by milestone deadline, then
    milestone id, then revision.
 
 **Rules and failure cases**
@@ -72,7 +74,7 @@ Rule functions (pure, unit-tested) in `server/src/rules/summary.ts`:
 | `GET /api/summary` by a Student, or by any role other than `SUPERVISOR` (including `ADMIN` from F-09) | 403 `FORBIDDEN` "Only supervisors can view the summary." |
 | Supervisor with no assigned team | 200, `teams: []`, totals all 0 and `onTimeRate` null |
 | Export for a team outside the caller's scope, unknown, or a malformed ID | 404 `NOT_FOUND` "Team not found." (D-03; scope before role) |
-| Export by an `ADMIN` (after F-09) | 404, because `teamScopeWhere` gives a non-student only the teams it is assigned to supervise, and an admin has none. (F-09's explicit ADMIN branch of `teamScopeWhere` matches no team.) |
+| Export by an `ADMIN` (after F-09) | 404, because F-09's explicit ADMIN branch of `teamScopeWhere` matches no team. |
 | Export by a Student of that team | 403 `FORBIDDEN` "Only supervisors can export a team record." |
 | Team with no milestone | 200, a CSV with the header row only |
 
@@ -156,7 +158,7 @@ The export is for supervisors only, so it includes scores that have not been rel
 | AC-12-1 | Unit: `isDue` / `isOnTime` / `summarizeTeam`. A first revision exactly at `originalDeadline` → on time, and 1 ms later → late. A revision submitted after an extension, but before the extended deadline → late. A milestone closed early with no revision → not due. Exactly at `originalDeadline` → not yet due, and 1 ms later → due. An extended milestone with no revision past `originalDeadline` → due, not on time, not overdue. A milestone closed early that has a revision and is past `originalDeadline` → due, and on time if revision 1 was at or before `originalDeadline`. No due milestone → `onTimeRate` null. 2 of 3 on time → 0.6667, and the pooled total of 1/2 and 1/1 → 0.6667, not 0.75. |
 | AC-12-2 | Supervisor 2 (Beta and Gamma) calls `GET /api/summary` on a fixture with known outcomes → 200. The per-team and total numbers equal the expected values. `teams` is ordered by course code, then name. The overdue and awaiting-feedback lists contain exactly the expected milestones in the documented order. No Alpha data appears. |
 | AC-12-3 | A Student → 403. An ADMIN (after F-09) → 403 on the summary and 404 on an export. No session → 401. A supervisor with no assigned team → 200 with empty teams and `onTimeRate` null. |
-| AC-12-4 | Supervisor 1 exports Alpha at a fixed server time → 200 with the documented headers, the filename carrying that time in Bangkok time. The header row has exactly the 20 columns in order. There is one row per revision, plus one row for a milestone without revisions. Values are the stored ones, with times in `+07:00`. `on_time`, `score` and `score_released` appear only on each milestone's first row. A due milestone without revisions has `on_time` = `no`. |
+| AC-12-4 | Supervisor 1 exports Alpha at a fixed server time → 200 with the documented headers, the filename carrying that time in Bangkok time. The header row has exactly the 20 columns in order. There is one row per revision, plus one row for a milestone without revisions, which still carries that milestone's score if one is set. Values are the stored ones, with times in `+07:00`. `on_time`, `score` and `score_released` appear only on each milestone's first row. A due milestone without revisions has `on_time` = `no`. |
 | AC-12-5 | Export: Supervisor 2 for Alpha, an unknown ID, `abc` → 404. Student A1 for Alpha → 403 (scope before role). No session → 401. A team with no milestone → the header row only. |
 | AC-12-6 | Escaping: a feedback text with a comma, a double quote and a line break, and a Thai submitter name, round-trip unchanged through an RFC 4180 parser. The file starts with the UTF-8 BOM and lines end with CRLF. |
 | AC-12-7 | CSV injection: in text columns, `=HYPERLINK("http://x")`, `+1`, `-2+3`, `-5 days`, `@x`, `  =1+1`, `=1,2`, and texts starting with a tab or CR are exported with a leading `'` (guard before quoting). Number, time and empty cells are never prefixed. |
