@@ -99,17 +99,28 @@ function assignRoute(kind: 'members' | 'supervisors', wanted: 'STUDENT' | 'SUPER
 
     const userId = parseBodyId((req.body ?? {}).userId)
     if (!userId) return sendError(res, 400, 'VALIDATION_ERROR', VALIDATION_MESSAGE, { userId: 'Choose an account.' })
-    const user = await prisma.user.findUnique({ where: { id: userId }, select: { role: true, isActive: true } })
-    const check = checkAssignable(user, wanted)
-    if (!check.ok) return sendError(res, 400, 'VALIDATION_ERROR', VALIDATION_MESSAGE, { userId: check.message })
 
+    // The check and the insert run in one transaction that locks the user row
+    // (SELECT … FOR UPDATE), the row a deactivation updates. A deactivation in
+    // progress therefore finishes first and this check sees the account as
+    // inactive, so an inactive account is never stored (PR #82 review).
+    let outcome: { ok: true } | { ok: false; message: string } | 'ALREADY_ASSIGNED'
     try {
-      if (kind === 'members') await prisma.teamMember.create({ data: { teamId, userId } })
-      else await prisma.supervisorAssignment.create({ data: { teamId, userId } })
+      outcome = await prisma.$transaction(async (tx) => {
+        const rows = await tx.$queryRaw<{ role: Role; isActive: boolean }[]>`
+          SELECT "role", "isActive" FROM "User" WHERE "id" = ${userId} FOR UPDATE`
+        const check = checkAssignable(rows[0] ?? null, wanted)
+        if (!check.ok) return check
+        if (kind === 'members') await tx.teamMember.create({ data: { teamId, userId } })
+        else await tx.supervisorAssignment.create({ data: { teamId, userId } })
+        return check
+      })
     } catch (err) {
       if (!isUniqueViolation(err)) throw err
-      return sendError(res, 409, 'ALREADY_ASSIGNED', 'This account is already in this team.')
+      outcome = 'ALREADY_ASSIGNED'
     }
+    if (outcome === 'ALREADY_ASSIGNED') return sendError(res, 409, 'ALREADY_ASSIGNED', 'This account is already in this team.')
+    if (!outcome.ok) return sendError(res, 400, 'VALIDATION_ERROR', VALIDATION_MESSAGE, { userId: outcome.message })
     res.status(201).json({ team: await loadAdminTeam(teamId) })
   }
 }
