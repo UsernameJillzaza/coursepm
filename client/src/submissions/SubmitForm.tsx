@@ -15,6 +15,9 @@ export default function SubmitForm({ milestone, onSubmitted }: { milestone: Mile
   const [error, setError] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
 
+  if (milestone.closedAt) {
+    return <p className="alert alert-secondary">This milestone has been closed by the supervisor. Submissions are closed.</p>
+  }
   if (milestone.status === 'CLOSED') {
     return <p className="alert alert-secondary">The deadline has passed. Submissions are closed.</p>
   }
