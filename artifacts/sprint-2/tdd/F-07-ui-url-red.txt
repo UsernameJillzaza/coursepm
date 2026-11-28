@@ -1,0 +1,12 @@
+PR #83 review item 7 (Issue #79): revisions page URL handling, RED run
+Code under test: c3f11f6 + the two new TEST-UI-07H cases (committed next as test:)
+Command: cd client && npx vitest run tests/sprint-2/revisions-ui.test.tsx
+Date: 2026-11-28 22:08 (ICT)
+Expected: assertion failures: ?a=1 alone shows no message, and going Back to the page without ?a=&b= keeps the old selection.
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+ FAIL  tests/sprint-2/revisions-ui.test.tsx > TEST-UI-07H (AC-07-7, AC-07-8): the revisions page > a URL with only one of a / b explains it and requests no comparison (PR #83 review)
+TestingLibraryElementError: Unable to find role="alert"
+ FAIL  tests/sprint-2/revisions-ui.test.tsx > TEST-UI-07H (AC-07-7, AC-07-8): the revisions page > going Back to the page without ?a=&b= clears the comparison and the selection (PR #83 review)
+Error: expect(element).not.toBeChecked()
+      Tests  2 failed | 13 passed (15)

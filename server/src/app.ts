@@ -9,6 +9,7 @@ import { teamsRouter } from './teams/routes'
 import { milestonesRouter } from './milestones/routes'
 import { submissionsRouter } from './submissions/routes'
 import { feedbackRouter } from './feedback/routes'
+import { compareRouter } from './milestones/compare'
 import { adminRouter } from './admin/routes'
 
 // Last-resort error handler (Express 5 forwards rejected async handlers here).
@@ -55,6 +56,7 @@ export function createApp() {
   app.use('/api/teams', teamsRouter) // F-03
   app.use('/api/milestones/:milestoneId/submissions', submissionsRouter) // F-05
   app.use('/api/submissions', feedbackRouter) // F-06
+  app.use('/api/milestones/:milestoneId/compare', compareRouter) // F-07
   app.use('/api/milestones', milestonesRouter) // F-04
   app.use('/api/admin', adminRouter) // F-09
 

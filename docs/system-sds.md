@@ -102,6 +102,7 @@ seed creates the complete set above in one repeatable command.
 | `/teams` | My teams (cards with member names) | Student, Supervisor |
 | `/teams/:teamId` | Team detail: members, milestone list with status badges; **New milestone** button | Student, Supervisor (button for Supervisor only) |
 | `/teams/:teamId/milestones/new` | Create milestone form, shown after the team loads (**Team not found** for an out-of-scope team) | Supervisor |
+| `/milestones/:milestoneId/revisions` | Compare revisions (F-07): the revision list with a checkbox per row and, for two checked, a side-by-side comparison kept in `?a=&b=` | Student, Supervisor |
 | `/admin` | Course administration (F-09): Teams (New team form, Add member / Add supervisor) and Accounts (role filter, Deactivate with confirmation). Other roles see `NoAccess` | Admin |
 | `/milestones/:milestoneId` | Milestone detail: deadline (Bangkok time) with an Open/Closed badge, revisions used / limit, submit form (Student, while open), revision list with feedback, feedback form (Supervisor) | Student, Supervisor |
 
@@ -153,6 +154,7 @@ PostgreSQL cannot store a NUL byte in text).
 | `GET /api/teams/:teamId/milestones` · `POST /api/teams/:teamId/milestones` · `GET /api/milestones/:milestoneId` | F-04 |
 | `GET /api/milestones/:milestoneId/submissions` · `POST /api/milestones/:milestoneId/submissions` | F-05 |
 | `POST /api/submissions/:submissionId/feedback` | F-06 |
+| `GET /api/milestones/:milestoneId/compare?a=&b=` | F-07; read-only, scope 404 → query 400 → revision 404 |
 | `GET /api/admin/users` · `GET /api/admin/teams` · `POST /api/admin/teams` · `POST /api/admin/teams/:teamId/members` · `POST /api/admin/teams/:teamId/supervisors` · `POST /api/admin/users/:userId/deactivate` | F-09; `ADMIN` only (403 `FORBIDDEN` otherwise), checked before the path ID because these routes reveal no team work |
 
 ## 5. Roles, permissions and authentication

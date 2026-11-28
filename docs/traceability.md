@@ -39,7 +39,7 @@ The **Result** column is filled from the release-candidate run on `daefdff` (Par
 | BR-09 | F-06 | 1 | AC-06-2, AC-06-3 | TEST-06-02, TEST-06-03 | Pass (2/2 tests) |
 | BR-10 | F-06 | 1 | AC-06-5 | TEST-06-05, TEST-06-06, TEST-L6-63-01, TEST-L6-63-02 | Pass (4/4 tests) |
 | NFR-10 | R-02 | 1 | AC-R02-1, AC-01-10, AC-02-10, AC-04-6, AC-05-8 (revised by CHG-01), AC-05-13, AC-05-10, AC-06-6 | TEST-R02-01, TEST-UI-05, TEST-UI-04, TEST-UI-01, TEST-UI-02, TEST-UI-07, TEST-UI-06, TEST-L6-60-03 | Revised by CHG-01: TEST-UI-02 not run yet; others Pass (7/7 tests) |
-| FR-11 | F-07 | 2 | AC-07-1 … AC-07-9 | TEST-07-01 … TEST-07-08, TEST-UI-07H | Planned (not run) |
+| FR-11 | F-07 | 2 | AC-07-1 … AC-07-9 | TEST-07-01 … TEST-07-08, TEST-UI-07H | Pass on `e30dc3a` (8/9 tests; TEST-07-08 E2E not run yet) |
 | FR-12 | F-08 | 2 | AC-08-1, AC-08-2, AC-08-3, AC-08-8, AC-08-10, AC-08-11, AC-08-12 | TEST-08-01 … TEST-08-04, TEST-08-10, TEST-08-12, TEST-08-13, TEST-08-14, TEST-08-15, TEST-08-18, TEST-UI-08 | Planned (not run) |
 | FR-13, BR-11 | F-08 (D-06, D-09) | 2 | AC-08-5, AC-08-6, AC-08-7, AC-08-9, AC-08-11 | TEST-08-06 … TEST-08-09, TEST-08-11, TEST-08-15, TEST-08-16, TEST-08-17 | Planned (not run) |
 | FR-14 | F-09 | 2 | AC-09-1 … AC-09-12 | TEST-09-01 … TEST-09-14, TEST-UI-09 | Pass on `c2acd7f` (14/15 tests; TEST-09-14 not run until F-07/F-08/F-10/F-11 merge) |
@@ -56,7 +56,7 @@ The **Result** column is filled from the release-candidate run on `daefdff` (Par
 
 ## Coverage gaps and approved changes
 
-- **Uncovered requirements:** none unmapped. Every FR, BR and NFR maps to a feature or responsibility. Sprint 2 and 3 rows are **Planned (not run)** unless they say Pass; F-09's rows (FR-14, BR-01 `ADMIN`, NFR-04 deactivation) were run in Issue #78, and the F-09 parts of the shared NFR-02 / NFR-10 rows passed there too (TEST-09-02, TEST-09-12, TEST-UI-09).
+- **Uncovered requirements:** none unmapped. Every FR, BR and NFR maps to a feature or responsibility. Sprint 2 and 3 rows are **Planned (not run)** unless they say Pass. F-07's FR-11 row was run in Issue #79 and F-09's rows (FR-14, BR-01 `ADMIN`, NFR-04 deactivation) in Issue #78; the F-07 and F-09 parts of the shared NFR-02 / NFR-10 rows passed there too (TEST-07-06, TEST-07-07, TEST-UI-07H; TEST-09-02, TEST-09-12, TEST-UI-09).
 - **Approved changes:** record each change as `CHG-nn` with the date, reason and affected IDs.
   - **CHG-01** (2026-11-28, Lab 7, Issue #74): revision n + 1 needs feedback on revision n.
     Reason: stop silent resubmission (D-01). Affects FR-07, BR-07, NFR-05; F-04, F-05, F-06;

@@ -1,0 +1,55 @@
+Issue #79 (F-07) server GREEN run
+Commit under test: 88fee80 (clean tree)
+Command: cd server && npx vitest run tests/sprint-2 --reporter=verbose
+Date: 2026-11-28 21:06 (ICT)
+
+✓ tests/sprint-2/compare.api.test.ts > TEST-07-03 (AC-07-1, AC-07-2): compare two revisions > A1 and Supervisor 1 get older = revision 1 with its feedback, newer = revision 3 without 280ms
+✓ tests/sprint-2/compare.api.test.ts > TEST-07-03 (AC-07-1, AC-07-2): compare two revisions > the revisions use exactly the F-05 list item shape 119ms
+✓ tests/sprint-2/compare.api.test.ts > TEST-07-03 (AC-07-1, AC-07-2): compare two revisions > a=3&b=1 returns the same body as a=1&b=3 108ms
+✓ tests/sprint-2/compare.api.test.ts > TEST-07-04 (AC-07-3): the changes > equal titles, different links, and the documented description parts 84ms
+✓ tests/sprint-2/compare.api.test.ts > TEST-07-05 (AC-07-4): query validation > ?b=3 → 400 naming ["a"] 110ms
+✓ tests/sprint-2/compare.api.test.ts > TEST-07-05 (AC-07-4): query validation > ?a=1 → 400 naming ["b"] 94ms
+✓ tests/sprint-2/compare.api.test.ts > TEST-07-05 (AC-07-4): query validation > ?a=0&b=3 → 400 naming ["a"] 100ms
+✓ tests/sprint-2/compare.api.test.ts > TEST-07-05 (AC-07-4): query validation > ?a=abc&b=3 → 400 naming ["a"] 94ms
+✓ tests/sprint-2/compare.api.test.ts > TEST-07-05 (AC-07-4): query validation > ?a=01&b=3 → 400 naming ["a"] 73ms
+✓ tests/sprint-2/compare.api.test.ts > TEST-07-05 (AC-07-4): query validation > ?a=1e0&b=3 → 400 naming ["a"] 65ms
+✓ tests/sprint-2/compare.api.test.ts > TEST-07-05 (AC-07-4): query validation > ?a=2147483648&b=3 → 400 naming ["a"] 66ms
+✓ tests/sprint-2/compare.api.test.ts > TEST-07-05 (AC-07-4): query validation > ?a=2&b=2 → 400 naming ["b"] 64ms
+✓ tests/sprint-2/compare.api.test.ts > TEST-07-06 (AC-07-5): scope > Supervisor 2 and B1 get 404 "Milestone not found." with no Alpha title 190ms
+✓ tests/sprint-2/compare.api.test.ts > TEST-07-06 (AC-07-5): scope > scope is checked before the query: an outsider with a bad query still gets 404 114ms
+✓ tests/sprint-2/compare.api.test.ts > TEST-07-06 (AC-07-5): scope > milestone ID 999999 → 404 95ms
+✓ tests/sprint-2/compare.api.test.ts > TEST-07-06 (AC-07-5): scope > milestone ID abc → 404 76ms
+✓ tests/sprint-2/compare.api.test.ts > TEST-07-06 (AC-07-5): scope > milestone ID 0 → 404 79ms
+✓ tests/sprint-2/compare.api.test.ts > TEST-07-06 (AC-07-5): scope > without a session → 401 6ms
+✓ tests/sprint-2/compare.api.test.ts > TEST-07-07 (AC-07-6, AC-07-9): revision existence and read-only > a revision that does not exist, or exists only in another milestone, is 404 "Revision not found." 94ms
+TEST-07-07 timing: compare of two 2,000-character descriptions took 41 ms
+✓ tests/sprint-2/compare.api.test.ts > TEST-07-07 (AC-07-6, AC-07-9): revision existence and read-only > two 2,000-character descriptions compare inside the NFR-08 budget, and nothing changes 189ms
+✓ tests/sprint-2/revision-diff.unit.test.ts > TEST-07-01 (AC-07-3): diffWords > equal texts: same+removed rebuilds the old text and same+added the new text, exactly 3ms
+✓ tests/sprint-2/revision-diff.unit.test.ts > TEST-07-01 (AC-07-3): diffWords > the SRS pair: same+removed rebuilds the old text and same+added the new text, exactly 0ms
+✓ tests/sprint-2/revision-diff.unit.test.ts > TEST-07-01 (AC-07-3): diffWords > empty → text: same+removed rebuilds the old text and same+added the new text, exactly 0ms
+✓ tests/sprint-2/revision-diff.unit.test.ts > TEST-07-01 (AC-07-3): diffWords > text → empty: same+removed rebuilds the old text and same+added the new text, exactly 0ms
+✓ tests/sprint-2/revision-diff.unit.test.ts > TEST-07-01 (AC-07-3): diffWords > spacing only: same+removed rebuilds the old text and same+added the new text, exactly 0ms
+✓ tests/sprint-2/revision-diff.unit.test.ts > TEST-07-01 (AC-07-3): diffWords > line breaks: same+removed rebuilds the old text and same+added the new text, exactly 0ms
+✓ tests/sprint-2/revision-diff.unit.test.ts > TEST-07-01 (AC-07-3): diffWords > Thai text with spaces: same+removed rebuilds the old text and same+added the new text, exactly 0ms
+✓ tests/sprint-2/revision-diff.unit.test.ts > TEST-07-01 (AC-07-3): diffWords > reordered words: same+removed rebuilds the old text and same+added the new text, exactly 0ms
+✓ tests/sprint-2/revision-diff.unit.test.ts > TEST-07-01 (AC-07-3): diffWords > the documented SRS pair: Draft removed, Final draft and v2 added, of the SRS same 1ms
+✓ tests/sprint-2/revision-diff.unit.test.ts > TEST-07-01 (AC-07-3): diffWords > equal texts give one same part; two empty texts give no parts 1ms
+✓ tests/sprint-2/revision-diff.unit.test.ts > TEST-07-01 (AC-07-3): diffWords > words compare case-sensitively 0ms
+✓ tests/sprint-2/revision-diff.unit.test.ts > TEST-07-01 (AC-07-3): diffWords > stays exact and quick for two 2,000-character descriptions (BR-08 maximum) 29ms
+✓ tests/sprint-2/revision-diff.unit.test.ts > TEST-07-02 (AC-07-4): parseRevisionPair > puts the smaller number first, whatever the order 1ms
+✓ tests/sprint-2/revision-diff.unit.test.ts > TEST-07-02 (AC-07-4): parseRevisionPair > a missing → fields 0ms
+✓ tests/sprint-2/revision-diff.unit.test.ts > TEST-07-02 (AC-07-4): parseRevisionPair > b missing → fields 0ms
+✓ tests/sprint-2/revision-diff.unit.test.ts > TEST-07-02 (AC-07-4): parseRevisionPair > a = 0 → fields 0ms
+✓ tests/sprint-2/revision-diff.unit.test.ts > TEST-07-02 (AC-07-4): parseRevisionPair > a = abc → fields 0ms
+✓ tests/sprint-2/revision-diff.unit.test.ts > TEST-07-02 (AC-07-4): parseRevisionPair > a = 01 → fields 0ms
+✓ tests/sprint-2/revision-diff.unit.test.ts > TEST-07-02 (AC-07-4): parseRevisionPair > a = 1e0 → fields 0ms
+✓ tests/sprint-2/revision-diff.unit.test.ts > TEST-07-02 (AC-07-4): parseRevisionPair > a = +1 → fields 0ms
+✓ tests/sprint-2/revision-diff.unit.test.ts > TEST-07-02 (AC-07-4): parseRevisionPair > a = 2147483648 → fields 0ms
+✓ tests/sprint-2/revision-diff.unit.test.ts > TEST-07-02 (AC-07-4): parseRevisionPair > a repeated (an array) → fields 0ms
+✓ tests/sprint-2/revision-diff.unit.test.ts > TEST-07-02 (AC-07-4): parseRevisionPair > both missing → fields 0ms
+✓ tests/sprint-2/revision-diff.unit.test.ts > TEST-07-02 (AC-07-4): parseRevisionPair > a = b → fields 0ms
+✓ tests/sprint-2/revision-diff.unit.test.ts > compareRevisions (AC-07-3) > marks title and link as whole values and the description word by word 0ms
+✓ tests/sprint-2/revision-diff.unit.test.ts > compareRevisions (AC-07-3) > equal descriptions → changed false with one same part 0ms
+Test Files  2 passed (2)
+Tests  46 passed (46)
+Duration  8.76s (transform 385ms, setup 0ms, import 958ms, tests 2.70s, environment 0ms)
