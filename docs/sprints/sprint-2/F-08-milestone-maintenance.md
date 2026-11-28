@@ -72,7 +72,10 @@ one's new deadline: it gets 201 if it is still later, otherwise 400 `fields.newD
   `reason` trimmed 3–500 characters with no control characters other than tab, line feed and
   carriage return (`text.ts`). The comparison with the current deadline happens after the lock.
 - `checkCanSubmit` (F-05) gains an **optional** `closedAt?: Date | null` in `SubmitState` and
-  `MILESTONE_CLOSED` in the `SubmitCheck` code union. It checks closed → deadline → revision limit.
+  `MILESTONE_CLOSED` in the `SubmitCheck` code union. **Combined rule order of `checkCanSubmit`** (the one place it is written for Sprint 2): closed
+  (`MILESTONE_CLOSED`, F-08) → deadline (`DEADLINE_PASSED`, BR-06) → revision limit
+  (`REVISION_LIMIT_REACHED`, BR-07) → feedback on the latest revision (`AWAITING_FEEDBACK`, CHG-01,
+  F-05 v1.2). Each later check runs only when the earlier ones pass.
   The Sprint 1 unit tests call it without `closedAt` and stay unchanged. `RULE_MESSAGES.MILESTONE_CLOSED`
   = "This milestone has been closed by the supervisor."
 
@@ -86,10 +89,11 @@ one's new deadline: it gets 201 if it is still later, otherwise 400 `fields.newD
   sentence and AC-04-5 get a note that `status` is also `CLOSED` after an early close.
 - **F-06 feedback:** unchanged. Feedback on existing revisions is still allowed after a close.
 - **F-10 board** (contract to be written in #73): uses `closedAt` to tell *Closed* from *Overdue*.
-- **Lab 7:** the Lab 7 change is not chosen yet and is not part of Sprint 2. Its own change request
-  states its effect on F-05 / F-08 when it is written. F-08 does not change BR-05. The F-08 test that
-  submits a second revision after an extension (TEST-08-09) gives feedback on revision 1 first, so it
-  does not depend on whether a later change ties resubmission to feedback.
+- **Lab 7 change CHG-01** (Issue #74, F-05 v1.2): revision n + 1 is accepted only when revision n
+  has feedback. It adds the last step of the combined order above. An extension re-opens the
+  deadline, but it does **not** bypass the feedback rule, and a close still wins over everything.
+  That is why AC-08-7 / TEST-08-09 give feedback on revision 1 before the late revision 2. F-08 does
+  not change BR-05 (the 24 h minimum notice was dropped and is not part of any contract).
 
 ## UI
 
