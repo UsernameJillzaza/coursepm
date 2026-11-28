@@ -1,0 +1,36 @@
+PR #82 review item 3 / F-09 DoD: the F-09 migration on a copy of the Lab 6 database, then the a342ed5 code
+Date: 2026-11-28 21:54 (ICT)
+Code: Lab 6 = a342ed5 (v0.2.1, the code behind Cloud Run tag lab6-v021), in a detached worktree with its own npm ci and Prisma client; F-09 = feature/78-admin at c2acd7f.
+Database: a new local PostgreSQL 18 database coursepm_lab6copy (not the development, test or Cloud SQL database). "Copy of the Lab 6 database" = the Lab 6 schema built by the a342ed5 migrations and seed, plus Lab 6-style data (a milestone and a revision created through the a342ed5 API). Cloud SQL itself was not touched.
+Steps: (1) a342ed5 prisma migrate deploy + seed, create a milestone and revision 1 through the a342ed5 API; (2) feature/78-admin prisma migrate deploy + seed, as the release job would; (3) start the a342ed5 server against the migrated copy and check health, readiness, student and supervisor login, the team list, the milestone list and the submissions list.
+Script: a local throwaway Node script (fetch against http://localhost:3101); demo password generated per run and never printed. Node deprecation warnings removed from the output below; nothing else changed. The database was dropped afterwards.
+
+Step 1: build the Lab 6 state with the a342ed5 code (6 migrations + its seed)
+6 migrations found in prisma/migrations
+Applying migration `20261114193252_users_sessions`
+Applying migration `20261114193953_teams`
+Applying migration `20261115082511_milestones`
+Applying migration `20261115091309_submissions`
+Applying migration `20261115091328_submission_team_matches_milestone`
+Applying migration `20261115094021_feedback`
+All migrations have been successfully applied.
+a342ed5 seed: done
+Lab 6 data: milestone 201 (id 1), revision 1 201
+
+Step 2: apply the F-09 migration and the F-09 seed with the feature/78-admin code (as the release job would)
+7 migrations found in prisma/migrations
+Applying migration `20261128132923_admin_role`
+  └─ 20261128132923_admin_role/
+All migrations have been successfully applied.
+F-09 seed: done (adds admin@coursepm.test)
+Role enum values now: STUDENT,SUPERVISOR,ADMIN
+
+Step 3: run the a342ed5 code (Prisma client generated without ADMIN) against the migrated copy
+GET /api/health → 200
+GET /api/ready → 200 {"status":"ready","db":"connected"}
+alpha1@coursepm.test: login 200 role STUDENT; GET /api/teams 200 (1 team(s)); milestone list 200, contains the Lab 6 milestone: true; its submissions 200, 1 revision(s)
+supervisor1@coursepm.test: login 200 role SUPERVISOR; GET /api/teams 200 (1 team(s)); milestone list 200, contains the Lab 6 milestone: true; its submissions 200, 1 revision(s)
+admin@coursepm.test through a342ed5 (documented known limit): login 500 INTERNAL_ERROR
+after the admin attempt, beta1 login still 200
+
+Result: PASS. The migration only adds ADMIN; the a342ed5 code keeps working for students and supervisors on the migrated database, including the data created before the migration. Signing in as the admin through a342ed5 gives 500 INTERNAL_ERROR, which is the known limit stated in the F-09 contract (its Prisma client has no ADMIN value); other logins keep working afterwards.

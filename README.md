@@ -28,7 +28,7 @@ Node.js 24, PostgreSQL 18 running locally, Microsoft Edge (used by the Playwrigh
    ```bash
    npm --prefix server run db:deploy
    ```
-5. Load the synthetic demo data (8 accounts, 3 teams). Every demo account uses the `SEED_PASSWORD` from your `server/.env`, and the seed is safe to run again:
+5. Load the synthetic demo data (8 team accounts, 1 course administrator, 3 teams). Every demo account uses the `SEED_PASSWORD` from your `server/.env`, and the seed is safe to run again:
    ```bash
    npm --prefix server run db:seed
    ```
@@ -51,6 +51,7 @@ Node.js 24, PostgreSQL 18 running locally, Microsoft Edge (used by the Playwrigh
 | `alpha1@coursepm.test`, `alpha2@coursepm.test` | Student | Team Alpha |
 | `beta1@coursepm.test`, `beta2@coursepm.test` | Student | Team Beta |
 | `gamma1@coursepm.test`, `gamma2@coursepm.test` | Student | Team Gamma |
+| `admin@coursepm.test` | Course administrator (F-09) | none; manages teams and accounts at `/admin` |
 
 ## Tests
 | Command | What it runs |

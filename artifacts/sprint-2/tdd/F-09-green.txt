@@ -1,0 +1,10 @@
+Issue #78 (F-09 course administration) GREEN run
+Commit under test: 50408c4 (clean tree: RED tests 4bc1d6e + implementation)
+Command: cd server && npx vitest run tests/sprint-2
+Date: 2026-11-28 20:35 (ICT)
+
+7 migrations found in prisma/migrations
+No pending migrations to apply.
+ Test Files  2 passed (2)
+      Tests  49 passed | 4 todo (53)
+   Duration  9.25s (transform 374ms, setup 0ms, import 824ms, tests 4.48s, environment 0ms)
