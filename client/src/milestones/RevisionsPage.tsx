@@ -38,12 +38,15 @@ export default function RevisionsPage() {
   const list = useApi<{ items: Submission[] }>(`/milestones/${milestoneId}/submissions`)
   const [selected, setSelected] = useState<number[]>([])
   const [compare, setCompare] = useState<CompareState>({ loading: false, data: null, error: '' })
-  const [milestoneMissing, setMilestoneMissing] = useState(false)
 
-  // The URL decides what is compared; the checkboxes start from it.
+  // The URL decides what is compared; the checkboxes start from it. Without
+  // ?a=&b= (for example after Back) there is no comparison and no selection.
+  // Only one of the two is the same mistake as a=b, so it gets the same
+  // message, and no request is sent (PR #83 review).
   useEffect(() => {
     if (!a || !b) {
-      setCompare({ loading: false, data: null, error: '' })
+      setSelected([])
+      setCompare({ loading: false, data: null, error: a || b ? 'Choose two different revisions to compare.' : '' })
       return
     }
     const fromUrl = [Number(a), Number(b)].filter((n) => Number.isInteger(n) && n > 0)
@@ -54,7 +57,10 @@ export default function RevisionsPage() {
       .then((r) => !cancelled && setCompare({ loading: false, data: r.comparison, error: '' }))
       .catch((e) => {
         if (cancelled) return
-        if (e instanceof ApiError && e.status === 404 && e.message === 'Milestone not found.') setMilestoneMissing(true)
+        // A milestone that is missing or out of scope is already shown by the
+        // detail and list requests (their 404 renders NotFound below), so no
+        // message text is matched here. A compare 404 is then a revision number
+        // that is not in this milestone ("Revision not found.").
         const message = e instanceof ApiError
           ? e.status === 400 ? 'Choose two different revisions to compare.' : e.message
           : 'Could not reach the server.'
@@ -65,7 +71,7 @@ export default function RevisionsPage() {
     }
   }, [milestoneId, a, b])
 
-  if (detail.error?.status === 404 || list.error?.status === 404 || milestoneMissing) return <NotFound />
+  if (detail.error?.status === 404 || list.error?.status === 404) return <NotFound />
   if (detail.loading && !detail.data) return <main className="container"><Loading /></main>
   if (detail.error || !detail.data) {
     return <main className="container"><ErrorAlert message={detail.error?.message ?? 'Error'} onRetry={detail.reload} /></main>
