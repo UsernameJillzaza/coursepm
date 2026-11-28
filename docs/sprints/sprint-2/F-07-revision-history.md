@@ -1,6 +1,6 @@
 # F-07 Revision history and comparison — feature contract
 
-Version 1.0 · 2026-11-28 · Issue: #73 (contract); implementation: S2-3 (Issue to be created) ·
+Version 1.1 · 2026-11-28 (page renamed to `/revisions`, PR #76 review; 1.0 same day) · Issue: #73 (contract); implementation: S2-3 (Issue to be created) ·
 Links: FR-11, FR-07, FR-08, FR-10, BR-02, BR-03, NFR-02, NFR-10, D-03, D-08 ·
 Depends on: F-05 (revisions), F-06 (feedback per revision)
 
@@ -8,7 +8,7 @@ Depends on: F-05 (revisions), F-06 (feedback per revision)
 
 F-05 already stores every revision unchanged and lists them newest first on the milestone page
 (FR-07, FR-08), with each revision's feedback (F-06). What a team or supervisor cannot do yet is
-**see what changed between two revisions** (FR-11). F-07 adds a history page for one milestone and a
+**see what changed between two revisions** (FR-11). F-07 adds a revisions page for one milestone and a
 side-by-side comparison of any two of its revisions, with the differences marked.
 
 The comparison is **read-only and computed on request**. Nothing new is stored, and no rule about
@@ -17,9 +17,10 @@ submitting, the deadline or the revision limit changes.
 ## Behavior and workflow
 
 1. Anyone in the milestone's scope (the team's students and its assigned supervisors, BR-02/BR-03)
-   opens the milestone page and follows **History & compare** to
-   `/milestones/:milestoneId/history`.
-2. The history page lists every revision, newest first, with revision number, title, submitter, time
+   opens the milestone page and follows **Compare revisions** to
+   `/milestones/:milestoneId/revisions`. (The page is not called "history": F-08's
+   `GET /api/milestones/:milestoneId/history` is the milestone's change history, a different thing.)
+2. The revisions page lists every revision, newest first, with revision number, title, submitter, time
    (Bangkok, D-05) and whether it has feedback. Each row has a checkbox.
 3. When exactly two revisions are checked, **Compare** becomes active. Pressing it requests the
    comparison and shows it side by side: the **older** revision on the left, the **newer** on the
@@ -61,9 +62,9 @@ In `server/src/rules/revisionDiff.ts`:
 
 ## UI
 
-- **Milestone page:** a **History & compare** link next to the Submissions heading, for every role
+- **Milestone page:** a **Compare revisions** link next to the Submissions heading, for every role
   that sees the page. Nothing else on the page changes.
-- **`/milestones/:milestoneId/history`** (inside `RequireAuth`):
+- **`/milestones/:milestoneId/revisions`** (inside `RequireAuth`):
   - Breadcrumb back to the team and the milestone; the milestone title and deadline.
   - The revision list with loading, empty and error states (NFR-10) and a checkbox per row. When
     two are checked the other checkboxes are disabled until one is unchecked.
@@ -82,7 +83,7 @@ In `server/src/rules/revisionDiff.ts`:
 | `GET /api/milestones/:milestoneId/submissions` | — (F-05, **no change**) | 200 `{ items }` | 401, 404 |
 | `GET /api/milestones/:milestoneId/compare?a=<n>&b=<n>` | query `a`, `b` | 200 `{ comparison }` | 400, 401, 404 |
 
-- The history list reuses the existing F-05 list: it already returns every revision newest first
+- The revisions list reuses the existing F-05 list: it already returns every revision newest first
   with `submittedBy`, `submittedAt` and `feedback` (AC-05-7, AC-06-4).
 - **`comparison`**: `{ milestoneId, older: revision, newer: revision, changes: { title: { changed },
   link: { changed }, description: { changed, parts: [{ op, text }] } } }`, where `revision` is the
@@ -100,7 +101,7 @@ unchanged (BR-07 append-only revisions). No migration.
 **Files expected to change:**
 - new `server/src/rules/revisionDiff.ts`; `server/src/submissions/routes.ts` or a new
   `server/src/milestones/compare.ts` mounted at `/api/milestones/:milestoneId/compare`
-- client: the history page, its route in `App.tsx`, the link on the milestone page, API helpers
+- client: the revisions page, its route in `App.tsx`, the link on the milestone page, API helpers
 - `docs/system-sds.md` (route table), `docs/traceability.md`
 
 ## Acceptance criteria
@@ -113,7 +114,7 @@ unchanged (BR-07 append-only revisions). No migration.
 | AC-07-4 | Validation: `a` missing, `b` missing, `a=0`, `a=abc`, `a=01`, `a=1e0`, `a=2147483648`, `a=b=2` → 400 naming `a` or `b`; nothing else is read. |
 | AC-07-5 | Scope: Supervisor 2 and B1 compare on the Alpha milestone → 404 "Milestone not found."; an unknown or malformed milestone ID → 404; without a session → 401. |
 | AC-07-6 | Revision existence: `compare?a=1&b=9` on a milestone with three revisions → 404 "Revision not found."; a revision number that exists only in another Alpha milestone → the same 404. |
-| AC-07-7 | Empty and single cases: the history page of a milestone with no revision shows "No revisions yet."; with one revision it shows the list and "Only one revision so far; compare needs two.", and Compare is disabled. |
+| AC-07-7 | Empty and single cases: the revisions page of a milestone with no revision shows "No revisions yet."; with one revision it shows the list and "Only one revision so far; compare needs two.", and Compare is disabled. |
 | AC-07-8 | UI: the list has loading, empty and error states; Compare is disabled until exactly two are checked and a third checkbox is disabled; checking revision 3 then 1 shows 1 on the left; the URL carries `?a=1&b=3` and a reload shows the same comparison; changed fields show `Changed`, removed words are struck through and added ones highlighted; at 375 px the columns stack and the page has no horizontal scroll. |
 | AC-07-9 | Read-only: after any number of compare requests the revision, feedback and milestone rows are unchanged (counts and `submittedAt` equal before and after). |
 
