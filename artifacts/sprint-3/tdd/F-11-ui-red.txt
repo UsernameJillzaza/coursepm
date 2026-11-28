@@ -1,0 +1,31 @@
+Issue #81 (F-11) client RED run (TEST-UI-11)
+Code under test: 8b3f6a6 (server score API done; no Score panel in the client yet) + the new test file (committed next as test:)
+Command: cd client && npx vitest run tests/sprint-3
+Date: 2026-11-28 23:52 (ICT)
+Expected: every case fails on an assertion (no "Score" region on the milestone page).
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 11 ⎯⎯⎯⎯⎯⎯⎯
+ FAIL  tests/sprint-3/score-ui.test.tsx > TEST-UI-11 (AC-11-10): supervisor > no score yet: the input and Save, no Release button, "No score yet."
+TestingLibraryElementError: Unable to find role="region" and name "Score"
+ FAIL  tests/sprint-3/score-ui.test.tsx > TEST-UI-11 (AC-11-10): supervisor > an invalid score shows the field error under the input and keeps the typed value
+TestingLibraryElementError: Unable to find role="region" and name "Score"
+ FAIL  tests/sprint-3/score-ui.test.tsx > TEST-UI-11 (AC-11-10): supervisor > NO_CHANGE and a 409 show in the alert
+TestingLibraryElementError: Unable to find role="region" and name "Score"
+ FAIL  tests/sprint-3/score-ui.test.tsx > TEST-UI-11 (AC-11-10): supervisor > saving shows the new value and history from the response
+TestingLibraryElementError: Unable to find role="region" and name "Score"
+ FAIL  tests/sprint-3/score-ui.test.tsx > TEST-UI-11 (AC-11-10): supervisor > Release is offered for an unreleased score; its dialog names the team, and Cancel sends nothing
+TestingLibraryElementError: Unable to find role="region" and name "Score"
+ FAIL  tests/sprint-3/score-ui.test.tsx > TEST-UI-11 (AC-11-10): supervisor > confirming Release shows the released state from the response
+TestingLibraryElementError: Unable to find role="region" and name "Score"
+ FAIL  tests/sprint-3/score-ui.test.tsx > TEST-UI-11 (AC-11-10): supervisor > a released score: the required reason field, the status line, no Release button and the history lines
+TestingLibraryElementError: Unable to find role="region" and name "Score"
+ FAIL  tests/sprint-3/score-ui.test.tsx > TEST-UI-11 (AC-11-10): student > before release: only "Score not released yet." — no input, button or history
+TestingLibraryElementError: Unable to find role="region" and name "Score"
+ FAIL  tests/sprint-3/score-ui.test.tsx > TEST-UI-11 (AC-11-10): student > after release: "Score: 90 / 100 (released 29 Nov 10:00)"
+TestingLibraryElementError: Unable to find role="region" and name "Score"
+ FAIL  tests/sprint-3/score-ui.test.tsx > TEST-UI-11 (AC-11-10): loading and error states > a pending score load shows a spinner inside the panel
+TestingLibraryElementError: Unable to find role="region" and name "Score"
+ FAIL  tests/sprint-3/score-ui.test.tsx > TEST-UI-11 (AC-11-10): loading and error states > a failed load shows ErrorAlert with Retry inside the panel, the rest of the page stays, and Retry re-requests
+TestingLibraryElementError: Unable to find role="region" and name "Score"
+ Test Files  1 failed (1)
+      Tests  11 failed (11)
