@@ -36,6 +36,8 @@ model User {
   extensionsGranted DeadlineExtension[]
   submissions       Submission[]
   feedbackGiven     Feedback[]
+  scoresReleased    MilestoneScore[]       @relation("ScoreReleasedBy")
+  scoreChanges      ScoreChange[]          @relation("ScoreChangedBy")
 }
 
 // NFR-04: the id is SHA-256(cookie token); the token itself is never stored.
@@ -103,6 +105,7 @@ model Milestone {
   submissions  Submission[]
   changes      MilestoneChange[]
   extensions   DeadlineExtension[]
+  score        MilestoneScore?
 
   @@unique([id, teamId])
   @@index([teamId, deadline])
@@ -185,4 +188,44 @@ model DeadlineExtension {
   grantedAt        DateTime  @db.Timestamptz(3)
 
   @@index([milestoneId, grantedAt])
+}
+
+// F-11 (FR-16, BR-12, D-10): one score 0–100 per milestone, hidden from the
+// team until released; a change after release needs a reason. CHECKs in the
+// migration: score 0–100, the release pair, the ScoreChange kind rules, and
+// BR-12 in the database (afterRelease ⇒ a SET with a 3–500 character reason).
+enum ScoreChangeKind {
+  SET
+  RELEASE
+}
+
+model MilestoneScore {
+  id           Int           @id @default(autoincrement())
+  milestoneId  Int           @unique
+  milestone    Milestone     @relation(fields: [milestoneId], references: [id])
+  score        Int
+  releasedAt   DateTime?     @db.Timestamptz(3)
+  releasedById Int?
+  releasedBy   User?         @relation("ScoreReleasedBy", fields: [releasedById], references: [id], onDelete: Restrict)
+  createdAt    DateTime      @db.Timestamptz(3)
+  updatedAt    DateTime      @db.Timestamptz(3)
+  changes      ScoreChange[]
+}
+
+// Every value, release and reason the score ever had. Rows are never updated
+// or deleted by the app.
+model ScoreChange {
+  id               Int             @id @default(autoincrement())
+  milestoneScoreId Int
+  milestoneScore   MilestoneScore  @relation(fields: [milestoneScoreId], references: [id])
+  kind             ScoreChangeKind
+  oldScore         Int?
+  newScore         Int?
+  reason           String?
+  afterRelease     Boolean         @default(false)
+  changedById      Int
+  changedBy        User            @relation("ScoreChangedBy", fields: [changedById], references: [id])
+  changedAt        DateTime        @db.Timestamptz(3)
+
+  @@index([milestoneScoreId, changedAt])
 }
